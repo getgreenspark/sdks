@@ -1,0 +1,1181 @@
+openapi: 3.0.0
+info:
+  title: Email
+  description: Here you can find documentation and examples for Greenspark Impact
+    API
+  contact: {}
+  version: v1
+servers:
+- url: https://sandbox.getgreenspark.com
+  description: Sandbox environment
+- url: https://demo-api.getgreenspark.com
+  description: Demo environment
+- url: https://api.getgreenspark.com
+  description: Production environment
+paths:
+  /v1/email/domains:
+    get:
+      tags:
+      - Email
+      summary: Fetch Domains
+      description: Fetch your previously added domains.
+      operationId: EmailController_fetchDomains
+      parameters: []
+      responses:
+        "200":
+          description: Domains has been successfully queried.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomDomainDto'
+                x-content-type: application/json
+        "400":
+          description: Bad request.
+        "401":
+          description: Provide your API key.
+        "403":
+          description: "Please upgrade to a growth, premium or enterprise plan."
+        "404":
+          description: Not found.
+      security:
+      - access-key: []
+    post:
+      tags:
+      - Email
+      summary: Add Domain
+      description: Add your domain and receive the DNS records that must be added
+        to your domain.
+      operationId: EmailController_addDomain
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomDomainRequestBody'
+        required: true
+      responses:
+        "200":
+          description: Domain has been successfully added.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomDomainDto'
+        "400":
+          description: Bad request.
+        "401":
+          description: Provide your API key.
+        "403":
+          description: "Please upgrade to a growth, premium or enterprise plan."
+        "404":
+          description: Not found.
+      security:
+      - access-key: []
+  /v1/email/domains/{domainId}/verify:
+    post:
+      tags:
+      - Email
+      summary: Verify Domain
+      description: Verify your domain based on the provided DNS records.
+      operationId: EmailController_verifyDomain
+      parameters:
+      - name: domainId
+        in: path
+        description: The id of the custom domain object.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 63c5857475784b9acf05c919
+      responses:
+        "200":
+          description: Domain has been successfully verified.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomDomainDto'
+        "400":
+          description: Bad request.
+        "401":
+          description: Provide your API key.
+        "403":
+          description: "Please upgrade to a growth, premium or enterprise plan."
+        "404":
+          description: Not found.
+      security:
+      - access-key: []
+  /v1/email/domains/{domainId}:
+    delete:
+      tags:
+      - Email
+      summary: Delete Domain
+      description: Delete your domain.
+      operationId: EmailController_deleteDomain
+      parameters:
+      - name: domainId
+        in: path
+        description: The id of the custom domain object.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 63c5857475784b9acf05c919
+      responses:
+        "200":
+          description: Domains has been successfully queried.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomDomainDto'
+        "400":
+          description: Bad request.
+        "401":
+          description: Provide your API key.
+        "403":
+          description: "Please upgrade to a growth, premium or enterprise plan."
+        "404":
+          description: Not found.
+      security:
+      - access-key: []
+  /v1/email/templates-defaults:
+    get:
+      tags:
+      - Email
+      summary: Fetch Templates Defaults
+      description: Fetch templates defaults for email sending.
+      operationId: EmailController_fetchTemplatesDefaults
+      parameters: []
+      responses:
+        "200":
+          description: Templates defaults has been successfully queried.
+          content:
+            application/json:
+              schema:
+                example:
+                  variables:
+                    type: "order, feedback, newsletter subscription"
+                    firstName: John
+                    lastName: Smith
+                    impactsTextPresent: "plant 3 trees, rescue 7 plastic bottles and\
+                      \ offset 5 kgs of CO2"
+                    impactsTextPast: "planted 3 trees, rescued 7 plastic bottles and\
+                      \ offset 5 kgs of CO2"
+                    sellerName: Greenspark
+                  templates:
+                  - userId: ""
+                    isActive: true
+                    isCustom: false
+                    type:
+                      name: Customer invitation
+                      template: invitation
+                      trigger:
+                      - offsetPerOrder
+                      - offsetPerProduct
+                      - offsetBySpend
+                      - offsetByStoreRevenue
+                      - offsetByPercentageOrder
+                      - offsetPerSubscription
+                      - offsetPerReview
+                      - offsetByApi
+                      isTriggerCustom: false
+                      schedule: null
+                      isScheduleCustom: false
+                    settings:
+                      from:
+                        name: hello
+                        domain: getgreenspark.com
+                      isFromCustom: false
+                      alias: "{{ sellerName }} x Greenspark"
+                      isAliasCustom: false
+                      subject: "Your {{type}} with {{sellerName}} {{impactsTextPast}}.\
+                        \ Track your impact here."
+                      isSubjectCustom: false
+                      preheader: Activate your Greenspark dashboard & grow your impact
+                        today.
+                      isPreheaderCustom: false
+                      schedule:
+                        startDate: 2023-02-09T21:09:47.830Z
+                        endDate: null
+                        isEndDateCustom: false
+                    content:
+                      headerImage: http://res.cloudinary.com/dlilerh6s/image/upload/v1670515295/templates/abgf9boicpxujispedpy.png
+                      isHeaderImageCustom: false
+                      body: "<div style=\"font-family: inherit; text-align: inherit\"\
+                        ><span style=\"font-family: tahoma, geneva, sans-serif; font-style:\
+                        \ normal; font-variant-ligatures: normal; font-variant-caps:\
+                        \ normal; font-weight: 400; letter-spacing: normal; orphans:\
+                        \ 2; text-align: center; text-indent: 0px; text-transform:\
+                        \ none; white-space: pre-wrap; widows: 2; word-spacing: 0px;\
+                        \ -webkit-text-stroke-width: 0px; background-color: rgb(249,\
+                        \ 249, 249); text-decoration-thickness: initial; text-decoration-style:\
+                        \ initial; text-decoration-color: initial; float: none; display:\
+                        \ inline; font-size: 14px; color: #3b755f\">Hi {{ firstName\
+                        \ }},</span></div><div style=\"font-family: inherit; text-align:\
+                        \ inherit\"><br></div><div style=\"font-family: inherit; text-align:\
+                        \ inherit\"><span style=\"line-height: 1.38; background-color:\
+                        \ transparent; margin-top: 0pt; margin-bottom: 0pt; font-size:\
+                        \ 10.5pt; font-family: Arial; color: #212121; font-weight:\
+                        \ 400; font-style: normal; font-variant-ligatures: normal;\
+                        \ font-variant-caps: normal; font-variant-numeric: normal;\
+                        \ font-variant-east-asian: normal; text-decoration-line: none;\
+                        \ text-decoration-thickness: initial; text-decoration-style:\
+                        \ initial; text-decoration-color: initial; vertical-align:\
+                        \ baseline; white-space: pre-wrap\">Thanks so much for your\
+                        \ </span><span style=\"line-height: 1.38; background-color:\
+                        \ transparent; margin-top: 0pt; margin-bottom: 0pt; font-size:\
+                        \ 10.5pt; font-family: Arial; color: #000000; font-weight:\
+                        \ 400; font-style: normal; font-variant-ligatures: normal;\
+                        \ font-variant-caps: normal; font-variant-numeric: normal;\
+                        \ font-variant-east-asian: normal; text-decoration-line: none;\
+                        \ text-decoration-thickness: initial; text-decoration-style:\
+                        \ initial; text-decoration-color: initial; vertical-align:\
+                        \ baseline; white-space: pre-wrap\">{{sellerName}}</span><span\
+                        \ style=\"line-height: 1.38; background-color: transparent;\
+                        \ margin-top: 0pt; margin-bottom: 0pt; font-size: 10.5pt;\
+                        \ font-family: Arial; color: #212121; font-weight: 400; font-style:\
+                        \ normal; font-variant-ligatures: normal; font-variant-caps:\
+                        \ normal; font-variant-numeric: normal; font-variant-east-asian:\
+                        \ normal; text-decoration-line: none; text-decoration-thickness:\
+                        \ initial; text-decoration-style: initial; text-decoration-color:\
+                        \ initial; vertical-align: baseline; white-space: pre-wrap\"\
+                        > {{ type }}!</span></div><div style=\"font-family: inherit;\
+                        \ text-align: inherit\">&nbsp;</div><div style=\"font-family:\
+                        \ inherit; text-align: inherit\"><span style=\"line-height:\
+                        \ 1.38; background-color: transparent; margin-top: 0pt; margin-bottom:\
+                        \ 0pt; font-size: 10.5pt; font-family: Arial; color: #212121;\
+                        \ font-weight: 400; font-style: normal; font-variant-ligatures:\
+                        \ normal; font-variant-caps: normal; font-variant-numeric:\
+                        \ normal; font-variant-east-asian: normal; text-decoration-line:\
+                        \ none; text-decoration-thickness: initial; text-decoration-style:\
+                        \ initial; text-decoration-color: initial; vertical-align:\
+                        \ baseline; white-space: pre-wrap\">Did you know that </span><span\
+                        \ style=\"line-height: 1.38; background-color: transparent;\
+                        \ margin-top: 0pt; margin-bottom: 0pt; font-size: 10.5pt;\
+                        \ font-family: Arial; color: #000000; font-weight: 400; font-style:\
+                        \ normal; font-variant-ligatures: normal; font-variant-caps:\
+                        \ normal; font-variant-numeric: normal; font-variant-east-asian:\
+                        \ normal; text-decoration-line: none; text-decoration-thickness:\
+                        \ initial; text-decoration-style: initial; text-decoration-color:\
+                        \ initial; vertical-align: baseline; white-space: pre-wrap\"\
+                        >{{sellerName}}</span><span style=\"line-height: 1.38; background-color:\
+                        \ transparent; margin-top: 0pt; margin-bottom: 0pt; font-size:\
+                        \ 10.5pt; font-family: Arial; color: #212121; font-weight:\
+                        \ 400; font-style: normal; font-variant-ligatures: normal;\
+                        \ font-variant-caps: normal; font-variant-numeric: normal;\
+                        \ font-variant-east-asian: normal; text-decoration-line: none;\
+                        \ text-decoration-thickness: initial; text-decoration-style:\
+                        \ initial; text-decoration-color: initial; vertical-align:\
+                        \ baseline; white-space: pre-wrap\"> has partnered with Greenspark\
+                        \ to {{ impactsTextPresent }} in your name?&nbsp;</span></div><div\
+                        \ style=\"font-family: inherit; text-align: inherit\">&nbsp;</div><div\
+                        \ style=\"font-family: inherit; text-align: inherit\"><span\
+                        \ style=\"line-height: 1.38; background-color: transparent;\
+                        \ margin-top: 0pt; margin-bottom: 0pt; font-size: 10.5pt;\
+                        \ font-family: Arial; color: #3b755f; font-weight: 700; font-style:\
+                        \ normal; font-variant-ligatures: normal; font-variant-caps:\
+                        \ normal; font-variant-numeric: normal; font-variant-east-asian:\
+                        \ normal; text-decoration-line: none; text-decoration-thickness:\
+                        \ initial; text-decoration-style: initial; text-decoration-color:\
+                        \ initial; vertical-align: baseline; white-space: pre-wrap\"\
+                        >Check out your unique digital certificate showcasing the\
+                        \ impact your {{ type }} has created below.&nbsp;</span></div><div\
+                        \ style=\"font-family: inherit; text-align: inherit\">&nbsp;</div><div\
+                        \ style=\"font-family: inherit; text-align: inherit\"><span\
+                        \ style=\"line-height: 1.38; background-color: transparent;\
+                        \ margin-top: 0pt; margin-bottom: 0pt; font-size: 10.5pt;\
+                        \ font-family: Arial; color: #212121; font-weight: 400; font-style:\
+                        \ normal; font-variant-ligatures: normal; font-variant-caps:\
+                        \ normal; font-variant-numeric: normal; font-variant-east-asian:\
+                        \ normal; text-decoration-line: none; text-decoration-thickness:\
+                        \ initial; text-decoration-style: initial; text-decoration-color:\
+                        \ initial; vertical-align: baseline; white-space: pre-wrap\"\
+                        >If you’d like to learn about the story behind your impact,\
+                        \ see where it’s taking place, and gain deeper insight into\
+                        \ what it means for the planet you can activate your personalised\
+                        \ Greenspark dashboard. It’s completely free as a gift from\
+                        \ us to you. Follow the link below to discover more!</span></div><div\
+                        \ style=\"font-family: inherit; text-align: inherit\">&nbsp;</div><div\
+                        \ style=\"font-family: inherit; text-align: inherit\"><span\
+                        \ style=\"line-height: 1.38; background-color: transparent;\
+                        \ margin-top: 0pt; margin-bottom: 0pt; font-size: 10.5pt;\
+                        \ font-family: Arial; color: #212121; font-weight: 400; font-style:\
+                        \ normal; font-variant-ligatures: normal; font-variant-caps:\
+                        \ normal; font-variant-numeric: normal; font-variant-east-asian:\
+                        \ normal; text-decoration-line: none; text-decoration-thickness:\
+                        \ initial; text-decoration-style: initial; text-decoration-color:\
+                        \ initial; vertical-align: baseline; white-space: pre-wrap\"\
+                        >Many thanks,&nbsp;</span></div><div style=\"font-family:\
+                        \ inherit; text-align: inherit\">&nbsp;</div><div style=\"\
+                        font-family: inherit; text-align: inherit\"><span style=\"\
+                        line-height: 1.38; background-color: transparent; margin-top:\
+                        \ 0pt; margin-bottom: 0pt; font-size: 10.5pt; font-family:\
+                        \ Arial; color: #212121; font-weight: 400; font-style: normal;\
+                        \ font-variant-ligatures: normal; font-variant-caps: normal;\
+                        \ font-variant-numeric: normal; font-variant-east-asian: normal;\
+                        \ text-decoration-line: none; text-decoration-thickness: initial;\
+                        \ text-decoration-style: initial; text-decoration-color: initial;\
+                        \ vertical-align: baseline; white-space: pre-wrap\">{{sellerName}}\
+                        \ &amp; Greenspark</span><br></div>"
+                      isBodyCustom: false
+                      isFooterHidden: false
+                      isFooterHiddenCustom: false
+                      isTotalImpactHidden: false
+                      isTotalImpactHiddenCustom: false
+                  - userId: ""
+                    isActive: true
+                    isCustom: false
+                    type:
+                      name: Customer update
+                      template: update
+                      trigger:
+                      - offsetPerOrder
+                      - offsetPerProduct
+                      - offsetBySpend
+                      - offsetByStoreRevenue
+                      - offsetByPercentageOrder
+                      - offsetPerSubscription
+                      - offsetPerReview
+                      - offsetByApi
+                      isTriggerCustom: false
+                      schedule: null
+                      isScheduleCustom: false
+                    settings:
+                      from:
+                        name: hello
+                        domain: getgreenspark.com
+                      isFromCustom: false
+                      alias: "{{ sellerName }} x Greenspark"
+                      isAliasCustom: false
+                      subject: "Your {{type}} with {{sellerName}} {{impactsTextPast}}.\
+                        \ Track your impact here."
+                      isSubjectCustom: false
+                      preheader: Login to your Greenspark dashboard.
+                      isPreheaderCustom: false
+                      schedule:
+                        startDate: 2023-02-09T21:09:47.830Z
+                        endDate: null
+                        isEndDateCustom: false
+                    content:
+                      headerImage: http://res.cloudinary.com/dlilerh6s/image/upload/v1670515295/templates/abgf9boicpxujispedpy.png
+                      isHeaderImageCustom: false
+                      body: "<div style=\"font-family: inherit; text-align: inherit\"\
+                        ><span style=\"font-family: tahoma, geneva, sans-serif; font-style:\
+                        \ normal; font-variant-ligatures: normal; font-variant-caps:\
+                        \ normal; font-weight: 400; letter-spacing: normal; orphans:\
+                        \ 2; text-align: center; text-indent: 0px; text-transform:\
+                        \ none; white-space: pre-wrap; widows: 2; word-spacing: 0px;\
+                        \ -webkit-text-stroke-width: 0px; background-color: rgb(249,\
+                        \ 249, 249); text-decoration-thickness: initial; text-decoration-style:\
+                        \ initial; text-decoration-color: initial; float: none; display:\
+                        \ inline; font-size: 14px; color: #3b755f\"><strong>Hi {{\
+                        \ firstName }},</strong></span></div><div style=\"font-family:\
+                        \ inherit; text-align: inherit\"><br></div><div style=\"font-family:\
+                        \ inherit; text-align: inherit\"><span style=\"white-space:\
+                        \ pre-wrap\">Thanks again for your {{ type }}! </span><span\
+                        \ style=\"color: #212121; font-family: tahoma, geneva, sans-serif;\
+                        \ font-size: 14px; font-style: normal; font-variant-ligatures:\
+                        \ normal; font-variant-caps: normal; font-weight: 400; letter-spacing:\
+                        \ normal; orphans: 2; text-align: start; text-indent: 0px;\
+                        \ text-transform: none; white-space: pre-wrap; widows: 2;\
+                        \ word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color:\
+                        \ rgb(255, 255, 255); text-decoration-thickness: initial;\
+                        \ text-decoration-style: initial; text-decoration-color: initial;\
+                        \ float: none; display: inline\">{{sellerName}}</span><span\
+                        \ style=\"white-space: pre-wrap\"> have partnered with Greenspark\
+                        \ to {{ impactsTextPresent }} in your name. </span><span style=\"\
+                        white-space: pre-wrap; color: #3b755f\"><strong>Login to your\
+                        \ dashboard to track the impact of your actions.</strong></span></div>"
+                      isBodyCustom: false
+                      isFooterHidden: false
+                      isFooterHiddenCustom: false
+                      isTotalImpactHidden: false
+                      isTotalImpactHiddenCustom: false
+                  - userId: ""
+                    isActive: true
+                    isCustom: false
+                    type:
+                      name: Customer nudge
+                      template: nudge
+                      trigger: null
+                      isTriggerCustom: false
+                      schedule:
+                      - 3
+                      - 7
+                      - 14
+                      isScheduleCustom: false
+                    settings:
+                      from:
+                        name: hello
+                        domain: getgreenspark.com
+                      isFromCustom: false
+                      alias: Greenspark Team
+                      isAliasCustom: false
+                      subject: Your Greenspark invitation is waiting!
+                      isSubjectCustom: false
+                      preheader: Claim your Greenspark dashboard.
+                      isPreheaderCustom: false
+                      schedule:
+                        startDate: 2023-02-09T21:09:47.830Z
+                        endDate: null
+                        isEndDateCustom: false
+                    content:
+                      headerImage: http://res.cloudinary.com/dlilerh6s/image/upload/v1670515295/templates/abgf9boicpxujispedpy.png
+                      isHeaderImageCustom: false
+                      body: "<div style=\"font-family: inherit; text-align: inherit\"\
+                        ><span style=\"font-family: tahoma, geneva, sans-serif; font-style:\
+                        \ normal; font-variant-ligatures: normal; font-variant-caps:\
+                        \ normal; font-weight: 400; letter-spacing: normal; orphans:\
+                        \ 2; text-align: center; text-indent: 0px; text-transform:\
+                        \ none; white-space: pre-wrap; widows: 2; word-spacing: 0px;\
+                        \ -webkit-text-stroke-width: 0px; background-color: rgb(249,\
+                        \ 249, 249); text-decoration-thickness: initial; text-decoration-style:\
+                        \ initial; text-decoration-color: initial; float: none; display:\
+                        \ inline; font-size: 14px; color: #3b755f\"><strong>Hi {{\
+                        \ firstName }},</strong></span></div><div style=\"font-family:\
+                        \ inherit; text-align: inherit\"><br></div><div style=\"font-family:\
+                        \ inherit; text-align: inherit\"><span style=\"color: #212121;\
+                        \ font-family: tahoma, geneva, sans-serif; font-style: normal;\
+                        \ font-variant-ligatures: normal; font-variant-caps: normal;\
+                        \ font-weight: 400; letter-spacing: normal; orphans: 2; text-align:\
+                        \ center; text-indent: 0px; text-transform: none; white-space:\
+                        \ pre-wrap; widows: 2; word-spacing: 0px; -webkit-text-stroke-width:\
+                        \ 0px; background-color: rgb(249, 249, 249); text-decoration-thickness:\
+                        \ initial; text-decoration-style: initial; text-decoration-color:\
+                        \ initial; float: none; display: inline; font-size: 14px\"\
+                        >Your Greenspark invitation is waiting. Claim your dashboard\
+                        \ to track your overall impact from your purchases, reviews\
+                        \ and newsletter signups with participating Greenspark retailers.</span></div>"
+                      isBodyCustom: false
+                      isFooterHidden: false
+                      isFooterHiddenCustom: false
+                      isTotalImpactHidden: false
+                      isTotalImpactHiddenCustom: false
+                x-content-type: application/json
+        "400":
+          description: Bad request.
+        "401":
+          description: Provide your API key.
+        "403":
+          description: "Please upgrade to a growth, premium or enterprise plan."
+        "404":
+          description: Not found.
+      security:
+      - access-key: []
+  /v1/email/templates:
+    get:
+      tags:
+      - Email
+      summary: Fetch Templates
+      description: Fetch templates for email sending.
+      operationId: EmailController_fetchTemplates
+      parameters: []
+      responses:
+        "200":
+          description: Templates has been successfully queried.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotificationTemplateResponseDto'
+                x-content-type: application/json
+        "400":
+          description: Bad request.
+        "401":
+          description: Provide your API key.
+        "403":
+          description: "Please upgrade to a growth, premium or enterprise plan."
+        "404":
+          description: Not found.
+      security:
+      - access-key: []
+    post:
+      tags:
+      - Email
+      summary: Add Template
+      description: Add your notification template for email sending.
+      operationId: EmailController_addTemplate
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationTemplateRequestDto'
+        required: true
+      responses:
+        "200":
+          description: Notification template has been successfully added.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTemplateResponseDto'
+        "400":
+          description: Bad request.
+        "401":
+          description: Provide your API key.
+        "403":
+          description: "Please upgrade to a growth, premium or enterprise plan."
+        "404":
+          description: Not found.
+      security:
+      - access-key: []
+  /v1/email/templates/{templateId}:
+    put:
+      tags:
+      - Email
+      summary: Update Template
+      description: Update your notification template for email sending.
+      operationId: EmailController_updateTemplate
+      parameters:
+      - name: templateId
+        in: path
+        description: The id of the notification template.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 853b035dcd13c4ad66c6d618
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationTemplateRequestDto'
+        required: true
+      responses:
+        "200":
+          description: Notifcation template has been successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTemplateResponseDto'
+        "400":
+          description: Bad request.
+        "401":
+          description: Provide your API key.
+        "403":
+          description: "Please upgrade to a growth, premium or enterprise plan."
+        "404":
+          description: Not found.
+      security:
+      - access-key: []
+    delete:
+      tags:
+      - Email
+      summary: Delete Template
+      description: Delete your template.
+      operationId: EmailController_deleteTemplate
+      parameters:
+      - name: templateId
+        in: path
+        description: The id of the notification template.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 853b035dcd13c4ad66c6d618
+      responses:
+        "200":
+          description: Template has been successfully deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTemplateResponseDto'
+        "400":
+          description: Bad request.
+        "401":
+          description: Provide your API key.
+        "403":
+          description: "Please upgrade to a growth, premium or enterprise plan."
+        "404":
+          description: Not found.
+      security:
+      - access-key: []
+  /v1/email/templates/test:
+    post:
+      tags:
+      - Email
+      summary: Test Template
+      description: Add your notification template for email sending.
+      operationId: EmailController_testTemplate
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestNotificationTemplateRequestDto'
+        required: true
+      responses:
+        "200":
+          description: Test email has been successfully sent.
+        "400":
+          description: Bad request.
+        "401":
+          description: Provide your API key.
+        "403":
+          description: "Please upgrade to a growth, premium or enterprise plan."
+        "404":
+          description: Not found.
+      security:
+      - access-key: []
+components:
+  schemas:
+    RecordDto:
+      required:
+      - data
+      - host
+      - type
+      - valid
+      type: object
+      properties:
+        valid:
+          type: boolean
+          description: The indicator of the DNS record validity.
+          example: false
+        type:
+          type: string
+          description: The type of the record that must be added to your domain.
+          example: cname
+        host:
+          type: string
+          description: The type of the record that must be added to your domain.
+          example: em43944.example.com
+        data:
+          type: string
+          description: The value of the record that must be added to your domain.
+          example: u250887955.wl0466.sendgrid.net
+    DnsDto:
+      required:
+      - dkim1
+      - dkim2
+      - mailCname
+      type: object
+      properties:
+        mailCname:
+          description: Record that must be added to your domain.
+          allOf:
+          - $ref: '#/components/schemas/RecordDto'
+        dkim1:
+          description: Record that must be added to your domain.
+          allOf:
+          - $ref: '#/components/schemas/RecordDto'
+        dkim2:
+          description: Record that must be added to your domain.
+          allOf:
+          - $ref: '#/components/schemas/RecordDto'
+    CustomDomainDto:
+      required:
+      - dns
+      - domain
+      - id
+      - valid
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the custom domain object.
+          example: 63c5857475784b9acf05c919
+        domain:
+          type: string
+          description: The domain name.
+          example: example.com
+        dns:
+          description: This object contains the DNS records that must be added to
+            your domain.
+          example:
+            mailCname:
+              valid: false
+              type: cname
+              host: em43944.example.com
+              data: u250887955.wl0466.sendgrid.net
+            dkim1:
+              valid: false
+              type: cname
+              host: s1._domainkey.example.com
+              data: s1.domainkey.u250887955.wl0466.sendgrid.net
+            dkim2:
+              valid: false
+              type: cname
+              host: s2._domainkey.example.com
+              data: s2.domainkey.u250887955.wl0466.sendgrid.net
+          allOf:
+          - $ref: '#/components/schemas/DnsDto'
+        valid:
+          type: boolean
+          description: The indicator of the DNS records validity.
+          example: false
+      example:
+        valid: false
+        domain: example.com
+        dns:
+          mailCname:
+            valid: false
+            type: cname
+            host: em43944.example.com
+            data: u250887955.wl0466.sendgrid.net
+          dkim1:
+            valid: false
+            type: cname
+            host: s1._domainkey.example.com
+            data: s1.domainkey.u250887955.wl0466.sendgrid.net
+          dkim2:
+            valid: false
+            type: cname
+            host: s2._domainkey.example.com
+            data: s2.domainkey.u250887955.wl0466.sendgrid.net
+        id: 63c5857475784b9acf05c919
+    CustomDomainRequestBody:
+      required:
+      - domain
+      type: object
+      properties:
+        domain:
+          type: string
+          description: The domain name.
+          example: example.com
+    TypeDto:
+      required:
+      - isScheduleCustom
+      - isTriggerCustom
+      - name
+      - schedule
+      - template
+      - trigger
+      type: object
+      properties:
+        isScheduleCustom:
+          type: boolean
+          description: Boolean flag indicates customized schedule.
+          example: false
+        isTriggerCustom:
+          type: boolean
+          description: Boolean flag indicates customized trigger.
+          example: false
+        name:
+          type: string
+          description: Name of the template
+          example: Customer invitation template
+        schedule:
+          type: array
+          description: Choose when your nudge email is sent out after a customer completes
+            an impact action.
+          example: "[3, 7, 14]"
+          items:
+            type: string
+        template:
+          type: object
+          description: The type of the template.
+          example: invitation
+        trigger:
+          type: array
+          description: Choose the impact action which triggers your email to be sent
+            out.
+          example: "[\"offsetPerOrder\", \"offsetPerProduct\"]"
+          items:
+            type: string
+      example:
+        template: invitation
+        schedule: "[3, 7, 14]"
+        isScheduleCustom: false
+        name: Customer invitation template
+        isTriggerCustom: false
+        trigger: "[\"offsetPerOrder\", \"offsetPerProduct\"]"
+    EmailDto:
+      required:
+      - domain
+      - name
+      type: object
+      properties:
+        domain:
+          type: string
+          description: The domain name used for sending emails based on this template.
+          example: getgreenspark.com
+        name:
+          type: string
+          description: The name part of the email address.
+          example: hello
+    ScheduleDto:
+      required:
+      - endDate
+      - isEndDateCustom
+      - startDate
+      type: object
+      properties:
+        endDate:
+          type: string
+          description: The end date of the scheduled email sending.
+          format: date-time
+          example: 2023-03-08T13:26:33.969Z
+        isEndDateCustom:
+          type: boolean
+          description: Boolean flag indicates customized schedule end date.
+          example: false
+        startDate:
+          type: string
+          description: The start date of the scheduled email sending.
+          format: date-time
+          example: 2023-02-08T13:26:33.969Z
+    SettingsDto:
+      required:
+      - alias
+      - from
+      - isAliasCustom
+      - isFromCustom
+      - isPreheaderCustom
+      - isSubjectCustom
+      - preheader
+      - schedule
+      - subject
+      type: object
+      properties:
+        alias:
+          type: string
+          description: This is the name display for the specified sender email address.
+          example: Greenspark
+        from:
+          description: The email address used for sending emails.
+          allOf:
+          - $ref: '#/components/schemas/EmailDto'
+        isAliasCustom:
+          type: boolean
+          description: Boolean flag indicates customized alias.
+          example: false
+        isFromCustom:
+          type: boolean
+          description: Boolean flag indicates customized sender email address.
+          example: false
+        isPreheaderCustom:
+          type: boolean
+          description: Boolean flag indicates customized preheader.
+          example: false
+        isSubjectCustom:
+          type: boolean
+          description: Boolean flag indicates customized subject.
+          example: false
+        preheader:
+          type: string
+          description: The preheader is the text following the subject line when an
+            email is previewed.
+          example: Activate your Greenspark dashboard & grow your impact today.
+        schedule:
+          description: You can choose to send your template continuously starting
+            today or only during a specific date range.
+          allOf:
+          - $ref: '#/components/schemas/ScheduleDto'
+        subject:
+          type: string
+          description: Your subject line is one of the first things that your customers
+            read and is a key driver in successful open rates.
+          example: "Your {{type}} with {{sellerName}} {{impactsTextPast}}. Track your\
+            \ impact here."
+      example:
+        isSubjectCustom: false
+        preheader: Activate your Greenspark dashboard & grow your impact today.
+        isPreheaderCustom: false
+        schedule: ""
+        isAliasCustom: false
+        subject: "Your {{type}} with {{sellerName}} {{impactsTextPast}}. Track your\
+          \ impact here."
+        alias: Greenspark
+        isFromCustom: false
+        from: ""
+    ContentDto:
+      required:
+      - body
+      - headerImage
+      - isBodyCustom
+      - isFooterHidden
+      - isFooterHiddenCustom
+      - isHeaderImageCustom
+      - isTotalImpactHidden
+      - isTotalImpactHiddenCustom
+      type: object
+      properties:
+        body:
+          type: string
+          description: Use our pre-defined email body or customise it to fit your
+            brand. Add dynamic data by using the variables provided.
+          example: Thanks so much for your order!
+        headerImage:
+          type: string
+          description: "Add your own logo to the top of the email or use our pre-defined\
+            \ header image. If you use your own header image please ensure it is maximum\
+            \ 1370 x 700, or has a 2:1 aspect ratio."
+          example: http://res.cloudinary.com/dlilerh6s/image/upload/v1670515295/templates/abgf9boicpxujispedpy.png
+        isBodyCustom:
+          type: boolean
+          description: Boolean flag indicates customized body.
+          example: false
+        isFooterHidden:
+          type: boolean
+          description: Hide our email footer explaining the benefits of Greenspark.
+          example: false
+        isFooterHiddenCustom:
+          type: boolean
+          description: Boolean flag indicates customized hidden footer setting.
+          example: false
+        isHeaderImageCustom:
+          type: boolean
+          description: Boolean flag indicates customized header image.
+          example: false
+        isTotalImpactHidden:
+          type: boolean
+          description: Hide your total impact so far within your emails.
+          example: false
+        isTotalImpactHiddenCustom:
+          type: boolean
+          description: Boolean flag indicates customized hidden total impact setting.
+          example: false
+      example:
+        isTotalImpactHiddenCustom: false
+        isHeaderImageCustom: false
+        isFooterHidden: false
+        headerImage: http://res.cloudinary.com/dlilerh6s/image/upload/v1670515295/templates/abgf9boicpxujispedpy.png
+        isFooterHiddenCustom: false
+        isBodyCustom: false
+        body: Thanks so much for your order!
+        isTotalImpactHidden: false
+    NotificationTemplateResponseDto:
+      required:
+      - content
+      - id
+      - isActive
+      - isCustom
+      - settings
+      - type
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the template.
+          example: 63e3a30d093df17fa11c1fbe
+        isActive:
+          type: boolean
+          description: Start sending this template to your customers.
+          example: false
+        isCustom:
+          type: boolean
+          description: Boolean flag indicates customized template.
+          example: false
+        type:
+          $ref: '#/components/schemas/TypeDto'
+        settings:
+          $ref: '#/components/schemas/SettingsDto'
+        content:
+          $ref: '#/components/schemas/ContentDto'
+      example:
+        settings:
+          isSubjectCustom: false
+          preheader: Activate your Greenspark dashboard & grow your impact today.
+          isPreheaderCustom: false
+          schedule: ""
+          isAliasCustom: false
+          subject: "Your {{type}} with {{sellerName}} {{impactsTextPast}}. Track your\
+            \ impact here."
+          alias: Greenspark
+          isFromCustom: false
+          from: ""
+        isCustom: false
+        id: 63e3a30d093df17fa11c1fbe
+        isActive: false
+        type:
+          template: invitation
+          schedule: "[3, 7, 14]"
+          isScheduleCustom: false
+          name: Customer invitation template
+          isTriggerCustom: false
+          trigger: "[\"offsetPerOrder\", \"offsetPerProduct\"]"
+        content:
+          isTotalImpactHiddenCustom: false
+          isHeaderImageCustom: false
+          isFooterHidden: false
+          headerImage: http://res.cloudinary.com/dlilerh6s/image/upload/v1670515295/templates/abgf9boicpxujispedpy.png
+          isFooterHiddenCustom: false
+          isBodyCustom: false
+          body: Thanks so much for your order!
+          isTotalImpactHidden: false
+    TypeRequestBody:
+      required:
+      - name
+      - schedule
+      - template
+      - trigger
+      type: object
+      properties:
+        name:
+          maxLength: 100
+          type: string
+          description: Name of the template
+          example: Customer invitation template
+        template:
+          type: string
+          description: The type of the template.
+          example: invitation
+          enum:
+          - invitation
+          - update
+          - nudge
+        trigger:
+          type: array
+          description: Choose the impact action which triggers your email to be sent
+            out.
+          example: "[\"offsetPerOrder\", \"offsetPerProduct\"]"
+          items:
+            type: string
+            enum:
+            - offsetPerOrder
+            - offsetPerProduct
+            - offsetBySpend
+            - offsetByStoreRevenue
+            - offsetByPercentageOrder
+            - offsetPerSubscription
+            - offsetPerReview
+            - offsetByApi
+        schedule:
+          type: array
+          description: Choose when your nudge email is sent out after a customer completes
+            an impact action.
+          example: "[3, 7, 14]"
+          items:
+            maximum: 365
+            minimum: 0
+            type: integer
+    EmailRequestBody:
+      required:
+      - domain
+      - name
+      type: object
+      properties:
+        name:
+          maxLength: 100
+          type: string
+          description: The domain name used for sending emails based on this template.
+          example: getgreenspark.com
+        domain:
+          maxLength: 100
+          type: string
+          description: The name part of the email address.
+          example: hello
+    ScheduleRequestBody:
+      required:
+      - endDate
+      - startDate
+      type: object
+      properties:
+        startDate:
+          type: string
+          description: The start date of the scheduled email sending.
+          format: date-time
+          example: 2023-02-08T13:26:33.969Z
+        endDate:
+          type: string
+          description: The end date of the scheduled email sending.
+          format: date-time
+          example: 2023-03-08T13:26:33.969Z
+    SettingsRequestBody:
+      required:
+      - alias
+      - from
+      - preheader
+      - schedule
+      - subject
+      type: object
+      properties:
+        from:
+          description: The email address used for sending emails.
+          allOf:
+          - $ref: '#/components/schemas/EmailRequestBody'
+        alias:
+          maxLength: 100
+          type: string
+          description: This is the name display for the specified sender email address.
+          example: Greenspark
+        subject:
+          maxLength: 100
+          type: string
+          description: Your subject line is one of the first things that your customers
+            read and is a key driver in successful open rates.
+          example: "Your {{type}} with {{sellerName}} {{impactsTextPast}}. Track your\
+            \ impact here."
+        preheader:
+          maxLength: 100
+          type: string
+          description: The preheader is the text following the subject line when an
+            email is previewed.
+          example: Activate your Greenspark dashboard & grow your impact today.
+        schedule:
+          description: You can choose to send your template continuously starting
+            today or only during a specific date range.
+          allOf:
+          - $ref: '#/components/schemas/ScheduleRequestBody'
+    ContentRequestBody:
+      required:
+      - body
+      - headerImage
+      - isFooterHidden
+      - isTotalImpactHidden
+      type: object
+      properties:
+        headerImage:
+          maxLength: 50000
+          type: string
+          description: "Add your own logo to the top of the email or use our pre-defined\
+            \ header image. If you use your own header image please ensure it is maximum\
+            \ 1370 x 700, or has a 2:1 aspect ratio. You can upload it as a base 64\
+            \ encoded image."
+          example: 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
+        body:
+          maxLength: 10000
+          type: string
+          description: Use our pre-defined email body or customise it to fit your
+            brand. Add dynamic data by using the variables provided.
+          example: Thanks so much for your order!
+        isFooterHidden:
+          type: boolean
+          description: Hide our email footer explaining the benefits of Greenspark.
+          example: false
+        isTotalImpactHidden:
+          type: boolean
+          description: Hide your total impact so far within your emails.
+          example: false
+    NotificationTemplateRequestDto:
+      required:
+      - content
+      - isActive
+      - settings
+      - type
+      type: object
+      properties:
+        isActive:
+          type: boolean
+          description: Start sending this template to your customers.
+          example: false
+        type:
+          $ref: '#/components/schemas/TypeRequestBody'
+        settings:
+          $ref: '#/components/schemas/SettingsRequestBody'
+        content:
+          $ref: '#/components/schemas/ContentRequestBody'
+    TestNotificationTemplateRequestDto:
+      required:
+      - customerEmail
+      - notificationTemplate
+      type: object
+      properties:
+        customerEmail:
+          type: string
+          description: Test recipient email address.
+          example: customer@example.com
+        notificationTemplate:
+          description: Notification template to test.
+          allOf:
+          - $ref: '#/components/schemas/NotificationTemplateRequestDto'
+  securitySchemes:
+    access-key:
+      type: apiKey
+      name: x-api-key
+      in: header
