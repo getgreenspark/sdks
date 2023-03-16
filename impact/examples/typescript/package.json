@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node app.js"
+  },
+  "devDependencies": {
+    "greenspark-impact-sdk": "^1.6.0",
+    "typescript": "^5.0.2"
+  }
+}
