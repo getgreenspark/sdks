@@ -1,6 +1,6 @@
 {
-  "name": "greenspark-impact-sdk",
-  "version": "1.6.0",
+  "name": "@getgreenspark/impacts",
+  "version": "1.0.0",
   "description": "OpenAPI client for ",
   "author": "OpenAPI-Generator Contributors",
   "keywords": [
