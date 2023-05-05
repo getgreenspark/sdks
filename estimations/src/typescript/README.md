@@ -1,45 +1,52 @@
-## @
+# Greenspark Estimations API SDK
+The Greenspark Estimations SDK provides access to the Greenspark Estimations API from
+applications running on a server or in a browser.
 
-This generator creates TypeScript/JavaScript client that utilizes [axios](https://github.com/axios/axios). The generated Node module can be used in the following environments:
+## Documentation
+See the [`@greenspark/estimations` API docs](https://greenspark.readme.io/reference/introduction) for details.
 
-Environment
-* Node.js
-* Webpack
-* Browserify
+## Requirements
 
-Language level
-* ES5 - you must have a Promises/A+ library installed
-* ES6
+Node 16 or higher.
 
-Module system
-* CommonJS
-* ES6 module system
+## Installation
 
-It can be used in both TypeScript and JavaScript. In TypeScript, the definition should be automatically resolved via `package.json`. ([Reference](http://www.typescriptlang.org/docs/handbook/typings-for-npm-packages.html))
+Install the package with:
 
-### Building
-
-To build and compile the typescript sources to javascript use:
-```
-npm install
-npm run build
+```sh
+npm install @getgreenspark/estimations --save
 ```
 
-### Publishing
-
-First build the package then run ```npm publish```
-
-### Consuming
-
-navigate to the folder of your consuming project and run one of the following commands.
-
-_published:_
-
-```
-npm install @ --save
+## Usage
+The SDK use the `production` environment by default. You can use the `sandbox` environment for testing and development.
+```js
+const estimationsApi = new EstimationsApi({basePath: "https://sandbox.getgreenspark.com", apiKey: "<YOUR_API_KEY>"})
 ```
 
-_unPublished (not recommended):_
+The SDK needs to be configured with your Greenspark API key, which is
+available in the [Greenspark Dashboard](https://app.getgreenspark.com/account).
 
+```js
+import {
+    EstimationsApi,
+    EstimationsByMCCRequestBodyGeoEnum,
+    EstimationsByMCCRequestBodyUserTypeEnum
+} from "@greenspark/estimations";
+
+const estimationsApi = new EstimationsApi({basePath: "https://sandbox.getgreenspark.com", apiKey: "<YOUR_API_KEY>"})
+const response = await estimationsApi.fetchCarbonEstimateOfATransactionByMCC({
+    "price": 1000,
+    "mcc": "5411",
+    "currencyISO": "EUR",
+    "merchant": "Superstore",
+    "geo": EstimationsByMCCRequestBodyGeoEnum.EUUK,
+    "userType": EstimationsByMCCRequestBodyUserTypeEnum.PERSONAL,
+    "metadata": [
+        {
+            "key": "customerId",
+            "value": "743ce227-22ef-4c6e-9c06-725f97b99690"
+        }
+    ]
+})
+console.log(response);
 ```
-npm install PATH_TO_GENERATED_PACKAGE --save
