@@ -1,7 +1,7 @@
 {
   "name": "@greenspark/estimations",
   "version": "1.0.0",
-  "description": "Greenspark Email API wrapper",
+  "description": "Greenspark Email API SDK",
   "author": "Greenspark <hello@getgreenspark.com> (https://getgreenspark.com/",
   "keywords": [
     "greenspark",

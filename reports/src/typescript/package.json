@@ -1,7 +1,7 @@
 {
   "name": "@greenspark/reports",
   "version": "1.0.0",
-  "description": "Greenspark Reports API wrapper",
+  "description": "Greenspark Reports API SDK",
   "author": "Greenspark <hello@getgreenspark.com> (https://getgreenspark.com/",
   "keywords": [
     "greenspark",

@@ -1,7 +1,7 @@
 {
   "name": "@greenspark/estimations",
   "version": "1.0.0",
-  "description": "Greenspark Estimations API wrapper",
+  "description": "Greenspark Estimations API SDK",
   "author": "Greenspark <hello@getgreenspark.com> (https://getgreenspark.com/",
   "keywords": [
     "greenspark",

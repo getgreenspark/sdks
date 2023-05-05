@@ -9,16 +9,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const greenspark_impact_sdk_1 = require("greenspark-impact-sdk");
+const impacts_1 = require("@greenspark/impacts");
 function createImpact() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const impactApi = new greenspark_impact_sdk_1.ImpactsApi({ apiKey: 'Uc1Yy0Z5QQwKGnxC1NycnVx2ylY9edyIVZv6u2zq8WghIbtIIRmwH%2BkBJLX6t0ZHagWkRENq6uUDf%' });
-            const response = yield impactApi.impactsControllerCreateImpact({
+            const impactApi = new impacts_1.ImpactsApi({ basePath: "https://sandbox.getgreenspark.com", apiKey: "Uc1Yy0Z5QQwKGnxC1NycnVx2ylY9edyIVZv6u2zq8WghIbtIIRmwH%2BkBJLX6t0ZHagWkRENq6uUDf%" });
+            const response = yield impactApi.createTailoredImpact({
                 "impactPurchases": [
                     {
                         "amount": 1,
-                        "type": greenspark_impact_sdk_1.ImpactPurchaseTypeEnum.Trees
+                        "type": impacts_1.ImpactPurchaseTypeEnum.Trees
                     }
                 ],
                 "metadata": [
@@ -27,7 +27,7 @@ function createImpact() {
                         "value": "sdk"
                     }
                 ]
-            }, '64138f16f5d5fa2f1e6c4cef', '64138f16f5d5fa2f1e6c4cf0');
+            });
             console.log(response);
         }
         catch (error) {

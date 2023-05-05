@@ -1,7 +1,7 @@
 {
   "name": "@greenspark/impacts",
   "version": "1.0.0",
-  "description": "Greenspark Impacts API wrapper",
+  "description": "Greenspark Impacts API SDK",
   "author": "Greenspark <hello@getgreenspark.com> (https://getgreenspark.com/",
   "keywords": [
     "greenspark",

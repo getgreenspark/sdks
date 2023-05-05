@@ -4,7 +4,7 @@
     "start": "node app.js"
   },
   "devDependencies": {
-    "@getgreenspark/impacts": "^1.0.0",
+    "@greenspark/impacts": "^1.0.0",
     "typescript": "^5.0.2"
   }
 }
