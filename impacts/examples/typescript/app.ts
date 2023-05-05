@@ -1,9 +1,10 @@
 import {ImpactsApi, ImpactPurchaseTypeEnum} from "@greenspark/impacts";
+import {AxiosResponse} from "axios";
 
 async function createImpact() {
     try {
         const impactApi = new ImpactsApi({basePath: "https://sandbox.getgreenspark.com", apiKey: "<YOUR_API_KEY>"})
-        const response = await impactApi.createTailoredImpact({
+        const response: AxiosResponse<void> = await impactApi.createTailoredImpact({
             "impactPurchases": [
                 {
                     "amount": 1,

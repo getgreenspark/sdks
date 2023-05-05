@@ -1,4 +1,5 @@
 import {
+    Estimation,
     EstimationsApi,
     EstimationsByMCCRequestBodyGeoEnum,
     EstimationsByMCCRequestBodyUserTypeEnum
@@ -7,7 +8,7 @@ import {
 async function createImpact() {
     try {
         const estimationsApi = new EstimationsApi({basePath: "https://sandbox.getgreenspark.com", apiKey: "<YOUR_API_KEY>"})
-        const response = await estimationsApi.fetchCarbonEstimateOfATransactionByMCC({
+        const {data}: Estimation = await estimationsApi.fetchCarbonEstimateOfATransactionByMCC({
             "price": 1000,
             "mcc": "5411",
             "currencyISO": "EUR",
@@ -21,7 +22,7 @@ async function createImpact() {
                 }
             ]
         })
-        console.log(response);
+        console.log(data);
     } catch (error) {
         console.error(error);
     }

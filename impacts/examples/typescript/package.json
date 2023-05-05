@@ -5,6 +5,7 @@
   },
   "devDependencies": {
     "@greenspark/impacts": "^1.0.0",
-    "typescript": "^5.0.2"
+    "typescript": "^5.0.2",
+    "axios": "^0.21.1"
   }
 }
