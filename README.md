@@ -1,42 +1,9 @@
+# Greenspark API SDKs
+The Greenspark SDKs provide access to the Greenspark API from
+applications running on a server or in a browser.
 
-# Generating
+## Documentation
+See the [API docs](https://greenspark.readme.io/reference/introduction) for details.
 
-### impacts sdk
-java -jar ~/bin/swagger-codegen-cli.jar generate -i http://localhost:3333/v1/api/impact-json -l typescript-axios -o impacts/src/typescript
-
-### estimations sdk
-java -jar ~/bin/swagger-codegen-cli.jar generate -i http://localhost:3333/v1/api/estimations-json -l typescript-axios -o estimations/src/typescript
-
-### reports sdk
-java -jar ~/bin/swagger-codegen-cli.jar generate -i http://localhost:3333/v1/api/reporting-json -l typescript-axios -o reports/src/typescript
-
-### email sdk
-java -jar ~/bin/swagger-codegen-cli.jar generate -i http://localhost:3333/v1/api/email-json -l typescript-axios -o email/src/typescript
-
-# Building
-
-To build and compile the typescript sources to javascript use:
-```
-npm install
-npm run build
-```
-
-# Publishing
-
-First build the package then run ```npm publish```
-
-# Consuming
-
-navigate to the folder of your consuming project and run one of the following commands.
-
-_published:_
-
-```
-npm install @ --save
-```
-
-_unPublished (not recommended):_
-
-```
-npm install PATH_TO_GENERATED_PACKAGE --save
-```
+## Examples
+You can find and an example implementation of the SDKs in the `examples` directory of the corresponding SDK.
