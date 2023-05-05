@@ -18,10 +18,20 @@ npm install @getgreenspark/reports --save
 ```
 
 ## Usage
-The SDK use the `production` environment by default. You can use the `sandbox` environment for testing and development.
+
+### Production Environment
+The SDK use the `production` environment by default. You only need to provide your API key.
+```js
+const reportsApi = new ReportsApi({apiKey: "<YOUR_API_KEY>"})
+```
+
+### Sandbox Environment
+The SDK use the `production` environment by default. You can use the `sandbox` environment for testing and development by providing the `sandbox` environment `basePath` and your API key.
 ```js
 const reportsApi = new ReportsApi({basePath: "https://sandbox.getgreenspark.com", apiKey: "<YOUR_API_KEY>"})
 ```
+
+### Sample API operation
 
 The SDK needs to be configured with your Greenspark API key, which is
 available in the [Greenspark Dashboard](https://app.getgreenspark.com/account).
@@ -29,7 +39,7 @@ available in the [Greenspark Dashboard](https://app.getgreenspark.com/account).
 ```js
 import {RawReport, ReportsApi} from "@greenspark/reports";
 
-const reportsApi = new ReportsApi({basePath: "https://sandbox.getgreenspark.com", apiKey: "<YOUR_API_KEY>"})
+const reportsApi = new ReportsApi({apiKey: "<YOUR_API_KEY>"})
 const {data}: RawReport = await reportsApi.fetchRawReport()
 console.log(data);
 ```

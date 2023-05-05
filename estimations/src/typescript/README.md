@@ -18,10 +18,20 @@ npm install @getgreenspark/estimations --save
 ```
 
 ## Usage
-The SDK use the `production` environment by default. You can use the `sandbox` environment for testing and development.
+
+### Production Environment
+The SDK use the `production` environment by default. You only need to provide your API key.
+```js
+const estimationsApi = new EstimationsApi({apiKey: "<YOUR_API_KEY>"})
+```
+
+### Sandbox Environment
+The SDK use the `production` environment by default. You can use the `sandbox` environment for testing and development by providing the `sandbox` environment `basePath` and your API key.
 ```js
 const estimationsApi = new EstimationsApi({basePath: "https://sandbox.getgreenspark.com", apiKey: "<YOUR_API_KEY>"})
 ```
+
+### Sample API operation
 
 The SDK needs to be configured with your Greenspark API key, which is
 available in the [Greenspark Dashboard](https://app.getgreenspark.com/account).
@@ -34,7 +44,7 @@ import {
     EstimationsByMCCRequestBodyUserTypeEnum
 } from "@greenspark/estimations";
 
-const estimationsApi = new EstimationsApi({basePath: "https://sandbox.getgreenspark.com", apiKey: "<YOUR_API_KEY>"})
+const estimationsApi = new EstimationsApi({apiKey: "<YOUR_API_KEY>"})
 const {data}: Estimation = await estimationsApi.fetchCarbonEstimateOfATransactionByMCC({
     "price": 1000,
     "mcc": "5411",

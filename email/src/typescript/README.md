@@ -18,10 +18,20 @@ npm install @getgreenspark/email --save
 ```
 
 ## Usage
-The SDK use the `production` environment by default. You can use the `sandbox` environment for testing and development.
+
+### Production Environment
+The SDK use the `production` environment by default. You only need to provide your API key.
+```js
+const emailApi = new EmailApi({apiKey: "<YOUR_API_KEY>"})
+```
+
+### Sandbox Environment
+The SDK use the `production` environment by default. You can use the `sandbox` environment for testing and development by providing the `sandbox` environment `basePath` and your API key.
 ```js
 const emailApi = new EmailApi({basePath: "https://sandbox.getgreenspark.com", apiKey: "<YOUR_API_KEY>"})
 ```
+
+### Sample API operation
 
 The SDK needs to be configured with your Greenspark API key, which is
 available in the [Greenspark Dashboard](https://app.getgreenspark.com/account).
@@ -29,7 +39,7 @@ available in the [Greenspark Dashboard](https://app.getgreenspark.com/account).
 ```js
 import {EmailApi, NotificationTemplateResponseDto} from "@greenspark/email";
 
-const emailApi = new EmailApi({basePath: "https://sandbox.getgreenspark.com", apiKey: "<YOUR_API_KEY>"})
+const emailApi = new EmailApi({apiKey: "<YOUR_API_KEY>"})
 const {data} : Array<NotificationTemplateResponseDto> = await emailApi.fetchTemplates()
 console.log(data);
 ```
