@@ -27,9 +27,9 @@ The SDK needs to be configured with your Greenspark API key, which is
 available in the [Greenspark Dashboard](https://app.getgreenspark.com/account).
 
 ```js
-import {ReportsApi} from "@greenspark/reports";
+import {RawReport, ReportsApi} from "@greenspark/reports";
 
 const reportsApi = new ReportsApi({basePath: "https://sandbox.getgreenspark.com", apiKey: "<YOUR_API_KEY>"})
-const response = await reportsApi.fetchRawReport()
-console.log(response);
+const {data}: RawReport = await reportsApi.fetchRawReport()
+console.log(data);
 ```

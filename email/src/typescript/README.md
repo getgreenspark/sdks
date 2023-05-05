@@ -27,9 +27,9 @@ The SDK needs to be configured with your Greenspark API key, which is
 available in the [Greenspark Dashboard](https://app.getgreenspark.com/account).
 
 ```js
-import {EmailApi} from "@greenspark/email";
+import {EmailApi, NotificationTemplateResponseDto} from "@greenspark/email";
 
 const emailApi = new EmailApi({basePath: "https://sandbox.getgreenspark.com", apiKey: "<YOUR_API_KEY>"})
-const response = await emailApi.fetchTemplates()
-console.log(response);
+const {data} : Array<NotificationTemplateResponseDto> = await emailApi.fetchTemplates()
+console.log(data);
 ```

@@ -28,13 +28,14 @@ available in the [Greenspark Dashboard](https://app.getgreenspark.com/account).
 
 ```js
 import {
+    Estimation,
     EstimationsApi,
     EstimationsByMCCRequestBodyGeoEnum,
     EstimationsByMCCRequestBodyUserTypeEnum
 } from "@greenspark/estimations";
 
 const estimationsApi = new EstimationsApi({basePath: "https://sandbox.getgreenspark.com", apiKey: "<YOUR_API_KEY>"})
-const response = await estimationsApi.fetchCarbonEstimateOfATransactionByMCC({
+const {data}: Estimation = await estimationsApi.fetchCarbonEstimateOfATransactionByMCC({
     "price": 1000,
     "mcc": "5411",
     "currencyISO": "EUR",
@@ -48,5 +49,5 @@ const response = await estimationsApi.fetchCarbonEstimateOfATransactionByMCC({
         }
     ]
 })
-console.log(response);
+console.log(data);
 ```

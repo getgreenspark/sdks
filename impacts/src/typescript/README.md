@@ -28,9 +28,10 @@ available in the [Greenspark Dashboard](https://app.getgreenspark.com/account).
 
 ```js
 import {ImpactsApi, ImpactPurchaseTypeEnum} from "@greenspark/impacts";
+import {AxiosResponse} from "axios";
 
-const impactApi = new ImpactsApi({apiKey: "<YOUR_API_KEY>"})
-const response = await impactApi.createTailoredImpact({
+const impactApi = new ImpactsApi({basePath: "https://sandbox.getgreenspark.com", apiKey: "<YOUR_API_KEY>"})
+const response: AxiosResponse<void> = await impactApi.createTailoredImpact({
     "impactPurchases": [
         {
             "amount": 1,
