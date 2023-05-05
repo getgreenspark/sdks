@@ -11,6 +11,12 @@
     "api"
   ],
   "license": "MIT",
+  "homepage": "https://github.com/getgreenspark/sdks",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:getgreenspark/sdks.git"
+  },
+  "bugs": "https://github.com/getgreenspark/sdks/issues",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "scripts": {
