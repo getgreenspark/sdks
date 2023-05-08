@@ -1,8 +1,8 @@
 {
-  "name": "@greenspark/impacts",
+  "name": "@getgreenspark/impacts",
   "version": "1.0.0",
   "description": "Greenspark Impacts API SDK",
-  "author": "Greenspark <hello@getgreenspark.com> (https://getgreenspark.com/",
+  "author": "Greenspark <support@getgreenspark.com> (https://getgreenspark.com/",
   "keywords": [
     "greenspark",
     "getgreenspark",
