@@ -1,0 +1,33 @@
+{
+  "name": "@greenspark/reports",
+  "version": "1.0.0",
+  "description": "Greenspark Reports API SDK",
+  "author": "Greenspark <hello@getgreenspark.com> (https://getgreenspark.com/",
+  "keywords": [
+    "greenspark",
+    "getgreenspark",
+    "report",
+    "reports",
+    "api"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/getgreenspark/sdks",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:getgreenspark/sdks.git"
+  },
+  "bugs": "https://github.com/getgreenspark/sdks/issues",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --outDir dist/",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "axios": "^0.21.1"
+  },
+  "devDependencies": {
+    "@types/node": "^12.11.5",
+    "typescript": "^3.6.4"
+  }
+}
