@@ -1,13 +1,25 @@
 {
   "name": "@getgreenspark/email",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Greenspark Email API SDK",
   "author": "Greenspark <support@getgreenspark.com> (https://getgreenspark.com/)",
   "keywords": [
     "greenspark",
     "getgreenspark",
     "email",
-    "api"
+    "api",
+    "carbon offset",
+    "carbon offsetting",
+    "carbon footprint",
+    "carbon estimation",
+    "carbon removal",
+    "trees",
+    "plastic",
+    "plant trees",
+    "offset plastic",
+    "carbon neutral",
+    "sustainability",
+    "carbon emissions"
   ],
   "license": "MIT",
   "homepage": "https://github.com/getgreenspark/sdks",
