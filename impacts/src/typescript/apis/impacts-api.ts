@@ -87,7 +87,7 @@ export const ImpactsApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Creates an impact associated wit a user id.
+         * Creates an impact associated wit a account id.
          * @summary Create Tailored Impact
          * @param {ImpactDto} body 
          * @param {*} [options] Override http request option.
@@ -163,7 +163,7 @@ export const ImpactsApiFp = function(configuration?: Configuration) {
             };
         },
         /**
-         * Creates an impact associated wit a user id.
+         * Creates an impact associated wit a account id.
          * @summary Create Tailored Impact
          * @param {ImpactDto} body 
          * @param {*} [options] Override http request option.
@@ -198,7 +198,7 @@ export const ImpactsApiFactory = function (configuration?: Configuration, basePa
             return ImpactsApiFp(configuration).createImpact(body, sourceId, triggerId, options).then((request) => request(axios, basePath));
         },
         /**
-         * Creates an impact associated wit a user id.
+         * Creates an impact associated wit a account id.
          * @summary Create Tailored Impact
          * @param {ImpactDto} body 
          * @param {*} [options] Override http request option.
@@ -231,7 +231,7 @@ export class ImpactsApi extends BaseAPI {
         return ImpactsApiFp(this.configuration).createImpact(body, sourceId, triggerId, options).then((request) => request(this.axios, this.basePath));
     }
     /**
-     * Creates an impact associated wit a user id.
+     * Creates an impact associated wit a account id.
      * @summary Create Tailored Impact
      * @param {ImpactDto} body 
      * @param {*} [options] Override http request option.

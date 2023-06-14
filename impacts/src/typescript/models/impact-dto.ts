@@ -26,6 +26,12 @@ export interface ImpactDto {
      */
     impactPurchases: Array<ImpactPurchase>;
     /**
+     * The id of the estimation that was used to calculate the impact.
+     * @type {string}
+     * @memberof ImpactDto
+     */
+    estimationId?: string;
+    /**
      * In the metadata array you can store up to 10 key-value pairs. You can use them to associate arbitrary data with your impact.
      * @type {Array<Metadata>}
      * @memberof ImpactDto
