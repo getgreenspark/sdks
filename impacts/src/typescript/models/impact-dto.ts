@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 import { ImpactPurchase } from './impact-purchase';
+import { ImpactPurchaseByValue } from './impact-purchase-by-value';
 import { Metadata } from './metadata';
 /**
  * 
@@ -20,11 +21,11 @@ import { Metadata } from './metadata';
  */
 export interface ImpactDto {
     /**
-     * The impactPurchases array contains your spending on a specific purpose.
-     * @type {Array<ImpactPurchase>}
+     * The impactPurchases array defines the impacts you would like to create.
+     * @type {Array<ImpactPurchase | ImpactPurchaseByValue>}
      * @memberof ImpactDto
      */
-    impactPurchases: Array<ImpactPurchase>;
+    impactPurchases: Array<ImpactPurchase | ImpactPurchaseByValue>;
     /**
      * The id of the estimation that was used to calculate the impact.
      * @type {string}

@@ -17,6 +17,7 @@ import { Configuration } from '../configuration';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 import { ImpactDto } from '../models';
+import { ImpactPurchaseDetail } from '../models';
 /**
  * ImpactsApi - axios parameter creator
  * @export
@@ -155,7 +156,7 @@ export const ImpactsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createImpact(body: ImpactDto, sourceId: string, triggerId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<void>>> {
+        async createImpact(body: ImpactDto, sourceId: string, triggerId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<ImpactPurchaseDetail>>>> {
             const localVarAxiosArgs = await ImpactsApiAxiosParamCreator(configuration).createImpact(body, sourceId, triggerId, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
@@ -169,7 +170,7 @@ export const ImpactsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createTailoredImpact(body: ImpactDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<void>>> {
+        async createTailoredImpact(body: ImpactDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<ImpactPurchaseDetail>>>> {
             const localVarAxiosArgs = await ImpactsApiAxiosParamCreator(configuration).createTailoredImpact(body, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
@@ -194,7 +195,7 @@ export const ImpactsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createImpact(body: ImpactDto, sourceId: string, triggerId: string, options?: AxiosRequestConfig): Promise<AxiosResponse<void>> {
+        async createImpact(body: ImpactDto, sourceId: string, triggerId: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<ImpactPurchaseDetail>>> {
             return ImpactsApiFp(configuration).createImpact(body, sourceId, triggerId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -204,7 +205,7 @@ export const ImpactsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createTailoredImpact(body: ImpactDto, options?: AxiosRequestConfig): Promise<AxiosResponse<void>> {
+        async createTailoredImpact(body: ImpactDto, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<ImpactPurchaseDetail>>> {
             return ImpactsApiFp(configuration).createTailoredImpact(body, options).then((request) => request(axios, basePath));
         },
     };
@@ -227,7 +228,7 @@ export class ImpactsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof ImpactsApi
      */
-    public async createImpact(body: ImpactDto, sourceId: string, triggerId: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<void>> {
+    public async createImpact(body: ImpactDto, sourceId: string, triggerId: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<ImpactPurchaseDetail>>> {
         return ImpactsApiFp(this.configuration).createImpact(body, sourceId, triggerId, options).then((request) => request(this.axios, this.basePath));
     }
     /**
@@ -238,7 +239,7 @@ export class ImpactsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof ImpactsApi
      */
-    public async createTailoredImpact(body: ImpactDto, options?: AxiosRequestConfig) : Promise<AxiosResponse<void>> {
+    public async createTailoredImpact(body: ImpactDto, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<ImpactPurchaseDetail>>> {
         return ImpactsApiFp(this.configuration).createTailoredImpact(body, options).then((request) => request(this.axios, this.basePath));
     }
 }
