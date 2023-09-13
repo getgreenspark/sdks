@@ -40,6 +40,6 @@ available in the [Greenspark Dashboard](https://app.getgreenspark.com/account).
 import {RawReport, ReportsApi} from "@greenspark/reports";
 
 const reportsApi = new ReportsApi({apiKey: "<YOUR_API_KEY>"})
-const {data}: RawReport = await reportsApi.fetchRawReport()
+const {data}: RawReport = await reportsApi.fetchRawReportV2()
 console.log(data);
 ```

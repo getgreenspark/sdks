@@ -14,34 +14,40 @@
 /**
  * 
  * @export
- * @interface ImpactPurchase
+ * @interface ImpactPurchaseWithPrice
  */
-export interface ImpactPurchase {
+export interface ImpactPurchaseWithPrice {
     /**
      * Type can be trees, plastic or carbon.
      * @type {string}
-     * @memberof ImpactPurchase
+     * @memberof ImpactPurchaseWithPrice
      */
-    type: ImpactPurchaseTypeEnum;
+    type: ImpactPurchaseWithPriceTypeEnum;
     /**
      * The id of the project.
      * @type {string}
-     * @memberof ImpactPurchase
+     * @memberof ImpactPurchaseWithPrice
      */
     projectId?: string;
     /**
      * Amount means number of trees, number of plastic bottles, kg of CO2.
      * @type {number}
-     * @memberof ImpactPurchase
+     * @memberof ImpactPurchaseWithPrice
      */
     amount: number;
+    /**
+     * Amount of money spent on the impact purchase.
+     * @type {number}
+     * @memberof ImpactPurchaseWithPrice
+     */
+    price: number;
 }
 
 /**
     * @export
     * @enum {string}
     */
-export enum ImpactPurchaseTypeEnum {
+export enum ImpactPurchaseWithPriceTypeEnum {
     Trees = 'trees',
     Carbon = 'carbon',
     Plastic = 'plastic'

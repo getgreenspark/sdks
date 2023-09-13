@@ -25,6 +25,7 @@ import { InlineResponse2005 } from '../models';
 import { InlineResponse2006 } from '../models';
 import { InlineResponse2007 } from '../models';
 import { RawReport } from '../models';
+import { RawReportV2 } from '../models';
 /**
  * ReportsApi - axios parameter creator
  * @export
@@ -474,6 +475,83 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
 
             if (impactType !== undefined) {
                 localVarQueryParameter['impactType'] = impactType;
+            }
+
+            const query = new URLSearchParams(localVarUrlObj.search);
+            for (const key in localVarQueryParameter) {
+                query.set(key, localVarQueryParameter[key]);
+            }
+            for (const key in options.params) {
+                query.set(key, options.params[key]);
+            }
+            localVarUrlObj.search = (new URLSearchParams(query)).toString();
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Fetch your impacts in a raw format.
+         * @summary Fetch Raw Report v2
+         * @param {string} [sourceId] The id of the source associated with the impact.
+         * @param {string} [triggerId] The id of the trigger associated with the impact.
+         * @param {string} [startDate] The beginning of the date filter interval.
+         * @param {string} [endDate] The end of the date filter interval.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [impactType] Type can be trees, plastic or carbon. As a result only the impacts containing the provided impact type will be returned. If they contain other impact types as well, those won&#x27;t be filtered out.
+         * @param {string} [cursor] The cursor identifies the next page within a report.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        fetchRawReportV2: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, impactType?: string, cursor?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/v2/reports`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, 'https://example.com');
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+            const localVarRequestOptions :AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication access-key required
+            if (configuration && configuration.apiKey) {
+                const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+                    ? await configuration.apiKey("x-api-key")
+                    : await configuration.apiKey;
+                localVarHeaderParameter["x-api-key"] = localVarApiKeyValue;
+            }
+
+            if (sourceId !== undefined) {
+                localVarQueryParameter['sourceId'] = sourceId;
+            }
+
+            if (triggerId !== undefined) {
+                localVarQueryParameter['triggerId'] = triggerId;
+            }
+
+            if (startDate !== undefined) {
+                localVarQueryParameter['startDate'] = startDate;
+            }
+
+            if (endDate !== undefined) {
+                localVarQueryParameter['endDate'] = endDate;
+            }
+
+            if (metadata !== undefined) {
+                localVarQueryParameter['metadata'] = metadata;
+            }
+
+            if (impactType !== undefined) {
+                localVarQueryParameter['impactType'] = impactType;
+            }
+
+            if (cursor !== undefined) {
+                localVarQueryParameter['cursor'] = cursor;
             }
 
             const query = new URLSearchParams(localVarUrlObj.search);
@@ -1028,6 +1106,26 @@ export const ReportsApiFp = function(configuration?: Configuration) {
             };
         },
         /**
+         * Fetch your impacts in a raw format.
+         * @summary Fetch Raw Report v2
+         * @param {string} [sourceId] The id of the source associated with the impact.
+         * @param {string} [triggerId] The id of the trigger associated with the impact.
+         * @param {string} [startDate] The beginning of the date filter interval.
+         * @param {string} [endDate] The end of the date filter interval.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [impactType] Type can be trees, plastic or carbon. As a result only the impacts containing the provided impact type will be returned. If they contain other impact types as well, those won&#x27;t be filtered out.
+         * @param {string} [cursor] The cursor identifies the next page within a report.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async fetchRawReportV2(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, impactType?: string, cursor?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<RawReportV2>>> {
+            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchRawReportV2(sourceId, triggerId, startDate, endDate, metadata, impactType, cursor, options);
+            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+                const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
+                return axios.request(axiosRequestArgs);
+            };
+        },
+        /**
          * Fetch the Array of impacts amount per source.
          * @summary Fetch Total Impact By Sources
          * @param {string} [sourceId] The id of the source associated with the impact.
@@ -1241,6 +1339,22 @@ export const ReportsApiFactory = function (configuration?: Configuration, basePa
             return ReportsApiFp(configuration).fetchRawReport(sourceId, triggerId, startDate, endDate, metadata, impactType, options).then((request) => request(axios, basePath));
         },
         /**
+         * Fetch your impacts in a raw format.
+         * @summary Fetch Raw Report v2
+         * @param {string} [sourceId] The id of the source associated with the impact.
+         * @param {string} [triggerId] The id of the trigger associated with the impact.
+         * @param {string} [startDate] The beginning of the date filter interval.
+         * @param {string} [endDate] The end of the date filter interval.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [impactType] Type can be trees, plastic or carbon. As a result only the impacts containing the provided impact type will be returned. If they contain other impact types as well, those won&#x27;t be filtered out.
+         * @param {string} [cursor] The cursor identifies the next page within a report.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async fetchRawReportV2(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, impactType?: string, cursor?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<RawReportV2>> {
+            return ReportsApiFp(configuration).fetchRawReportV2(sourceId, triggerId, startDate, endDate, metadata, impactType, cursor, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Fetch the Array of impacts amount per source.
          * @summary Fetch Total Impact By Sources
          * @param {string} [sourceId] The id of the source associated with the impact.
@@ -1436,6 +1550,23 @@ export class ReportsApi extends BaseAPI {
      */
     public async fetchRawReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, impactType?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<RawReport>> {
         return ReportsApiFp(this.configuration).fetchRawReport(sourceId, triggerId, startDate, endDate, metadata, impactType, options).then((request) => request(this.axios, this.basePath));
+    }
+    /**
+     * Fetch your impacts in a raw format.
+     * @summary Fetch Raw Report v2
+     * @param {string} [sourceId] The id of the source associated with the impact.
+     * @param {string} [triggerId] The id of the trigger associated with the impact.
+     * @param {string} [startDate] The beginning of the date filter interval.
+     * @param {string} [endDate] The end of the date filter interval.
+     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+     * @param {string} [impactType] Type can be trees, plastic or carbon. As a result only the impacts containing the provided impact type will be returned. If they contain other impact types as well, those won&#x27;t be filtered out.
+     * @param {string} [cursor] The cursor identifies the next page within a report.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ReportsApi
+     */
+    public async fetchRawReportV2(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, impactType?: string, cursor?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<RawReportV2>> {
+        return ReportsApiFp(this.configuration).fetchRawReportV2(sourceId, triggerId, startDate, endDate, metadata, impactType, cursor, options).then((request) => request(this.axios, this.basePath));
     }
     /**
      * Fetch the Array of impacts amount per source.
