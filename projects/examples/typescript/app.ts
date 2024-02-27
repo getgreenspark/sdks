@@ -1,4 +1,4 @@
-import {Project, ProjectsApi} from "@greenspark/projects"
+import {Project, ProjectsApi} from "@getgreenspark/projects"
 
 async function getProjects() {
     try {

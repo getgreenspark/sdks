@@ -37,7 +37,7 @@ The SDK needs to be configured with your Greenspark API key, which is
 available in the [Greenspark Dashboard](https://app.getgreenspark.com/account).
 
 ```js
-import {Project, ProjectsApi} from "@greenspark/projects";
+import {Project, ProjectsApi} from "@getgreenspark/projects";
 
 const projectsApi = new ProjectsApi({apiKey: "<YOUR_API_KEY>"})
 const {data}: Project[] = await projectsApi.getProjects()
