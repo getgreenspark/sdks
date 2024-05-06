@@ -50,6 +50,7 @@ export interface ImpactPurchaseWithPrice {
 export enum ImpactPurchaseWithPriceTypeEnum {
     Trees = 'trees',
     Carbon = 'carbon',
-    Plastic = 'plastic'
+    Plastic = 'plastic',
+    Kelp = 'kelp'
 }
 
