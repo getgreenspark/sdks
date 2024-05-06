@@ -30,7 +30,7 @@ export interface EstimationsByCategoryType {
      */
     categoryType: EstimationsByCategoryTypeCategoryTypeEnum;
     /**
-     * The name of the category used to calculate the co2 emission. We support all [plaid categories](https://plaid.com/docs/api/products/transactions/#categoriesget) and the new categorisation for [personal_finance_category](https://plaid.com/docs/api/products/transactions/#transactions-recurring-get-request-options-include-personal-finance-category), as well as True Layer [categories](https://docs.truelayer.com/docs/transaction-types).
+     * The name of the category used to calculate the co2 emission. We support all [plaid categories](https://plaid.com/docs/api/products/transactions/#categoriesget) and the new categorisation for [personal_finance_category](https://plaid.com/docs/api/products/transactions/#transactions-recurring-get-request-options-include-personal-finance-category).
      * @type {Array<string>}
      * @memberof EstimationsByCategoryType
      */
@@ -48,7 +48,6 @@ export interface EstimationsByCategoryType {
     * @enum {string}
     */
 export enum EstimationsByCategoryTypeCategoryTypeEnum {
-    TrueLayer = 'true_layer',
     Plaid = 'plaid'
 }
 
