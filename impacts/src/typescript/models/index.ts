@@ -1,3 +1,7 @@
+export * from './batch-impact-purchase-response';
+export * from './batch-impact-purchase-responses';
+export * from './create-impact-batch-request';
+export * from './create-impact-batch-request-body';
 export * from './impact-dto';
 export * from './impact-purchase';
 export * from './impact-purchase-by-value';

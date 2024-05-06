@@ -24,6 +24,12 @@ export interface ImpactPurchase {
      */
     type: ImpactPurchaseTypeEnum;
     /**
+     * The id of the project.
+     * @type {string}
+     * @memberof ImpactPurchase
+     */
+    projectId?: string;
+    /**
      * Amount means number of trees, number of plastic bottles, kg of CO2.
      * @type {number}
      * @memberof ImpactPurchase
@@ -38,6 +44,7 @@ export interface ImpactPurchase {
 export enum ImpactPurchaseTypeEnum {
     Trees = 'trees',
     Carbon = 'carbon',
-    Plastic = 'plastic'
+    Plastic = 'plastic',
+    Kelp = 'kelp'
 }
 

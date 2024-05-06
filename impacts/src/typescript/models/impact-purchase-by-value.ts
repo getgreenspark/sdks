@@ -24,6 +24,12 @@ export interface ImpactPurchaseByValue {
      */
     type: ImpactPurchaseByValueTypeEnum;
     /**
+     * The id of the project.
+     * @type {string}
+     * @memberof ImpactPurchaseByValue
+     */
+    projectId?: string;
+    /**
      * Value of the impacts to be purchased in the account’s currency.
      * @type {number}
      * @memberof ImpactPurchaseByValue
@@ -38,6 +44,7 @@ export interface ImpactPurchaseByValue {
 export enum ImpactPurchaseByValueTypeEnum {
     Trees = 'trees',
     Carbon = 'carbon',
-    Plastic = 'plastic'
+    Plastic = 'plastic',
+    Kelp = 'kelp'
 }
 

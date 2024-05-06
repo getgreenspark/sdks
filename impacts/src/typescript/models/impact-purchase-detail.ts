@@ -41,6 +41,12 @@ export interface ImpactPurchaseDetail {
      * @memberof ImpactPurchaseDetail
      */
     unspentValue: number;
+    /**
+     * The id of the project.
+     * @type {string}
+     * @memberof ImpactPurchaseDetail
+     */
+    projectId: string;
 }
 
 /**
@@ -50,6 +56,7 @@ export interface ImpactPurchaseDetail {
 export enum ImpactPurchaseDetailTypeEnum {
     Trees = 'trees',
     Carbon = 'carbon',
-    Plastic = 'plastic'
+    Plastic = 'plastic',
+    Kelp = 'kelp'
 }
 

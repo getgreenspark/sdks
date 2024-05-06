@@ -16,6 +16,8 @@ import { Configuration } from '../configuration';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
+import { BatchImpactPurchaseResponses } from '../models';
+import { CreateImpactBatchRequestBody } from '../models';
 import { ImpactDto } from '../models';
 import { ImpactPurchaseDetail } from '../models';
 /**
@@ -88,7 +90,58 @@ export const ImpactsApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Creates an impact associated wit a account id.
+         * Run multiple create impact call in a batch, equivalent to calling create impact multiple times with different parameters.
+         * @summary Create Impact in Batch
+         * @param {CreateImpactBatchRequestBody} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createImpactBatch: async (body: CreateImpactBatchRequestBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'body' is not null or undefined
+            if (body === null || body === undefined) {
+                throw new RequiredError('body','Required parameter body was null or undefined when calling createImpactBatch.');
+            }
+            const localVarPath = `/v1/impacts/batch`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, 'https://example.com');
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+            const localVarRequestOptions :AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication access-key required
+            if (configuration && configuration.apiKey) {
+                const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+                    ? await configuration.apiKey("x-api-key")
+                    : await configuration.apiKey;
+                localVarHeaderParameter["x-api-key"] = localVarApiKeyValue;
+            }
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            const query = new URLSearchParams(localVarUrlObj.search);
+            for (const key in localVarQueryParameter) {
+                query.set(key, localVarQueryParameter[key]);
+            }
+            for (const key in options.params) {
+                query.set(key, options.params[key]);
+            }
+            localVarUrlObj.search = (new URLSearchParams(query)).toString();
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            const needsSerialization = (typeof body !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
+            localVarRequestOptions.data =  needsSerialization ? JSON.stringify(body !== undefined ? body : {}) : (body || "");
+
+            return {
+                url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Creates an impact associated with an account id.
          * @summary Create Tailored Impact
          * @param {ImpactDto} body 
          * @param {*} [options] Override http request option.
@@ -164,7 +217,21 @@ export const ImpactsApiFp = function(configuration?: Configuration) {
             };
         },
         /**
-         * Creates an impact associated wit a account id.
+         * Run multiple create impact call in a batch, equivalent to calling create impact multiple times with different parameters.
+         * @summary Create Impact in Batch
+         * @param {CreateImpactBatchRequestBody} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createImpactBatch(body: CreateImpactBatchRequestBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<BatchImpactPurchaseResponses>>> {
+            const localVarAxiosArgs = await ImpactsApiAxiosParamCreator(configuration).createImpactBatch(body, options);
+            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+                const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
+                return axios.request(axiosRequestArgs);
+            };
+        },
+        /**
+         * Creates an impact associated with an account id.
          * @summary Create Tailored Impact
          * @param {ImpactDto} body 
          * @param {*} [options] Override http request option.
@@ -199,7 +266,17 @@ export const ImpactsApiFactory = function (configuration?: Configuration, basePa
             return ImpactsApiFp(configuration).createImpact(body, sourceId, triggerId, options).then((request) => request(axios, basePath));
         },
         /**
-         * Creates an impact associated wit a account id.
+         * Run multiple create impact call in a batch, equivalent to calling create impact multiple times with different parameters.
+         * @summary Create Impact in Batch
+         * @param {CreateImpactBatchRequestBody} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createImpactBatch(body: CreateImpactBatchRequestBody, options?: AxiosRequestConfig): Promise<AxiosResponse<BatchImpactPurchaseResponses>> {
+            return ImpactsApiFp(configuration).createImpactBatch(body, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Creates an impact associated with an account id.
          * @summary Create Tailored Impact
          * @param {ImpactDto} body 
          * @param {*} [options] Override http request option.
@@ -232,7 +309,18 @@ export class ImpactsApi extends BaseAPI {
         return ImpactsApiFp(this.configuration).createImpact(body, sourceId, triggerId, options).then((request) => request(this.axios, this.basePath));
     }
     /**
-     * Creates an impact associated wit a account id.
+     * Run multiple create impact call in a batch, equivalent to calling create impact multiple times with different parameters.
+     * @summary Create Impact in Batch
+     * @param {CreateImpactBatchRequestBody} body 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ImpactsApi
+     */
+    public async createImpactBatch(body: CreateImpactBatchRequestBody, options?: AxiosRequestConfig) : Promise<AxiosResponse<BatchImpactPurchaseResponses>> {
+        return ImpactsApiFp(this.configuration).createImpactBatch(body, options).then((request) => request(this.axios, this.basePath));
+    }
+    /**
+     * Creates an impact associated with an account id.
      * @summary Create Tailored Impact
      * @param {ImpactDto} body 
      * @param {*} [options] Override http request option.
