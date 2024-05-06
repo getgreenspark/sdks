@@ -18,13 +18,13 @@
  */
 export interface EmailRequestBody {
     /**
-     * The domain name used for sending emails based on this template.
+     * The name part of the email address.
      * @type {string}
      * @memberof EmailRequestBody
      */
     name: string;
     /**
-     * The name part of the email address.
+     * The domain name used for sending emails based on this template.
      * @type {string}
      * @memberof EmailRequestBody
      */

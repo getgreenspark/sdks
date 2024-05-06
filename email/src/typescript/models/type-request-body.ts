@@ -34,7 +34,7 @@ export interface TypeRequestBody {
      * @type {Array<string>}
      * @memberof TypeRequestBody
      */
-    trigger: Array<TypeRequestBodyTriggerEnum>;
+    trigger: Array<string>;
     /**
      * Sets how many days after an impact creation a signup nudging email is sent out to your customer.
      * @type {Array<number>}
@@ -51,19 +51,5 @@ export enum TypeRequestBodyTemplateEnum {
     Invitation = 'invitation',
     Update = 'update',
     Nudge = 'nudge'
-}
-/**
-    * @export
-    * @enum {string}
-    */
-export enum TypeRequestBodyTriggerEnum {
-    OffsetPerOrder = 'offsetPerOrder',
-    OffsetPerProduct = 'offsetPerProduct',
-    OffsetBySpend = 'offsetBySpend',
-    OffsetByStoreRevenue = 'offsetByStoreRevenue',
-    OffsetByPercentageOrder = 'offsetByPercentageOrder',
-    OffsetPerSubscription = 'offsetPerSubscription',
-    OffsetPerReview = 'offsetPerReview',
-    OffsetByApi = 'offsetByApi'
 }
 
