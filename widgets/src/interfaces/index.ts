@@ -6,6 +6,10 @@ export interface ApiSettings {
   shopUniqueName: string
 }
 
+export interface ApiRequestBody {
+  shopUniqueName: string
+}
+
 export interface OrderProduct {
   productId: string
   quantity: number
@@ -17,11 +21,10 @@ export interface StoreOrder {
   lineItems: Array<OrderProduct>
 }
 
-export interface CartWidgetAPIParams {
-  shopUniqueName: string
+export interface CartWidgetParams {
   color: (typeof WIDGET_COLORS.cart)[number]
   order: StoreOrder
   withPopup?: boolean
 }
 
-export interface Widget {}
+export interface CartWidgetRequestBody extends ApiRequestBody, CartWidgetParams {}

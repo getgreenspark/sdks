@@ -1,15 +1,27 @@
 import { AVAILABLE_LOCALES } from '@/constants'
+import { ConnectionHandler } from '@/network'
+
 import type { ApiSettings } from '@/interfaces'
 
 export class ApiConsumer {
   apiKey: string
   shopUniqueName: string
   currentLocale: (typeof AVAILABLE_LOCALES)[number]
+  api: ConnectionHandler
 
   constructor({ apiKey, locale, shopUniqueName }: ApiSettings) {
     this.apiKey = apiKey
     this.currentLocale = locale
     this.shopUniqueName = shopUniqueName
+    this.api = this.instanciateApi()
+  }
+
+  instanciateApi(): ConnectionHandler {
+    return new ConnectionHandler({
+      apiKey: this.apiKey,
+      shopUniqueName: this.shopUniqueName,
+      locale: this.locale,
+    })
   }
 
   get locale(): (typeof AVAILABLE_LOCALES)[number] {
@@ -24,5 +36,6 @@ export class ApiConsumer {
     }
 
     this.currentLocale = newLocale
+    this.instanciateApi()
   }
 }

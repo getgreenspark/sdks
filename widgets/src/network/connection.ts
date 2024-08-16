@@ -1,21 +1,47 @@
-import axios, { AxiosHeaders, type AxiosResponse } from 'axios'
+import axios, { AxiosHeaders } from 'axios'
 
 import { AVAILABLE_LOCALES } from '@/constants'
 
-import type { CartWidgetAPIParams } from '@/interfaces'
+import type { CartWidgetRequestBody, CartWidgetParams } from '@/interfaces'
+import type { AxiosInstance, AxiosResponse } from 'axios'
 
-const api = axios.create({
-  baseURL: process.env.API_URL,
-  timeout: 10000,
-})
+export class ConnectionHandler {
+  apiKey: string
+  shopUniqueName: string
+  api: AxiosInstance
+  locale: (typeof AVAILABLE_LOCALES)[number]
 
-export const fetchCartWidget = (
-  body: CartWidgetAPIParams,
-  query: { locale?: (typeof AVAILABLE_LOCALES)[number] } = { locale: 'en' },
-  headers: AxiosHeaders,
-): Promise<AxiosResponse<string>> => {
-  return api.post('/cart-widget', body, {
-    params: { lng: query.locale },
-    headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-  })
+  constructor(options: {
+    apiKey: string
+    shopUniqueName: string
+    locale: (typeof AVAILABLE_LOCALES)[number]
+  }) {
+    const { apiKey, shopUniqueName, locale = 'en' } = options
+    this.apiKey = apiKey
+    this.shopUniqueName = shopUniqueName
+    this.locale = locale
+    this.api = axios.create({
+      baseURL: process.env.API_URL,
+      timeout: 10000,
+    })
+
+    this.api.defaults.headers.common['x-api-key'] = this.apiKey
+  }
+
+  async fetchCartWidget(
+    body: CartWidgetParams,
+    headers?: AxiosHeaders,
+  ): Promise<AxiosResponse<string>> {
+    return this.api.post<string, AxiosResponse<string>, CartWidgetRequestBody>(
+      '/cart-widget',
+      {
+        ...body,
+        shopUniqueName: this.shopUniqueName,
+      },
+      {
+        params: { lng: this.locale },
+        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
+      },
+    )
+  }
 }
