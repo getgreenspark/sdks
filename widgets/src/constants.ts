@@ -1,4 +1,5 @@
 export const AVAILABLE_LOCALES: Readonly<string[]> = ['en', 'de']
+export const DEFAULT_LOCALE: Readonly<string> = 'en'
 export const AVAILABLE_STORE_CURRENCIES: Readonly<string[]> = ['USD', 'GBP', 'EUR', 'AUD', 'NZD']
 
 export const DEFAULT_CONTAINER_CSS_SELECTOR: Readonly<string> = '[data-greenspark-widget-container]'

@@ -1,4 +1,4 @@
-import { AVAILABLE_LOCALES } from '@/constants'
+import { AVAILABLE_LOCALES, DEFAULT_LOCALE } from '@/constants'
 import { ConnectionHandler } from '@/network'
 
 import type { ApiSettings } from '@/interfaces'
@@ -9,7 +9,7 @@ export class ApiConsumer {
   currentLocale: (typeof AVAILABLE_LOCALES)[number]
   api: ConnectionHandler
 
-  constructor({ apiKey, locale, shopUniqueName }: ApiSettings) {
+  constructor({ apiKey, locale = DEFAULT_LOCALE, shopUniqueName }: ApiSettings) {
     this.apiKey = apiKey
     this.currentLocale = locale
     this.shopUniqueName = shopUniqueName

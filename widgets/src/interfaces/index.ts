@@ -2,7 +2,7 @@ import { AVAILABLE_LOCALES, AVAILABLE_STORE_CURRENCIES, WIDGET_COLORS } from '@/
 
 export interface ApiSettings {
   apiKey: string
-  locale: (typeof AVAILABLE_LOCALES)[number]
+  locale?: (typeof AVAILABLE_LOCALES)[number]
   shopUniqueName: string
 }
 
