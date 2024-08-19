@@ -10,13 +10,12 @@ export class Widget {
   api: ConnectionHandler
   containerSelector: string
 
-  constructor(config: WidgetConfig) {
-    const { api, containerSelector } = config
+  constructor({ api, containerSelector }: WidgetConfig) {
     this.api = api
     this.containerSelector = containerSelector
   }
 
-  render(containerSelector?: string, options?: unknown): Promise<void> {
+  render(options?: unknown, containerSelector?: string): Promise<void> {
     throw new Error(`Greenspark - This widget does not support the 'render' method`)
   }
 

@@ -11,12 +11,15 @@ export class ConnectionHandler {
   api: AxiosInstance
   locale: (typeof AVAILABLE_LOCALES)[number]
 
-  constructor(options: {
+  constructor({
+    apiKey,
+    shopUniqueName,
+    locale = 'en',
+  }: {
     apiKey: string
     shopUniqueName: string
     locale: (typeof AVAILABLE_LOCALES)[number]
   }) {
-    const { apiKey, shopUniqueName, locale = 'en' } = options
     this.apiKey = apiKey
     this.shopUniqueName = shopUniqueName
     this.locale = locale
@@ -33,7 +36,7 @@ export class ConnectionHandler {
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, CartWidgetRequestBody>(
-      '/cart-widget',
+      '/widgets/cart-widget',
       {
         ...body,
         shopUniqueName: this.shopUniqueName,

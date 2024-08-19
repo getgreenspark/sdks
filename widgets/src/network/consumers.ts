@@ -31,7 +31,9 @@ export class ApiConsumer {
   set locale(newLocale: (typeof AVAILABLE_LOCALES)[number]) {
     if (!AVAILABLE_LOCALES.includes(newLocale)) {
       throw new Error(
-        `Greenspark - Failed to update locale, because ${newLocale} is not currently supported. The available options are ${AVAILABLE_LOCALES.join()}`,
+        `Greenspark - Failed to update locale, because ${newLocale} is not currently supported. The available options are ${AVAILABLE_LOCALES.join(
+          ', ',
+        )}`,
       )
     }
 

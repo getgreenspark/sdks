@@ -15,10 +15,9 @@ export class CartWidget extends Widget implements CartWidgetParams {
 
   constructor(params: WidgetConfig & CartWidgetParams) {
     super(params)
-    const { color, order, withPopup = true } = params
-    this.color = color
-    this.order = order
-    this.withPopup = withPopup
+    this.color = params.color
+    this.order = params.order
+    this.withPopup = params.withPopup ?? true
   }
 
   get cartWidgetRequestBody(): CartWidgetParams {
@@ -29,8 +28,7 @@ export class CartWidget extends Widget implements CartWidgetParams {
     }
   }
 
-  updateDefaults(options: Partial<CartWidgetParams>) {
-    const { color, order, withPopup = true } = options
+  updateDefaults({ color, order, withPopup }: Partial<CartWidgetParams>) {
     this.color = color ?? this.color
     this.order = order ?? this.order
     this.withPopup = withPopup ?? this.withPopup
@@ -41,7 +39,9 @@ export class CartWidget extends Widget implements CartWidgetParams {
       throw new Error(
         `Greenspark - "${
           this.color
-        }" was selected as the color for the Cart Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.cart.join()}`,
+        }" was selected as the color for the Cart Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.cart.join(
+          ', ',
+        )}`,
       )
     }
 
@@ -49,7 +49,9 @@ export class CartWidget extends Widget implements CartWidgetParams {
       throw new Error(
         `Greenspark - "${
           this.order.currency
-        }" was selected as the cart currency for the Cart Widget, but this currency is not available. Please use one of the available currencies: ${AVAILABLE_STORE_CURRENCIES.join()}`,
+        }" was selected as the cart currency for the Cart Widget, but this currency is not available. Please use one of the available currencies: ${AVAILABLE_STORE_CURRENCIES.join(
+          ', ',
+        )}`,
       )
     }
 
@@ -73,7 +75,7 @@ export class CartWidget extends Widget implements CartWidgetParams {
 
     if (!this.order.lineItems.every(isValidProduct)) {
       throw new Error(
-        `Greenspark - The values provided to the Cart Widget as 'lineItems' are not valid products with a 'productId'(string) and 'quantity'(number).`,
+        `Greenspark - The values provided to the Cart Widget as 'lineItems' are not valid products with a 'productId'(string) and a 'quantity'(number).`,
       )
     }
   }
@@ -90,7 +92,7 @@ export class CartWidget extends Widget implements CartWidgetParams {
     if (widget) container.replaceWith(widget)
   }
 
-  async render(containerSelector?: string, options?: Partial<CartWidgetParams>): Promise<void> {
+  async render(options?: Partial<CartWidgetParams>, containerSelector?: string): Promise<void> {
     const node = await this.renderToNode(options)
     this.inject(node, containerSelector)
   }
