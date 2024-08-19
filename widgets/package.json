@@ -25,6 +25,8 @@
     "carbon emissions"
   ],
   "scripts": {
+    "test": "echo \"TODO: Add tests\"",
+    "lint": "echo \"TODO: Add linting\"",
     "dev": "webpack --mode=development",
     "build": "webpack --mode=production",
     "release": "release-it"
@@ -59,6 +61,13 @@
     },
     "npm": {
       "publish": false
+    },
+    "hooks": {
+      "before:init": [
+        "npm run lint",
+        "npm run test",
+        "npm run build"
+      ]
     }
   }
 }
