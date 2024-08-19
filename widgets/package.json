@@ -1,6 +1,6 @@
 {
   "name": "@getgreenspark/widgets",
-  "version": "0.0.6-1",
+  "version": "0.0.6-2",
   "bugs": "https://github.com/getgreenspark/sdks/issues",
   "main": "./dist/index.js",
   "description": "An SDK design to help the use of Greenspark's widget API in the browser",
