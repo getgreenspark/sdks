@@ -1,6 +1,6 @@
 {
   "name": "@getgreenspark/widgets",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "bugs": "https://github.com/getgreenspark/sdks/issues",
   "main": "./dist/index.js",
   "description": "An SDK design to help the use of Greenspark's widget API in the browser",
@@ -26,7 +26,8 @@
   ],
   "scripts": {
     "dev": "webpack --mode=development",
-    "build": "webpack --mode=production"
+    "build": "webpack --mode=production",
+    "release": "release-it"
   },
   "license": "MIT",
   "homepage": "https://github.com/getgreenspark/sdks",
@@ -39,6 +40,7 @@
     "@types/node": "^12.11.5",
     "@types/webpack-env": "^1.18.5",
     "dotenv-webpack": "^8.1.0",
+    "release-it": "^17.6.0",
     "ts-loader": "^9.5.1",
     "typescript": "^5.5.4",
     "webpack": "^5.93.0",
@@ -46,5 +48,11 @@
   },
   "dependencies": {
     "axios": "^1.7.4"
+  },
+  "release-it": {
+    "$schema": "https://unpkg.com/release-it/schema/release-it.json",
+    "npm": {
+      "publish": false
+    }
   }
 }

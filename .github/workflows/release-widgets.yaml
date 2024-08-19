@@ -1,0 +1,36 @@
+name: release-widgets
+
+on:
+  push:
+    tags:
+      - "widgets-v*"
+
+env:
+  PROJECT_ID: openapi-352913
+  BUCKET_NAME: greenspark-widgets
+
+jobs:
+  release-widgets:
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    steps:
+      - id: "checkout"
+        uses: "actions/checkout@v4"
+
+      - run: npm install
+      - run: npm run release
+
+      - id: "auth"
+        uses: "google-github-actions/auth@v2"
+        with:
+          credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
+
+      - id: "upload-folder"
+        uses: "google-github-actions/upload-cloud-storage@v2"
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          path: "/widgets/dist"
+          destination: ${{ env.BUCKET_NAME }}
+          parent: false
