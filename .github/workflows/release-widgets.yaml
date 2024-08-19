@@ -38,3 +38,4 @@ jobs:
           path: ${{ env.WIDGET_DIST_FOLDER }}
           destination: ${{ env.BUCKET_NAME }}
           parent: false
+          predefinedAcl: "publicRead"
