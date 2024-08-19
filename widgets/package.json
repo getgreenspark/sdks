@@ -29,7 +29,8 @@
     "lint": "echo \"TODO: Add linting\"",
     "dev": "webpack --mode=development",
     "build": "webpack --mode=production",
-    "release": "release-it"
+    "prerelease": "release-it",
+    "release": "release-it --ci"
   },
   "license": "MIT",
   "homepage": "https://github.com/getgreenspark/sdks",
