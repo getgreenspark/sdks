@@ -1,0 +1,11 @@
+{
+  "name": "sdks",
+  "version": "1.0.0",
+  "description": "The Greenspark SDKs provide access to the Greenspark API from applications running on a server or in a browser.",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "cd widgets && npm install"
+  },
+  "author": "",
+  "license": "ISC"
+}
