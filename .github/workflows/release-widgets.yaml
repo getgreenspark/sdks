@@ -7,10 +7,11 @@ on:
 
 env:
   PROJECT_ID: openapi-352913
-  BUCKET_NAME: greenspark-widgets
+  BUCKET_NAME: greenspark-scripts
 
 jobs:
   release-widgets:
+    runs-on: ubuntu-latest
     permissions:
       contents: "read"
       id-token: "write"
@@ -20,7 +21,9 @@ jobs:
         uses: "actions/checkout@v4"
 
       - run: npm install
-      - run: npm run release
+      - run: npm run test
+      - run: npm run lint
+      - run: npm run build
 
       - id: "auth"
         uses: "google-github-actions/auth@v2"
