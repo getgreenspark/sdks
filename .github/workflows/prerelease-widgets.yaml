@@ -3,8 +3,8 @@ name: release-widgets
 on:
   push:
     tags:
-      # checks for all non-prerelease versions
-      - "widgets-v[0-9]+.[0-9]+.[0-9]+"
+      # only check for prerelease versions
+      - "widgets-v[0-9]+.[0-9]+.[0-9]+-[0-9]+"
 
 env:
   PROJECT_ID: openapi-352913
@@ -25,7 +25,7 @@ jobs:
       - run: npm install
       - run: npm --prefix ./widgets run test
       - run: npm --prefix ./widgets run lint
-      - run: npm --prefix ./widgets run build
+      - run: npm --prefix ./widgets run dev
 
       - id: "auth"
         uses: "google-github-actions/auth@v2"
