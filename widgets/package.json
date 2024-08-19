@@ -1,6 +1,6 @@
 {
   "name": "@getgreenspark/widgets",
-  "version": "0.0.1",
+  "version": "0.0.2-0",
   "bugs": "https://github.com/getgreenspark/sdks/issues",
   "main": "./dist/index.js",
   "description": "An SDK design to help the use of Greenspark's widget API in the browser",
@@ -51,6 +51,11 @@
   },
   "release-it": {
     "$schema": "https://unpkg.com/release-it/schema/release-it.json",
+    "git": {
+      "tag": true,
+      "tagName": "widgets-${version}",
+      "tagAnnotation": "Release of Widget SDK ${version}"
+    },
     "npm": {
       "publish": false
     }
