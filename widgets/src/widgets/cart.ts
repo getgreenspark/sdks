@@ -78,19 +78,8 @@ export class CartWidget extends Widget implements CartWidgetParams {
     }
   }
 
-  async fetchWidget(options?: Partial<CartWidgetParams>): Promise<string> {
-    if (options) this.updateDefaults(options)
-    this.validateOptions()
-    const response = await this.api.fetchCartWidget(this.cartWidgetRequestBody)
-    return response.data
-  }
-
-  inject(html: string, containerSelector?: string) {
+  inject(widget: Node, containerSelector?: string) {
     this.containerSelector = containerSelector ?? this.containerSelector
-
-    const parser = new DOMParser()
-    const parsedWidget = parser.parseFromString(html, 'text/html')
-    const widget = parsedWidget.body.firstChild
     const container = document.querySelector(this.containerSelector)
     if (!container) {
       throw new Error(
@@ -102,7 +91,29 @@ export class CartWidget extends Widget implements CartWidgetParams {
   }
 
   async render(containerSelector?: string, options?: Partial<CartWidgetParams>): Promise<void> {
-    const html = await this.fetchWidget(options)
-    this.inject(html, containerSelector)
+    const node = await this.renderToNode(options)
+    this.inject(node, containerSelector)
+  }
+
+  async renderToString(options?: Partial<CartWidgetParams>): Promise<string> {
+    if (options) this.updateDefaults(options)
+    this.validateOptions()
+    const response = await this.api.fetchCartWidget(this.cartWidgetRequestBody)
+    return response.data
+  }
+
+  async renderToNode(options?: Partial<CartWidgetParams>): Promise<Node> {
+    const html = await this.renderToString(options)
+    const parser = new DOMParser()
+    const parsedWidget = parser.parseFromString(html, 'text/html')
+
+    const { firstChild } = parsedWidget.body
+    if (firstChild === null) {
+      throw new Error(
+        `Greenspark - An error occurred when trying to execute 'renderToNode'. Failed to render ${html} `,
+      )
+    }
+
+    return firstChild
   }
 }

@@ -10,3 +10,5 @@ export class GreensparkWidgets extends ApiConsumer {
     return new CartWidget({ ...params, api: this.api, containerSelector })
   }
 }
+
+window.GreensparkWidgets = GreensparkWidgets

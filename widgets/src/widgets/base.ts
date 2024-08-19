@@ -16,15 +16,15 @@ export class Widget {
     this.containerSelector = containerSelector
   }
 
-  render(containerSelector?: string, options?: unknown): void {
+  render(containerSelector?: string, options?: unknown): Promise<void> {
     throw new Error(`Greenspark - This widget does not support the 'render' method`)
   }
 
-  renderToString(options?: unknown): string {
+  renderToString(options?: unknown): Promise<string> {
     throw new Error(`Greenspark - This widget does not support the 'renderToString' method`)
   }
 
-  renderToElement(options?: unknown): Node {
-    throw new Error(`Greenspark - This widget does not support the 'renderToElement' method`)
+  renderToNode(options?: unknown): Promise<Node> {
+    throw new Error(`Greenspark - This widget does not support the 'renderToNode' method`)
   }
 }
