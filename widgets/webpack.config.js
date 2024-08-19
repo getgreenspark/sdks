@@ -3,8 +3,6 @@ const Dotenv = require('dotenv-webpack');
 var PACKAGE = require('./package.json');
 
 module.exports = (env, { mode }) => {
-  const isProduction = mode === 'production'
-
   return {
     entry: {
       'latest': './src/index.ts',
@@ -26,7 +24,7 @@ module.exports = (env, { mode }) => {
       },
     },
     output: {
-      filename: isProduction ? 'widgets@[name].js' : 'dev-bundle.js',
+      filename: 'widgets@[name].js',
       path: path.resolve(__dirname, 'dist'),
     },
     plugins: [
