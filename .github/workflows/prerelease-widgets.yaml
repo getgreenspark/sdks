@@ -1,4 +1,4 @@
-name: release-widgets
+name: pre-release-widgets
 
 on:
   push:
@@ -12,7 +12,7 @@ env:
   WIDGET_DIST_FOLDER: ./widgets/dist
 
 jobs:
-  release-widgets:
+  pre-release-widgets:
     runs-on: ubuntu-latest
     permissions:
       contents: "read"
