@@ -4,7 +4,8 @@
   "description": "The Greenspark SDKs provide access to the Greenspark API from applications running on a server or in a browser.",
   "main": "index.js",
   "scripts": {
-    "postinstall": "cd widgets && npm install"
+    "postinstall": "cd widgets && npm install",
+    "release-widgets": "cd widgets && npm run release"
   },
   "author": "",
   "license": "ISC"
