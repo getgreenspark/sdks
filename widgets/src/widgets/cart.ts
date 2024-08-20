@@ -89,7 +89,12 @@ export class CartWidget extends Widget implements CartWidgetParams {
       )
     }
 
-    if (widget) container.replaceWith(widget)
+    if (widget) {
+      while (container.firstChild) {
+        container.removeChild(container.firstChild)
+      }
+      container.appendChild(widget)
+    }
   }
 
   async render(options?: Partial<CartWidgetParams>, containerSelector?: string): Promise<void> {
