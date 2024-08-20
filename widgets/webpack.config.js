@@ -3,11 +3,12 @@ const Dotenv = require('dotenv-webpack');
 var PACKAGE = require('./package.json');
 
 module.exports = (env, { mode }) => {
+  const isProduction = mode === 'production';
   return {
-    entry: {
+    entry: isProduction ? {
       'latest': './src/index.ts',
       [PACKAGE.version]: './src/index.ts',
-    },
+    } : { [PACKAGE.version]: './src/index.ts' },
     module: {
       rules: [
         {
