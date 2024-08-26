@@ -5,7 +5,7 @@ import type { ApiSettings } from '@/interfaces'
 
 export class ApiConsumer {
   apiKey: string
-  shopUniqueName: string
+  shopUniqueName?: string
   currentLocale: (typeof AVAILABLE_LOCALES)[number]
   api: ConnectionHandler
 

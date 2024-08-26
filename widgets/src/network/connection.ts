@@ -7,7 +7,7 @@ import type { AxiosInstance, AxiosResponse } from 'axios'
 
 export class ConnectionHandler {
   apiKey: string
-  shopUniqueName: string
+  shopUniqueName?: string
   api: AxiosInstance
   locale: (typeof AVAILABLE_LOCALES)[number]
 
@@ -17,7 +17,7 @@ export class ConnectionHandler {
     locale = 'en',
   }: {
     apiKey: string
-    shopUniqueName: string
+    shopUniqueName?: string
     locale: (typeof AVAILABLE_LOCALES)[number]
   }) {
     this.apiKey = apiKey
@@ -37,10 +37,7 @@ export class ConnectionHandler {
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, CartWidgetRequestBody>(
       '/widgets/cart-widget',
-      {
-        ...body,
-        shopUniqueName: this.shopUniqueName,
-      },
+      Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },

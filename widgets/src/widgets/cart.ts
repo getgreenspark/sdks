@@ -6,7 +6,7 @@ import {
 } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
-import type { OrderProduct, CartWidgetParams, CartWidgetRequestBody } from '@/interfaces'
+import type { OrderProduct, CartWidgetParams } from '@/interfaces'
 
 export class CartWidget extends Widget implements CartWidgetParams {
   color

@@ -1,9 +1,9 @@
-export const AVAILABLE_LOCALES: Readonly<string[]> = ['en', 'de']
-export const DEFAULT_LOCALE: Readonly<string> = 'en'
-export const AVAILABLE_STORE_CURRENCIES: Readonly<string[]> = ['USD', 'GBP', 'EUR', 'AUD', 'NZD']
+export const AVAILABLE_LOCALES = ['en', 'de'] as const
+export const DEFAULT_LOCALE = 'en' as const
+export const AVAILABLE_STORE_CURRENCIES = ['USD', 'GBP', 'EUR', 'AUD', 'NZD'] as const
 
-export const DEFAULT_CONTAINER_CSS_SELECTOR: Readonly<string> = '[data-greenspark-widget-container]'
-export const WIDGET_TYPES: Readonly<string[]> = ['cart']
-export const WIDGET_COLORS: Readonly<Record<(typeof WIDGET_TYPES)[number], string[]>> = {
+export const DEFAULT_CONTAINER_CSS_SELECTOR = '[data-greenspark-widget-container]' as const
+export const WIDGET_TYPES = ['cart'] as const
+export const WIDGET_COLORS = {
   cart: ['beige', 'green', 'blue', 'white', 'black'],
-}
+} as const
