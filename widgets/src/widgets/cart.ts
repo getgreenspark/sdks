@@ -1,17 +1,13 @@
 import { Widget } from '@/widgets/base'
-import {
-  WIDGET_COLORS,
-  AVAILABLE_STORE_CURRENCIES,
-  DEFAULT_CONTAINER_CSS_SELECTOR,
-} from '@/constants'
+import { WIDGET_COLORS, DEFAULT_CONTAINER_CSS_SELECTOR } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
-import type { OrderProduct, CartWidgetParams } from '@/interfaces'
+import type { OrderProduct, CartWidgetParams, StoreOrder } from '@/interfaces'
 
 export class CartWidget extends Widget implements CartWidgetParams {
-  color
-  order
-  withPopup
+  color: (typeof WIDGET_COLORS.cart)[number]
+  order: StoreOrder
+  withPopup?: boolean
 
   constructor(params: WidgetConfig & CartWidgetParams) {
     super(params)
@@ -45,13 +41,9 @@ export class CartWidget extends Widget implements CartWidgetParams {
       )
     }
 
-    if (!AVAILABLE_STORE_CURRENCIES.includes(this.order.currency)) {
+    if (!(typeof this.order.currency === 'string')) {
       throw new Error(
-        `Greenspark - "${
-          this.order.currency
-        }" was selected as the cart currency for the Cart Widget, but this currency is not available. Please use one of the available currencies: ${AVAILABLE_STORE_CURRENCIES.join(
-          ', ',
-        )}`,
+        `Greenspark - "${this.order.currency}" was selected as the cart currency for the Cart Widget, but this currency is not available. Please use a valid currency code like "USD", "GBP" and "EUR".`,
       )
     }
 

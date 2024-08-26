@@ -1,4 +1,4 @@
-import { AVAILABLE_LOCALES, AVAILABLE_STORE_CURRENCIES, WIDGET_COLORS } from '@/constants'
+import { AVAILABLE_LOCALES, WIDGET_COLORS } from '@/constants'
 
 export interface ApiSettings {
   apiKey: string
@@ -16,7 +16,7 @@ export interface OrderProduct {
 }
 
 export interface StoreOrder {
-  currency: (typeof AVAILABLE_STORE_CURRENCIES)[number]
+  currency: string
   totalPrice: number
   lineItems: Array<OrderProduct>
 }
