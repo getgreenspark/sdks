@@ -15,6 +15,8 @@ import type {
   TieredSpendLevelRequestBody,
   PerProductWidgetParams,
   PerProductRequestBody,
+  TopStatsWidgetParams,
+  TopStatsRequestBody,
 } from '@/interfaces'
 import type { AxiosInstance, AxiosResponse } from 'axios'
 
@@ -121,6 +123,20 @@ export class ConnectionHandler {
     return this.api.post<string, AxiosResponse<string>, PerProductRequestBody>(
       '/widgets/per-product-widget',
       Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
+      {
+        params: { lng: this.locale },
+        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
+      },
+    )
+  }
+
+  async fetchTopStatsWidget(
+    body: TopStatsWidgetParams,
+    headers?: AxiosHeaders,
+  ): Promise<AxiosResponse<string>> {
+    return this.api.post<string, AxiosResponse<string>, TopStatsRequestBody>(
+      '/widgets/stats-widget',
+      body,
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },

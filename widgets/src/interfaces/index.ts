@@ -6,7 +6,7 @@ export interface ApiSettings {
   shopUniqueName?: string
 }
 
-export interface ApiRequestBody {
+export interface ExternalShopContext {
   shopUniqueName: string
 }
 
@@ -56,9 +56,16 @@ export interface PerProductWidgetParams {
   withPopup?: boolean
 }
 
-export interface CartWidgetRequestBody extends ApiRequestBody, CartWidgetParams {}
-export interface SpendLevelRequestBody extends ApiRequestBody, SpendLevelWidgetParams {}
-export interface PerOrderRequestBody extends ApiRequestBody, PerOrderWidgetParams {}
-export interface ByPercentageRequestBody extends ApiRequestBody, ByPercentageWidgetParams {}
-export interface TieredSpendLevelRequestBody extends ApiRequestBody, TieredSpendLevelWidgetParams {}
-export interface PerProductRequestBody extends ApiRequestBody, PerProductWidgetParams {}
+export interface TopStatsWidgetParams {
+  color: (typeof WIDGET_COLORS.spendLevel)[number]
+}
+
+export interface CartWidgetRequestBody extends ExternalShopContext, CartWidgetParams {}
+export interface SpendLevelRequestBody extends ExternalShopContext, SpendLevelWidgetParams {}
+export interface PerOrderRequestBody extends ExternalShopContext, PerOrderWidgetParams {}
+export interface ByPercentageRequestBody extends ExternalShopContext, ByPercentageWidgetParams {}
+export interface TieredSpendLevelRequestBody
+  extends ExternalShopContext,
+    TieredSpendLevelWidgetParams {}
+export interface PerProductRequestBody extends ExternalShopContext, PerProductWidgetParams {}
+export type TopStatsRequestBody = TopStatsWidgetParams

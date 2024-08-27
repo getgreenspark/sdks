@@ -6,6 +6,7 @@ import {
   ByPercentageWidget,
   TieredSpendLevelWidget,
   PerProductWidget,
+  TopStatsWidget,
 } from '@/widgets'
 import { DEFAULT_CONTAINER_CSS_SELECTOR } from '@/constants'
 
@@ -16,6 +17,7 @@ import type {
   PerProductWidgetParams,
   SpendLevelWidgetParams,
   TieredSpendLevelWidgetParams,
+  TopStatsWidgetParams,
 } from '@/interfaces'
 
 export default class GreensparkWidgets extends ApiConsumer {
@@ -47,6 +49,11 @@ export default class GreensparkWidgets extends ApiConsumer {
   perProduct(params: PerProductWidgetParams & { containerSelector?: string }) {
     const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR } = params
     return new PerProductWidget({ ...params, api: this.api, containerSelector })
+  }
+
+  topStats(params: TopStatsWidgetParams & { containerSelector?: string }) {
+    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR } = params
+    return new TopStatsWidget({ ...params, api: this.api, containerSelector })
   }
 }
 

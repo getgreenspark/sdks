@@ -8,6 +8,7 @@ import {
   PerProductWidget,
   SpendLevelWidget,
   TieredSpendLevelWidget,
+  TopStatsWidget,
 } from '@/widgets'
 
 import apiFixtures from '@fixtures/api.json'
@@ -191,6 +192,32 @@ describe('Widgets', () => {
 
       axiosMock.post.mockResolvedValueOnce({ data: mockString })
       await perProduct.render()
+      expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockString)
+    })
+  })
+
+  describe('Top Stats Widget', () => {
+    test('can create top stats widget', async () => {
+      const widgets = new GreensparkWidgets({ apiKey: API_KEY, shopUniqueName: SHOP_UNIQUE_NAME })
+      expect(typeof widgets.topStats).toEqual('function')
+      const containerSelector = createContainer()
+      const topStats = widgets.topStats({
+        color: 'beige',
+        containerSelector: containerSelector,
+      })
+
+      expect(topStats instanceof TopStatsWidget).toBe(true)
+
+      const mockString = 'some-top-stats-html'
+      axiosMock.post.mockResolvedValueOnce({ data: mockString })
+      expect(await topStats.renderToString()).toEqual(mockString)
+
+      axiosMock.post.mockResolvedValueOnce({ data: mockString })
+      const renderNode = await topStats.renderToNode()
+      expect(renderNode.textContent).toBe(mockString)
+
+      axiosMock.post.mockResolvedValueOnce({ data: mockString })
+      await topStats.render()
       expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockString)
     })
   })
