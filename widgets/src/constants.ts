@@ -9,4 +9,5 @@ export const WIDGET_COLORS = {
   perOrder: ['beige', 'green', 'blue', 'white', 'black'],
   byPercentage: ['beige', 'green', 'blue', 'white', 'black'],
   tieredSpendLevel: ['beige', 'green', 'blue', 'white', 'black'],
+  perProduct: ['beige', 'green', 'blue', 'white', 'black'],
 } as const

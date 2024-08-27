@@ -5,6 +5,7 @@ import {
   ByPercentageWidget,
   CartWidget,
   PerOrderWidget,
+  PerProductWidget,
   SpendLevelWidget,
   TieredSpendLevelWidget,
 } from '@/widgets'
@@ -163,6 +164,33 @@ describe('Widgets', () => {
 
       axiosMock.post.mockResolvedValueOnce({ data: mockString })
       await tieredSpendLevel.render()
+      expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockString)
+    })
+  })
+
+  describe('Per Product Widget', () => {
+    test('can create per product widget', async () => {
+      const widgets = new GreensparkWidgets({ apiKey: API_KEY, shopUniqueName: SHOP_UNIQUE_NAME })
+      expect(typeof widgets.perProduct).toEqual('function')
+      const containerSelector = createContainer()
+      const perProduct = widgets.perProduct({
+        color: 'beige',
+        productId: 'id-for-some-product',
+        containerSelector: containerSelector,
+      })
+
+      expect(perProduct instanceof PerProductWidget).toBe(true)
+
+      const mockString = 'some-product-html'
+      axiosMock.post.mockResolvedValueOnce({ data: mockString })
+      expect(await perProduct.renderToString()).toEqual(mockString)
+
+      axiosMock.post.mockResolvedValueOnce({ data: mockString })
+      const renderNode = await perProduct.renderToNode()
+      expect(renderNode.textContent).toBe(mockString)
+
+      axiosMock.post.mockResolvedValueOnce({ data: mockString })
+      await perProduct.render()
       expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockString)
     })
   })
