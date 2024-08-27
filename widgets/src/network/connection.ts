@@ -17,6 +17,8 @@ import type {
   PerProductRequestBody,
   TopStatsWidgetParams,
   TopStatsRequestBody,
+  FullWidthBannerWidgetParams,
+  FullWidthBannerRequestBody,
 } from '@/interfaces'
 import type { AxiosInstance, AxiosResponse } from 'axios'
 
@@ -136,6 +138,20 @@ export class ConnectionHandler {
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, TopStatsRequestBody>(
       '/widgets/stats-widget',
+      body,
+      {
+        params: { lng: this.locale },
+        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
+      },
+    )
+  }
+
+  async fetchFullWidthBannerWidget(
+    body: FullWidthBannerWidgetParams,
+    headers?: AxiosHeaders,
+  ): Promise<AxiosResponse<string>> {
+    return this.api.post<string, AxiosResponse<string>, FullWidthBannerRequestBody>(
+      '/widgets/full-width-banner',
       body,
       {
         params: { lng: this.locale },

@@ -7,12 +7,14 @@ import {
   TieredSpendLevelWidget,
   PerProductWidget,
   TopStatsWidget,
+  FullWidthBannerWidget,
 } from '@/widgets'
 import { DEFAULT_CONTAINER_CSS_SELECTOR } from '@/constants'
 
 import type {
   ByPercentageWidgetParams,
   CartWidgetParams,
+  FullWidthBannerWidgetParams,
   PerOrderWidgetParams,
   PerProductWidgetParams,
   SpendLevelWidgetParams,
@@ -54,6 +56,11 @@ export default class GreensparkWidgets extends ApiConsumer {
   topStats(params: TopStatsWidgetParams & { containerSelector?: string }) {
     const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR } = params
     return new TopStatsWidget({ ...params, api: this.api, containerSelector })
+  }
+
+  fullWidthBanner(params: FullWidthBannerWidgetParams & { containerSelector?: string }) {
+    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR } = params
+    return new FullWidthBannerWidget({ ...params, api: this.api, containerSelector })
   }
 }
 

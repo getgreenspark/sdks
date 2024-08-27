@@ -1,4 +1,4 @@
-import type { AVAILABLE_LOCALES, WIDGET_COLORS } from '@/constants'
+import type { AVAILABLE_LOCALES, AVAILABLE_STATISTIC_TYPES, WIDGET_COLORS } from '@/constants'
 
 export interface ApiSettings {
   apiKey: string
@@ -60,6 +60,11 @@ export interface TopStatsWidgetParams {
   color: (typeof WIDGET_COLORS.spendLevel)[number]
 }
 
+export interface FullWidthBannerWidgetParams {
+  options: Array<(typeof AVAILABLE_STATISTIC_TYPES)[number]>
+  imageUrl?: string
+}
+
 export interface CartWidgetRequestBody extends ExternalShopContext, CartWidgetParams {}
 export interface SpendLevelRequestBody extends ExternalShopContext, SpendLevelWidgetParams {}
 export interface PerOrderRequestBody extends ExternalShopContext, PerOrderWidgetParams {}
@@ -69,3 +74,4 @@ export interface TieredSpendLevelRequestBody
     TieredSpendLevelWidgetParams {}
 export interface PerProductRequestBody extends ExternalShopContext, PerProductWidgetParams {}
 export type TopStatsRequestBody = TopStatsWidgetParams
+export type FullWidthBannerRequestBody = FullWidthBannerWidgetParams

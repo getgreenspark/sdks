@@ -4,6 +4,7 @@ import GreensparkWidgets from '@/index'
 import {
   ByPercentageWidget,
   CartWidget,
+  FullWidthBannerWidget,
   PerOrderWidget,
   PerProductWidget,
   SpendLevelWidget,
@@ -209,6 +210,40 @@ describe('Widgets', () => {
       expect(topStats instanceof TopStatsWidget).toBe(true)
 
       const mockString = 'some-top-stats-html'
+      axiosMock.post.mockResolvedValueOnce({ data: mockString })
+      expect(await topStats.renderToString()).toEqual(mockString)
+
+      axiosMock.post.mockResolvedValueOnce({ data: mockString })
+      const renderNode = await topStats.renderToNode()
+      expect(renderNode.textContent).toBe(mockString)
+
+      axiosMock.post.mockResolvedValueOnce({ data: mockString })
+      await topStats.render()
+      expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockString)
+    })
+  })
+
+  describe('Full Width Banner Widget', () => {
+    test('can create full width banner', async () => {
+      const widgets = new GreensparkWidgets({ apiKey: API_KEY, shopUniqueName: SHOP_UNIQUE_NAME })
+      expect(typeof widgets.fullWidthBanner).toEqual('function')
+      const containerSelector = createContainer()
+      const topStats = widgets.fullWidthBanner({
+        options: [
+          'monthsEarthPositive',
+          'trees',
+          'plastic',
+          'carbon',
+          'straws',
+          'miles',
+          'footballPitches',
+        ],
+        containerSelector,
+      })
+
+      expect(topStats instanceof FullWidthBannerWidget).toBe(true)
+
+      const mockString = 'some-full-width-html'
       axiosMock.post.mockResolvedValueOnce({ data: mockString })
       expect(await topStats.renderToString()).toEqual(mockString)
 
