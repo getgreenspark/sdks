@@ -1,0 +1,6 @@
+{
+  "default": {
+    "apiKey": "some-fake-api-key",
+    "shopUniqueName": "some-fake-shop-name.myshopify.com"
+  }
+}

@@ -1,9 +1,9 @@
-import { AVAILABLE_LOCALES, WIDGET_COLORS } from '@/constants'
+import type { AVAILABLE_LOCALES, WIDGET_COLORS } from '@/constants'
 
 export interface ApiSettings {
   apiKey: string
   locale?: (typeof AVAILABLE_LOCALES)[number]
-  shopUniqueName: string
+  shopUniqueName?: string
 }
 
 export interface ApiRequestBody {

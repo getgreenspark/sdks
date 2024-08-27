@@ -1,7 +1,7 @@
-import axios, { AxiosHeaders } from 'axios'
+import axios from 'axios'
 
-import { AVAILABLE_LOCALES } from '@/constants'
-
+import type { AxiosHeaders } from 'axios'
+import type { AVAILABLE_LOCALES } from '@/constants'
 import type { CartWidgetRequestBody, CartWidgetParams } from '@/interfaces'
 import type { AxiosInstance, AxiosResponse } from 'axios'
 

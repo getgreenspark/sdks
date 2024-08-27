@@ -1,12 +1,17 @@
 import type { ConnectionHandler } from '@/network'
-import type { CartWidgetParams } from '@/interfaces'
 
 export interface WidgetConfig {
   containerSelector: string
   api: ConnectionHandler
 }
 
-export class Widget {
+interface WidgetTemplate {
+  render(options?: unknown, containerSelector?: string): Promise<void>
+  renderToString(options?: unknown): Promise<string>
+  renderToNode(options?: unknown): Promise<Node>
+}
+
+export class Widget implements WidgetTemplate {
   api: ConnectionHandler
   containerSelector: string
 
@@ -15,15 +20,15 @@ export class Widget {
     this.containerSelector = containerSelector
   }
 
-  render(options?: unknown, containerSelector?: string): Promise<void> {
+  render(): Promise<void> {
     throw new Error(`Greenspark - This widget does not support the 'render' method`)
   }
 
-  renderToString(options?: unknown): Promise<string> {
+  renderToString(): Promise<string> {
     throw new Error(`Greenspark - This widget does not support the 'renderToString' method`)
   }
 
-  renderToNode(options?: unknown): Promise<Node> {
+  renderToNode(): Promise<Node> {
     throw new Error(`Greenspark - This widget does not support the 'renderToNode' method`)
   }
 }
