@@ -11,6 +11,8 @@ import type {
   PerOrderRequestBody,
   ByPercentageWidgetParams,
   ByPercentageRequestBody,
+  TieredSpendLevelWidgetParams,
+  TieredSpendLevelRequestBody,
 } from '@/interfaces'
 import type { AxiosInstance, AxiosResponse } from 'axios'
 
@@ -87,6 +89,20 @@ export class ConnectionHandler {
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, ByPercentageRequestBody>(
+      '/widgets/per-order-widget',
+      Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
+      {
+        params: { lng: this.locale },
+        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
+      },
+    )
+  }
+
+  async fetchTieredSpendLevelWidget(
+    body: TieredSpendLevelWidgetParams,
+    headers?: AxiosHeaders,
+  ): Promise<AxiosResponse<string>> {
+    return this.api.post<string, AxiosResponse<string>, TieredSpendLevelRequestBody>(
       '/widgets/per-order-widget',
       Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
       {

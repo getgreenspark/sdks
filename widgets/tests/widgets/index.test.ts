@@ -1,7 +1,13 @@
 import axios from 'axios'
 
 import GreensparkWidgets from '@/index'
-import { CartWidget, PerOrderWidget, SpendLevelWidget } from '@/widgets'
+import {
+  ByPercentageWidget,
+  CartWidget,
+  PerOrderWidget,
+  SpendLevelWidget,
+  TieredSpendLevelWidget,
+} from '@/widgets'
 
 import apiFixtures from '@fixtures/api.json'
 import orderFixtures from '@fixtures/order.json'
@@ -111,26 +117,52 @@ describe('Widgets', () => {
   describe('By Percentage Widget', () => {
     test('can create by percentage widget', async () => {
       const widgets = new GreensparkWidgets({ apiKey: API_KEY, shopUniqueName: SHOP_UNIQUE_NAME })
-      expect(typeof widgets.perOrder).toEqual('function')
+      expect(typeof widgets.byPercentage).toEqual('function')
       const containerSelector = createContainer()
-      const perOrder = widgets.perOrder({
+      const byPercentage = widgets.byPercentage({
+        color: 'beige',
+        containerSelector: containerSelector,
+      })
+
+      expect(byPercentage instanceof ByPercentageWidget).toBe(true)
+
+      const mockString = 'some-percentage-html'
+      axiosMock.post.mockResolvedValueOnce({ data: mockString })
+      expect(await byPercentage.renderToString()).toEqual(mockString)
+
+      axiosMock.post.mockResolvedValueOnce({ data: mockString })
+      const renderNode = await byPercentage.renderToNode()
+      expect(renderNode.textContent).toBe(mockString)
+
+      axiosMock.post.mockResolvedValueOnce({ data: mockString })
+      await byPercentage.render()
+      expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockString)
+    })
+  })
+
+  describe('Tiered Spend Level Widget', () => {
+    test('can create tiered spend level widget', async () => {
+      const widgets = new GreensparkWidgets({ apiKey: API_KEY, shopUniqueName: SHOP_UNIQUE_NAME })
+      expect(typeof widgets.tieredSpendLevel).toEqual('function')
+      const containerSelector = createContainer()
+      const tieredSpendLevel = widgets.tieredSpendLevel({
         color: 'beige',
         currency: 'USD',
         containerSelector: containerSelector,
       })
 
-      expect(perOrder instanceof PerOrderWidget).toBe(true)
+      expect(tieredSpendLevel instanceof TieredSpendLevelWidget).toBe(true)
 
-      const mockString = 'some-percentage-html'
+      const mockString = 'some-tiered-level-html'
       axiosMock.post.mockResolvedValueOnce({ data: mockString })
-      expect(await perOrder.renderToString()).toEqual(mockString)
+      expect(await tieredSpendLevel.renderToString()).toEqual(mockString)
 
       axiosMock.post.mockResolvedValueOnce({ data: mockString })
-      const renderNode = await perOrder.renderToNode()
+      const renderNode = await tieredSpendLevel.renderToNode()
       expect(renderNode.textContent).toBe(mockString)
 
       axiosMock.post.mockResolvedValueOnce({ data: mockString })
-      await perOrder.render()
+      await tieredSpendLevel.render()
       expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockString)
     })
   })
