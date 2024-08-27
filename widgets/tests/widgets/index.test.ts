@@ -82,7 +82,7 @@ describe('Widgets', () => {
   })
 
   describe('Per Order Widget', () => {
-    test('can create basic spend level widget', async () => {
+    test('can create basic per order widget', async () => {
       const widgets = new GreensparkWidgets({ apiKey: API_KEY, shopUniqueName: SHOP_UNIQUE_NAME })
       expect(typeof widgets.perOrder).toEqual('function')
       const containerSelector = createContainer()
@@ -94,7 +94,34 @@ describe('Widgets', () => {
 
       expect(perOrder instanceof PerOrderWidget).toBe(true)
 
-      const mockString = 'some-spend-level-html'
+      const mockString = 'per-order-level-html'
+      axiosMock.post.mockResolvedValueOnce({ data: mockString })
+      expect(await perOrder.renderToString()).toEqual(mockString)
+
+      axiosMock.post.mockResolvedValueOnce({ data: mockString })
+      const renderNode = await perOrder.renderToNode()
+      expect(renderNode.textContent).toBe(mockString)
+
+      axiosMock.post.mockResolvedValueOnce({ data: mockString })
+      await perOrder.render()
+      expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockString)
+    })
+  })
+
+  describe('By Percentage Widget', () => {
+    test('can create by percentage widget', async () => {
+      const widgets = new GreensparkWidgets({ apiKey: API_KEY, shopUniqueName: SHOP_UNIQUE_NAME })
+      expect(typeof widgets.perOrder).toEqual('function')
+      const containerSelector = createContainer()
+      const perOrder = widgets.perOrder({
+        color: 'beige',
+        currency: 'USD',
+        containerSelector: containerSelector,
+      })
+
+      expect(perOrder instanceof PerOrderWidget).toBe(true)
+
+      const mockString = 'some-percentage-html'
       axiosMock.post.mockResolvedValueOnce({ data: mockString })
       expect(await perOrder.renderToString()).toEqual(mockString)
 

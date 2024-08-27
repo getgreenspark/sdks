@@ -39,6 +39,12 @@ export interface PerOrderWidgetParams {
   withPopup?: boolean
 }
 
+export interface ByPercentageWidgetParams {
+  color: (typeof WIDGET_COLORS.spendLevel)[number]
+  withPopup?: boolean
+}
+
 export interface CartWidgetRequestBody extends ApiRequestBody, CartWidgetParams {}
 export interface SpendLevelRequestBody extends ApiRequestBody, SpendLevelWidgetParams {}
 export interface PerOrderRequestBody extends ApiRequestBody, PerOrderWidgetParams {}
+export interface ByPercentageRequestBody extends ApiRequestBody, ByPercentageWidgetParams {}

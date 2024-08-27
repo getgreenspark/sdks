@@ -7,4 +7,5 @@ export const WIDGET_COLORS = {
   cart: ['beige', 'green', 'blue', 'white', 'black'],
   spendLevel: ['beige', 'green', 'blue', 'white', 'black'],
   perOrder: ['beige', 'green', 'blue', 'white', 'black'],
+  byPercentage: ['beige', 'green', 'blue', 'white', 'black'],
 } as const
