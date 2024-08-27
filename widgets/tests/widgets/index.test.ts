@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 import GreensparkWidgets from '@/index'
-import { CartWidget, SpendLevelWidget } from '@/widgets'
+import { CartWidget, PerOrderWidget, SpendLevelWidget } from '@/widgets'
 
 import apiFixtures from '@fixtures/api.json'
 import orderFixtures from '@fixtures/order.json'
@@ -77,6 +77,33 @@ describe('Widgets', () => {
 
       axiosMock.post.mockResolvedValueOnce({ data: mockString })
       await spendLevel.render()
+      expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockString)
+    })
+  })
+
+  describe('Per Order Widget', () => {
+    test('can create basic spend level widget', async () => {
+      const widgets = new GreensparkWidgets({ apiKey: API_KEY, shopUniqueName: SHOP_UNIQUE_NAME })
+      expect(typeof widgets.perOrder).toEqual('function')
+      const containerSelector = createContainer()
+      const perOrder = widgets.perOrder({
+        color: 'beige',
+        currency: 'USD',
+        containerSelector: containerSelector,
+      })
+
+      expect(perOrder instanceof PerOrderWidget).toBe(true)
+
+      const mockString = 'some-spend-level-html'
+      axiosMock.post.mockResolvedValueOnce({ data: mockString })
+      expect(await perOrder.renderToString()).toEqual(mockString)
+
+      axiosMock.post.mockResolvedValueOnce({ data: mockString })
+      const renderNode = await perOrder.renderToNode()
+      expect(renderNode.textContent).toBe(mockString)
+
+      axiosMock.post.mockResolvedValueOnce({ data: mockString })
+      await perOrder.render()
       expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockString)
     })
   })

@@ -7,6 +7,8 @@ import type {
   CartWidgetParams,
   SpendLevelWidgetParams,
   SpendLevelRequestBody,
+  PerOrderWidgetParams,
+  PerOrderRequestBody,
 } from '@/interfaces'
 import type { AxiosInstance, AxiosResponse } from 'axios'
 
@@ -55,7 +57,21 @@ export class ConnectionHandler {
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, SpendLevelRequestBody>(
-      '/widgets/cart-widget',
+      '/widgets/spend-level-widget',
+      Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
+      {
+        params: { lng: this.locale },
+        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
+      },
+    )
+  }
+
+  async fetchPerOrderWidget(
+    body: PerOrderWidgetParams,
+    headers?: AxiosHeaders,
+  ): Promise<AxiosResponse<string>> {
+    return this.api.post<string, AxiosResponse<string>, PerOrderRequestBody>(
+      '/widgets/per-order-widget',
       Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
       {
         params: { lng: this.locale },

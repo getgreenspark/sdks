@@ -33,5 +33,12 @@ export interface SpendLevelWidgetParams {
   withPopup?: boolean
 }
 
+export interface PerOrderWidgetParams {
+  color: (typeof WIDGET_COLORS.spendLevel)[number]
+  currency: string
+  withPopup?: boolean
+}
+
 export interface CartWidgetRequestBody extends ApiRequestBody, CartWidgetParams {}
 export interface SpendLevelRequestBody extends ApiRequestBody, SpendLevelWidgetParams {}
+export interface PerOrderRequestBody extends ApiRequestBody, PerOrderWidgetParams {}
