@@ -1,3 +1,4 @@
+import { DOMInjector } from '@/dom'
 import type { ConnectionHandler } from '@/network'
 
 export interface WidgetConfig {
@@ -11,13 +12,12 @@ interface WidgetTemplate {
   renderToNode(options?: unknown): Promise<Node>
 }
 
-export class Widget implements WidgetTemplate {
+export class Widget extends DOMInjector implements WidgetTemplate {
   api: ConnectionHandler
-  containerSelector: string
 
   constructor({ api, containerSelector }: WidgetConfig) {
+    super({ containerSelector })
     this.api = api
-    this.containerSelector = containerSelector
   }
 
   render(): Promise<void> {

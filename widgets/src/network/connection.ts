@@ -2,7 +2,12 @@ import axios from 'axios'
 
 import type { AxiosHeaders } from 'axios'
 import type { AVAILABLE_LOCALES } from '@/constants'
-import type { CartWidgetRequestBody, CartWidgetParams } from '@/interfaces'
+import type {
+  CartWidgetRequestBody,
+  CartWidgetParams,
+  SpendLevelWidgetParams,
+  SpendLevelRequestBody,
+} from '@/interfaces'
 import type { AxiosInstance, AxiosResponse } from 'axios'
 
 export class ConnectionHandler {
@@ -36,6 +41,20 @@ export class ConnectionHandler {
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, CartWidgetRequestBody>(
+      '/widgets/cart-widget',
+      Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
+      {
+        params: { lng: this.locale },
+        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
+      },
+    )
+  }
+
+  async fetchSpendLevelWidget(
+    body: SpendLevelWidgetParams,
+    headers?: AxiosHeaders,
+  ): Promise<AxiosResponse<string>> {
+    return this.api.post<string, AxiosResponse<string>, SpendLevelRequestBody>(
       '/widgets/cart-widget',
       Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
       {
