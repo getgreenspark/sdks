@@ -11,6 +11,7 @@ import { SpendLevelWidget } from '@/widgets/spendLevel'
 const API_KEY = apiFixtures.default.apiKey as string
 const SHOP_UNIQUE_NAME = apiFixtures.default.shopUniqueName as string
 const EMPTY_ORDER = orderFixture.empty as StoreOrder
+const BASIC_ORDER = orderFixture.basic as StoreOrder
 
 describe('GreensparkWidgets', () => {
   test('can initialize the package through import', () => {
@@ -34,17 +35,25 @@ describe('GreensparkWidgets', () => {
     expect(widgets.currentLocale).toEqual('de')
   })
 
-  test('can access the cart widget', () => {
+  test('can initialize the package in english and change it to german', () => {
+    const widgets = new GreensparkWidgets({ apiKey: API_KEY, locale: 'en' })
+    expect(widgets.currentLocale).toEqual('en')
+    widgets.locale = 'de'
+    expect(widgets.currentLocale).toEqual('de')
+    expect(widgets.api.locale).toEqual('de')
+  })
+
+  test('can create individual widget instances', () => {
     const widgets = new GreensparkWidgets({ apiKey: API_KEY, shopUniqueName: SHOP_UNIQUE_NAME })
     expect(typeof widgets.cart).toEqual('function')
     const cart = widgets.cart({ color: 'beige', order: EMPTY_ORDER })
     expect(cart instanceof CartWidget).toBe(true)
-  })
 
-  test('can access the spend level widget', () => {
-    const widgets = new GreensparkWidgets({ apiKey: API_KEY, shopUniqueName: SHOP_UNIQUE_NAME })
-    expect(typeof widgets.spendLevel).toEqual('function')
-    const spendLevel = widgets.spendLevel({ color: 'beige', currency: 'EUR' })
-    expect(spendLevel instanceof SpendLevelWidget).toBe(true)
+    const cartOldest = widgets.cart({ color: 'green', order: EMPTY_ORDER })
+    const cartOld = widgets.cart({ color: 'blue', order: BASIC_ORDER })
+    const cartNew = widgets.cart({ color: 'black', order: BASIC_ORDER })
+    expect(cartOldest).not.toBe(cartOld)
+    expect(cartOld).not.toBe(cartNew)
+    expect(cartOldest).not.toBe(cartNew)
   })
 })

@@ -1,3 +1,17 @@
 {
-  "empty": { "currency": "EUR", "totalPrice": 0, "lineItems": [] }
+  "empty": { "currency": "EUR", "totalPrice": 0, "lineItems": [] },
+  "basic": {
+    "currency": "USD",
+    "totalPrice": 20.5,
+    "lineItems": [
+      {
+        "productId": "some-id-123",
+        "quantity": 3
+      },
+      {
+        "productId": "some-other-id-456",
+        "quantity": 1
+      }
+    ]
+  }
 }

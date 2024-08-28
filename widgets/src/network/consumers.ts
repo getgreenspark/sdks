@@ -38,6 +38,6 @@ export class ApiConsumer {
     }
 
     this.currentLocale = newLocale
-    this.instanciateApi()
+    this.api = this.instanciateApi()
   }
 }
