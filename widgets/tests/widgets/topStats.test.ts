@@ -71,4 +71,25 @@ describe('Top Stats Widget', () => {
     const renderNode = await topStats.renderToNode()
     expect(renderNode.textContent).toBe('Hi there!')
   })
+
+  test('cannot render a color that is not allowed', async () => {
+    expect(typeof widgets.topStats).toEqual('function')
+    const containerSelector = createContainer()
+    const topStats = widgets.topStats({
+      color: 'yellow' as 'beige',
+      containerSelector: containerSelector,
+    })
+
+    expect(topStats instanceof TopStatsWidget).toBe(true)
+
+    const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    expect(topStats.render).rejects.toThrow()
+
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    await topStats.render({ color: 'beige' })
+    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+
+    expect(() => topStats.render({ color: '3' as 'black' })).rejects.toThrow()
+  })
 })

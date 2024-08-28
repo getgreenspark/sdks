@@ -74,4 +74,26 @@ describe('Spend level Widget', () => {
     const renderNode = await spendLevel.renderToNode()
     expect(renderNode.textContent).toBe('Hi there!')
   })
+
+  test('cannot render a color that is not allowed', async () => {
+    expect(typeof widgets.spendLevel).toEqual('function')
+    const containerSelector = createContainer()
+    const spendLevel = widgets.spendLevel({
+      color: 'yellow' as 'beige',
+      currency: 'USD',
+      containerSelector: containerSelector,
+    })
+
+    expect(spendLevel instanceof SpendLevelWidget).toBe(true)
+
+    const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    expect(spendLevel.render).rejects.toThrow()
+
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    await spendLevel.render({ color: 'beige' })
+    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+
+    expect(() => spendLevel.render({ color: '3' as 'black' })).rejects.toThrow()
+  })
 })

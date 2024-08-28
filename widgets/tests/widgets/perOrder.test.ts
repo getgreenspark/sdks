@@ -74,4 +74,26 @@ describe('Per order Widget', () => {
     const renderNode = await perOrder.renderToNode()
     expect(renderNode.textContent).toBe('Hi there!')
   })
+
+  test('cannot render a color that is not allowed', async () => {
+    expect(typeof widgets.perOrder).toEqual('function')
+    const containerSelector = createContainer()
+    const perOrder = widgets.perOrder({
+      color: 'yellow' as 'beige',
+      currency: 'USD',
+      containerSelector: containerSelector,
+    })
+
+    expect(perOrder instanceof PerOrderWidget).toBe(true)
+
+    const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    expect(perOrder.render).rejects.toThrow()
+
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    await perOrder.render({ color: 'beige' })
+    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+
+    expect(() => perOrder.render({ color: '3' as 'black' })).rejects.toThrow()
+  })
 })

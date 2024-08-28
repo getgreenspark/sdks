@@ -43,6 +43,13 @@ describe('GreensparkWidgets', () => {
     expect(widgets.api.locale).toEqual('de')
   })
 
+  test('cannot initialize the package in spanish or change it to spanish', () => {
+    expect(() => new GreensparkWidgets({ apiKey: API_KEY, locale: 'es' as 'en' })).toThrow()
+    const widgets = new GreensparkWidgets({ apiKey: API_KEY, locale: 'en' })
+    expect(widgets.currentLocale).toEqual('en')
+    expect(() => (widgets.locale = 'es' as 'de')).toThrow()
+  })
+
   test('can create individual widget instances', () => {
     const widgets = new GreensparkWidgets({ apiKey: API_KEY, shopUniqueName: SHOP_UNIQUE_NAME })
     expect(typeof widgets.cart).toEqual('function')

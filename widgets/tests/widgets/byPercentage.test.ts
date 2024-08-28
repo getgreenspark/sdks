@@ -71,4 +71,25 @@ describe('By Percentage Widget', () => {
     const renderNode = await byPercentage.renderToNode()
     expect(renderNode.textContent).toBe('Hi there!')
   })
+
+  test('cannot render a color that is not allowed', async () => {
+    expect(typeof widgets.byPercentage).toEqual('function')
+    const containerSelector = createContainer()
+    const byPercentage = widgets.byPercentage({
+      color: 'yellow' as 'beige',
+      containerSelector: containerSelector,
+    })
+
+    expect(byPercentage instanceof ByPercentageWidget).toBe(true)
+
+    const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    expect(byPercentage.render).rejects.toThrow()
+
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    await byPercentage.render({ color: 'beige' })
+    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+
+    expect(() => byPercentage.render({ color: '3' as 'black' })).rejects.toThrow()
+  })
 })

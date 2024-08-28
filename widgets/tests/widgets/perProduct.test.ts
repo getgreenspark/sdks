@@ -74,4 +74,26 @@ describe('Per product level Widget', () => {
     const renderNode = await perProduct.renderToNode()
     expect(renderNode.textContent).toBe('Hi there!')
   })
+
+  test('cannot render a color that is not allowed', async () => {
+    expect(typeof widgets.perProduct).toEqual('function')
+    const containerSelector = createContainer()
+    const perProduct = widgets.perProduct({
+      color: 'yellow' as 'beige',
+      productId: 'something-something',
+      containerSelector: containerSelector,
+    })
+
+    expect(perProduct instanceof PerProductWidget).toBe(true)
+
+    const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    expect(perProduct.render).rejects.toThrow()
+
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    await perProduct.render({ color: 'beige' })
+    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+
+    expect(() => perProduct.render({ color: '3' as 'black' })).rejects.toThrow()
+  })
 })

@@ -74,4 +74,26 @@ describe('Tiered spend level Widget', () => {
     const renderNode = await tieredSpendLevel.renderToNode()
     expect(renderNode.textContent).toBe('Hi there!')
   })
+
+  test('cannot render a color that is not allowed', async () => {
+    expect(typeof widgets.tieredSpendLevel).toEqual('function')
+    const containerSelector = createContainer()
+    const tieredSpendLevel = widgets.tieredSpendLevel({
+      color: 'yellow' as 'beige',
+      currency: 'USD',
+      containerSelector: containerSelector,
+    })
+
+    expect(tieredSpendLevel instanceof TieredSpendLevelWidget).toBe(true)
+
+    const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    expect(tieredSpendLevel.render).rejects.toThrow()
+
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    await tieredSpendLevel.render({ color: 'beige' })
+    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+
+    expect(() => tieredSpendLevel.render({ color: '3' as 'black' })).rejects.toThrow()
+  })
 })

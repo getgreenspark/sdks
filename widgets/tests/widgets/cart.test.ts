@@ -77,4 +77,26 @@ describe('Cart Widget', () => {
     const renderNode = await cart.renderToNode()
     expect(renderNode.textContent).toBe('Hi there!')
   })
+
+  test('cannot render a color that is not allowed', async () => {
+    expect(typeof widgets.cart).toEqual('function')
+    const containerSelector = createContainer()
+    const cart = widgets.cart({
+      color: 'yellow' as 'beige',
+      order: EMPTY_CART,
+      containerSelector: containerSelector,
+    })
+
+    expect(cart instanceof CartWidget).toBe(true)
+
+    const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    expect(cart.render).rejects.toThrow()
+
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    await cart.render({ color: 'beige' })
+    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+
+    expect(() => cart.render({ color: '3' as 'black' })).rejects.toThrow()
+  })
 })
