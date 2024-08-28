@@ -95,7 +95,7 @@ export class ConnectionHandler {
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, ByPercentageRequestBody>(
-      '/widgets/per-order-widget',
+      '/widgets/by-percentage-widget',
       Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
       {
         params: { lng: this.locale },

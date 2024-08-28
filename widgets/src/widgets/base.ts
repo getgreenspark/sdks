@@ -6,7 +6,7 @@ export interface WidgetConfig {
   api: ConnectionHandler
 }
 
-interface WidgetTemplate {
+export interface WidgetTemplate {
   render(options?: unknown, containerSelector?: string): Promise<void>
   renderToString(options?: unknown): Promise<string>
   renderToNode(options?: unknown): Promise<Node>
