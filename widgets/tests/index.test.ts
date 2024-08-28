@@ -2,8 +2,8 @@ import { DEFAULT_LOCALE } from '@/constants'
 import GreensparkWidgets from '@/index'
 import { CartWidget } from '@/widgets'
 
-import apiFixtures from '@fixtures/api.json'
-import orderFixture from '@fixtures/order.json'
+import apiFixtures from '@tests/fixtures/api.json'
+import orderFixture from '@tests/fixtures/order.json'
 
 import type { StoreOrder } from '@/interfaces'
 import { SpendLevelWidget } from '@/widgets/spendLevel'

@@ -3,8 +3,9 @@ import axios from 'axios'
 import GreensparkWidgets from '@/index'
 import { CartWidget } from '@/widgets'
 
-import apiFixtures from '@fixtures/api.json'
-import orderFixtures from '@fixtures/order.json'
+import apiFixtures from '@tests/fixtures/api.json'
+import orderFixtures from '@tests/fixtures/order.json'
+import { createContainer } from '@tests/utilities/dom'
 
 import type { StoreOrder } from '@/interfaces'
 
@@ -13,18 +14,11 @@ const axiosMock = axios as jest.Mocked<typeof axios>
 
 const API_KEY = apiFixtures.default.apiKey as string
 const SHOP_UNIQUE_NAME = apiFixtures.default.shopUniqueName as string
-const EMPTY_CART = orderFixtures.empty as StoreOrder
-
-const createContainer = (): string => {
-  const id = 'test-widget-container'
-  const selector = `#${id}`
-
-  const container = document.querySelector(selector) ?? document.createElement('div')
-  container.innerHTML = ''
-  container.id = id
-  document.body.appendChild(container)
-  return selector
-}
+const EMPTY_ORDER = orderFixtures.empty as StoreOrder
+const BASIC_ORDER = orderFixtures.basic as StoreOrder
+const ORDER_WITH_INVALID_PRICE = orderFixtures.invalidPrice as StoreOrder
+const ORDER_WITH_INVALID_PRODUCTS = orderFixtures.invalidProducts as unknown as StoreOrder
+const ORDER_WITH_INVALID_QUANTITIES = orderFixtures.invalidQuantities as StoreOrder
 
 let widgets: GreensparkWidgets
 describe('Cart Widget', () => {
@@ -37,7 +31,7 @@ describe('Cart Widget', () => {
     const containerSelector = createContainer()
     const cart = widgets.cart({
       color: 'beige',
-      order: EMPTY_CART,
+      order: EMPTY_ORDER,
       containerSelector: containerSelector,
     })
 
@@ -54,7 +48,7 @@ describe('Cart Widget', () => {
     const containerSelector = createContainer()
     const cart = widgets.cart({
       color: 'beige',
-      order: EMPTY_CART,
+      order: BASIC_ORDER,
       containerSelector: containerSelector,
     })
 
@@ -68,7 +62,7 @@ describe('Cart Widget', () => {
     const containerSelector = createContainer()
     const cart = widgets.cart({
       color: 'beige',
-      order: EMPTY_CART,
+      order: BASIC_ORDER,
       containerSelector: containerSelector,
     })
 
@@ -83,11 +77,9 @@ describe('Cart Widget', () => {
     const containerSelector = createContainer()
     const cart = widgets.cart({
       color: 'yellow' as 'beige',
-      order: EMPTY_CART,
+      order: BASIC_ORDER,
       containerSelector: containerSelector,
     })
-
-    expect(cart instanceof CartWidget).toBe(true)
 
     const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
@@ -98,5 +90,31 @@ describe('Cart Widget', () => {
     expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
 
     expect(() => cart.render({ color: '3' as 'black' })).rejects.toThrow()
+  })
+
+  test('cannot render an invalid order', async () => {
+    expect(typeof widgets.cart).toEqual('function')
+    const containerSelector = createContainer()
+    const cart = widgets.cart({
+      color: 'beige',
+      order: ORDER_WITH_INVALID_PRICE,
+      containerSelector: containerSelector,
+    })
+
+    const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
+    expect(cart.render).rejects.toThrow()
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    await cart.render({ order: BASIC_ORDER })
+    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+
+    expect(() => cart.render({ order: ORDER_WITH_INVALID_PRODUCTS })).rejects.toThrow()
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    await cart.render({ order: BASIC_ORDER })
+    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+
+    expect(() => cart.render({ order: ORDER_WITH_INVALID_QUANTITIES })).rejects.toThrow()
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    await cart.render({ order: BASIC_ORDER })
+    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
   })
 })

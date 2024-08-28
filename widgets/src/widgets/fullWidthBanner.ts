@@ -27,6 +27,12 @@ export class FullWidthBannerWidget extends Widget implements FullWidthBannerWidg
   }
 
   validateOptions() {
+    if (this.options.length <= 0) {
+      throw new Error(
+        `Greenspark - the "options" value that was provided to the Full Width Banner Widget has no elements within the array.`,
+      )
+    }
+
     this.options.forEach((option) => {
       if (!AVAILABLE_STATISTIC_TYPES.includes(option) || typeof option !== 'string') {
         throw new Error(

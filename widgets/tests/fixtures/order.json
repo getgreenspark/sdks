@@ -2,7 +2,7 @@
   "empty": { "currency": "EUR", "totalPrice": 0, "lineItems": [] },
   "basic": {
     "currency": "USD",
-    "totalPrice": 20.5,
+    "totalPrice": 2050,
     "lineItems": [
       {
         "productId": "some-id-123",
@@ -11,6 +11,48 @@
       {
         "productId": "some-other-id-456",
         "quantity": 1
+      }
+    ]
+  },
+  "invalidPrice": {
+    "currency": "USD",
+    "totalPrice": -200,
+    "lineItems": [
+      {
+        "productId": "some-id-123",
+        "quantity": 3
+      },
+      {
+        "productId": "some-other-id-456",
+        "quantity": 1
+      }
+    ]
+  },
+  "invalidProducts": {
+    "currency": "USD",
+    "totalPrice": 400,
+    "lineItems": [
+      {
+        "productId": { "something": 3 },
+        "quantity": 3
+      },
+      {
+        "productId": 1234,
+        "quantity": 1
+      }
+    ]
+  },
+  "invalidQuantities": {
+    "currency": "USD",
+    "totalPrice": 250,
+    "lineItems": [
+      {
+        "productId": "some-id-123",
+        "quantity": -3
+      },
+      {
+        "productId": "some-id-123",
+        "quantity": "3"
       }
     ]
   }

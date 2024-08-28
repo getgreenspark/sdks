@@ -6,7 +6,7 @@ const config: Config = {
   testEnvironment: 'jsdom',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
-    '^@fixtures/(.*)$': '<rootDir>/tests/fixtures/$1',
+    '^@tests/(.*)$': '<rootDir>/tests/$1',
   },
   transform: {
     ...createDefaultPreset().transform,

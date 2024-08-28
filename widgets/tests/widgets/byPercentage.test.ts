@@ -3,24 +3,14 @@ import axios from 'axios'
 import GreensparkWidgets from '@/index'
 import { ByPercentageWidget } from '@/widgets'
 
-import apiFixtures from '@fixtures/api.json'
+import apiFixtures from '@tests/fixtures/api.json'
+import { createContainer } from '@tests/utilities/dom'
 
 jest.mock('axios')
 const axiosMock = axios as jest.Mocked<typeof axios>
 
 const API_KEY = apiFixtures.default.apiKey as string
 const SHOP_UNIQUE_NAME = apiFixtures.default.shopUniqueName as string
-
-const createContainer = (): string => {
-  const id = 'test-widget-container'
-  const selector = `#${id}`
-
-  const container = document.querySelector(selector) ?? document.createElement('div')
-  container.innerHTML = ''
-  container.id = id
-  document.body.appendChild(container)
-  return selector
-}
 
 let widgets: GreensparkWidgets
 
@@ -80,10 +70,7 @@ describe('By Percentage Widget', () => {
       containerSelector: containerSelector,
     })
 
-    expect(byPercentage instanceof ByPercentageWidget).toBe(true)
-
     const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
-    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     expect(byPercentage.render).rejects.toThrow()
 
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })

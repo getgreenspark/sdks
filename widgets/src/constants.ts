@@ -13,6 +13,7 @@ export const WIDGET_COLORS = {
   perProduct: ['beige', 'green', 'blue', 'white', 'black'],
   topStats: ['beige', 'green', 'blue', 'white', 'black'],
 } as const
+
 export const AVAILABLE_STATISTIC_TYPES = [
   'monthsEarthPositive',
   'trees',
@@ -21,4 +22,4 @@ export const AVAILABLE_STATISTIC_TYPES = [
   'straws',
   'miles',
   'footballPitches',
-]
+] as const
