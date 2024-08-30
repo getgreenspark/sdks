@@ -42,7 +42,7 @@ describe('Full Width Banner Widget', () => {
     const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await fullWidthBanner.render()
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
   })
 
   test('can render a full width banner widget to a string', async () => {
@@ -108,7 +108,7 @@ describe('Full Width Banner Widget', () => {
     await fullWidthBanner.render({
       options: ['monthsEarthPositive', 'trees'],
     })
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
     expect(() => fullWidthBanner.render({ options: [] })).rejects.toThrow()
 
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
@@ -116,7 +116,7 @@ describe('Full Width Banner Widget', () => {
       options: ['monthsEarthPositive', 'trees'],
       imageUrl: 'https://some.url.com/to/image.png',
     })
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
     expect(() =>
       fullWidthBanner.render({
         options: ['monthsEarthPositive', 'trees'],

@@ -33,7 +33,7 @@ describe('Tiered spend level Widget', () => {
     const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await tieredSpendLevel.render()
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
   })
 
   test('can render a tiered spend level widget to a string', async () => {
@@ -80,7 +80,7 @@ describe('Tiered spend level Widget', () => {
 
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await tieredSpendLevel.render({ color: 'beige' })
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
 
     expect(() => tieredSpendLevel.render({ color: '3' as 'black' })).rejects.toThrow()
     expect(() =>
@@ -94,6 +94,6 @@ describe('Tiered spend level Widget', () => {
     ).rejects.toThrow()
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await tieredSpendLevel.render({ color: 'beige', currency: 'EUR' })
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
   })
 })

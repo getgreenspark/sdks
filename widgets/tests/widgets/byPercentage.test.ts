@@ -32,7 +32,7 @@ describe('By Percentage Widget', () => {
     const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await byPercentage.render()
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
   })
 
   test('can render a by percentage widget to a string', async () => {
@@ -75,7 +75,7 @@ describe('By Percentage Widget', () => {
 
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await byPercentage.render({ color: 'beige' })
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
 
     expect(() => byPercentage.render({ color: '3' as 'black' })).rejects.toThrow()
   })

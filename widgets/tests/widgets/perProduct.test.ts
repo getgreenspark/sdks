@@ -33,7 +33,7 @@ describe('Per product level Widget', () => {
     const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await perProduct.render()
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
   })
 
   test('can render a per product widget to a string', async () => {
@@ -79,7 +79,7 @@ describe('Per product level Widget', () => {
 
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await perProduct.render({ color: 'beige', productId: '123' })
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
     expect(() => perProduct.render({ color: '3' as 'black' })).rejects.toThrow()
     expect(() => perProduct.render({ productId: 123 as unknown as string })).rejects.toThrow()
     expect(() => perProduct.render({ productId: '' as unknown as string })).rejects.toThrow()
@@ -87,6 +87,6 @@ describe('Per product level Widget', () => {
 
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await perProduct.render({ color: 'beige', productId: '123' })
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
   })
 })

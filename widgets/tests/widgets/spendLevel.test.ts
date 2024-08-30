@@ -33,7 +33,7 @@ describe('Spend level Widget', () => {
     const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await spendLevel.render()
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
   })
 
   test('can render a spend level widget to a string', async () => {
@@ -80,7 +80,7 @@ describe('Spend level Widget', () => {
 
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await spendLevel.render({ color: 'beige' })
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
 
     expect(() => spendLevel.render({ color: '3' as 'black' })).rejects.toThrow()
     expect(() =>
@@ -95,6 +95,6 @@ describe('Spend level Widget', () => {
 
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await spendLevel.render({ color: 'white', currency: 'USD' })
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
   })
 })

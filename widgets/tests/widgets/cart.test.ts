@@ -40,7 +40,7 @@ describe('Cart Widget', () => {
     const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await cart.render()
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
   })
 
   test('can render a cart widget to a string', async () => {
@@ -87,7 +87,7 @@ describe('Cart Widget', () => {
 
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await cart.render({ color: 'beige' })
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
 
     expect(() => cart.render({ color: '3' as 'black' })).rejects.toThrow()
   })
@@ -105,16 +105,16 @@ describe('Cart Widget', () => {
     expect(cart.render).rejects.toThrow()
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await cart.render({ order: BASIC_ORDER })
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
 
     expect(() => cart.render({ order: ORDER_WITH_INVALID_PRODUCTS })).rejects.toThrow()
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await cart.render({ order: BASIC_ORDER })
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
 
     expect(() => cart.render({ order: ORDER_WITH_INVALID_QUANTITIES })).rejects.toThrow()
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await cart.render({ order: BASIC_ORDER })
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
   })
 })

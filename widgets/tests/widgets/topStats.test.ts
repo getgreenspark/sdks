@@ -32,7 +32,7 @@ describe('Top Stats Widget', () => {
     const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await topStats.render()
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
   })
 
   test('can render a top stats widget to a string', async () => {
@@ -75,7 +75,7 @@ describe('Top Stats Widget', () => {
 
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await topStats.render({ color: 'beige' })
-    expect(document.querySelector(containerSelector)?.innerHTML).toEqual(mockHtml)
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
 
     expect(() => topStats.render({ color: '3' as 'black' })).rejects.toThrow()
   })

@@ -19,8 +19,8 @@ export class DOMInjector {
     }
 
     container.setAttribute('data-greenspark-shadow-dom-container', 'true')
-    while (container.firstChild) {
-      container.removeChild(container.firstChild)
+    while (container?.shadowRoot?.firstChild) {
+      container.shadowRoot.removeChild(container.shadowRoot.firstChild)
     }
     const scripts = [...widget.children].filter((el) => el.tagName === 'SCRIPT')
     const nonScripts = [...widget.children].filter((el) => el.tagName !== 'SCRIPT')
