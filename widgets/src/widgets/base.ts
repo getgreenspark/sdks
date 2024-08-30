@@ -9,7 +9,7 @@ export interface WidgetConfig {
 export interface WidgetTemplate {
   render(options?: unknown, containerSelector?: string): Promise<void>
   renderToString(options?: unknown): Promise<string>
-  renderToNode(options?: unknown): Promise<Node>
+  renderToElement(options?: unknown): Promise<HTMLElement>
 }
 
 export class Widget extends DOMInjector implements WidgetTemplate {
@@ -28,7 +28,7 @@ export class Widget extends DOMInjector implements WidgetTemplate {
     throw new Error(`Greenspark - This widget does not support the 'renderToString' method`)
   }
 
-  renderToNode(): Promise<Node> {
-    throw new Error(`Greenspark - This widget does not support the 'renderToNode' method`)
+  renderToElement(): Promise<HTMLElement> {
+    throw new Error(`Greenspark - This widget does not support the 'renderToElement' method`)
   }
 }

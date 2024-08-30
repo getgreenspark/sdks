@@ -68,7 +68,7 @@ describe('Cart Widget', () => {
 
     const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
-    const renderNode = await cart.renderToNode()
+    const renderNode = await cart.renderToElement()
     expect(renderNode.textContent).toBe('Hi there!')
   })
 

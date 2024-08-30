@@ -84,7 +84,7 @@ describe('Full Width Banner Widget', () => {
 
     const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
-    const renderNode = await fullWidthBanner.renderToNode()
+    const renderNode = await fullWidthBanner.renderToElement()
     expect(renderNode.textContent).toBe('Hi there!')
   })
 

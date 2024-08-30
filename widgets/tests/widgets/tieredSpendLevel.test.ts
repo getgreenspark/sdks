@@ -61,7 +61,7 @@ describe('Tiered spend level Widget', () => {
 
     const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
-    const renderNode = await tieredSpendLevel.renderToNode()
+    const renderNode = await tieredSpendLevel.renderToElement()
     expect(renderNode.textContent).toBe('Hi there!')
   })
 

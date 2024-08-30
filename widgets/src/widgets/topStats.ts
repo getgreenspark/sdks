@@ -35,7 +35,7 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
   }
 
   async render(options?: Partial<TopStatsWidgetParams>, containerSelector?: string): Promise<void> {
-    const node = await this.renderToNode(options)
+    const node = await this.renderToElement(options)
     this.inject(node, containerSelector)
   }
 
@@ -46,18 +46,8 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
     return response.data
   }
 
-  async renderToNode(options?: Partial<TopStatsWidgetParams>): Promise<Node> {
+  async renderToElement(options?: Partial<TopStatsWidgetParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
-    const parser = new DOMParser()
-    const parsedWidget = parser.parseFromString(html, 'text/html')
-
-    const { firstChild } = parsedWidget.body
-    if (firstChild === null) {
-      throw new Error(
-        `Greenspark - An error occurred when trying to execute 'renderToNode'. Failed to render ${html} `,
-      )
-    }
-
-    return firstChild
+    return this.parseHtml(html)
   }
 }

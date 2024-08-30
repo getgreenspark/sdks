@@ -61,7 +61,7 @@ describe('Per order Widget', () => {
 
     const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
-    const renderNode = await perOrder.renderToNode()
+    const renderNode = await perOrder.renderToElement()
     expect(renderNode.textContent).toBe('Hi there!')
   })
 

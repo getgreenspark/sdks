@@ -49,7 +49,7 @@ export class PerOrderWidget extends Widget implements PerOrderWidgetParams {
   }
 
   async render(options?: Partial<PerOrderWidgetParams>, containerSelector?: string): Promise<void> {
-    const node = await this.renderToNode(options)
+    const node = await this.renderToElement(options)
     this.inject(node, containerSelector)
   }
 
@@ -60,18 +60,8 @@ export class PerOrderWidget extends Widget implements PerOrderWidgetParams {
     return response.data
   }
 
-  async renderToNode(options?: Partial<PerOrderWidgetParams>): Promise<Node> {
+  async renderToElement(options?: Partial<PerOrderWidgetParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
-    const parser = new DOMParser()
-    const parsedWidget = parser.parseFromString(html, 'text/html')
-
-    const { firstChild } = parsedWidget.body
-    if (firstChild === null) {
-      throw new Error(
-        `Greenspark - An error occurred when trying to execute 'renderToNode'. Failed to render ${html} `,
-      )
-    }
-
-    return firstChild
+    return this.parseHtml(html)
   }
 }

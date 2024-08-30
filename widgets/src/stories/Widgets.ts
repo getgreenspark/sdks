@@ -1,9 +1,9 @@
 import type { WidgetTemplate } from '@/widgets/base'
 
-export const createWidgetPage = (widget: WidgetTemplate) => {
+export const createWidgetPage = (id: string, widget: WidgetTemplate) => {
   const article = document.createElement('article')
-  const containerId = 'widget-container'
-  article.id = containerId
-  widget.render(undefined, '#widget-container')
+  const containerClass = `widget-container-${id}`
+  if (!article.classList.contains(containerClass)) article.classList.add(containerClass)
+  widget.render(undefined, `.${containerClass}`).catch((error) => console.error(error))
   return article
 }

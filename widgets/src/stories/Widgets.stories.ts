@@ -29,7 +29,7 @@ type WIDGET_VARIANTS =
   | 'topStats'
 
 const meta = {
-  title: 'Example/Widgets',
+  title: 'Widget SDK/Widgets',
   tags: ['autodocs'],
   render: (args) => {
     const { apiKey, shopUniqueName, widgetType, widgetArgs } = args
@@ -78,7 +78,7 @@ const meta = {
         break
     }
 
-    return createWidgetPage(widget)
+    return createWidgetPage(widgetType, widget)
   },
   argTypes: {
     apiKey: { control: 'text' },
@@ -202,7 +202,7 @@ export const PerProduct: StoryObj<{
   },
   args: {
     widgetArgs: {
-      productId: '123',
+      productId: '9530077774147',
       withPopup: true,
       color: 'beige',
     },

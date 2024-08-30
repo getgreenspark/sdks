@@ -61,7 +61,7 @@ describe('Spend level Widget', () => {
 
     const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
-    const renderNode = await spendLevel.renderToNode()
+    const renderNode = await spendLevel.renderToElement()
     expect(renderNode.textContent).toBe('Hi there!')
   })
 

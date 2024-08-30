@@ -58,7 +58,7 @@ describe('Top Stats Widget', () => {
 
     const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
-    const renderNode = await topStats.renderToNode()
+    const renderNode = await topStats.renderToElement()
     expect(renderNode.textContent).toBe('Hi there!')
   })
 
