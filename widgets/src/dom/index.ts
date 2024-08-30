@@ -31,7 +31,6 @@ export class DOMInjector {
       scripts.forEach((s) => eval(s.innerHTML))
     } else {
       document.addEventListener('DOMContentLoaded', function () {
-        console.error('sup')
         scripts.forEach((s) => eval(s.innerHTML))
       })
     }
