@@ -39,43 +39,49 @@ const meta = {
       shopUniqueName,
     })
 
+    const basicVariants = [
+      { version: 'v1' },
+      { version: 'v2', simplified: false },
+      { version: 'v2', simplified: true },
+    ]
+
     let widget: Widget
     switch (widgetType) {
       case 'byPercentage':
         widget = widgets.byPercentage(widgetArgs as ByPercentageWidgetParams)
-        return createWidgetPage(widgetType, widget, WIDGET_COLORS, ['v1', 'v2'])
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
 
       case 'cart':
         widget = widgets.cart(widgetArgs as CartWidgetParams)
-        return createWidgetPage(widgetType, widget, WIDGET_COLORS, ['v1', 'v2'])
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
 
       case 'fullWidthBanner':
         widget = widgets.fullWidthBanner(widgetArgs as FullWidthBannerWidgetParams)
-        return createWidgetPage(widgetType, widget, ['default'], ['v1'])
+        return createWidgetPage(widgetType, widget, ['default'], [{ version: 'v1' }])
 
       case 'perOrder':
         widget = widgets.perOrder(widgetArgs as PerOrderWidgetParams)
-        return createWidgetPage(widgetType, widget, WIDGET_COLORS, ['v1', 'v2'])
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
 
       case 'perProduct':
         widget = widgets.perProduct(widgetArgs as PerProductWidgetParams)
-        return createWidgetPage(widgetType, widget, WIDGET_COLORS, ['v1', 'v2'])
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
 
       case 'spendLevel':
         widget = widgets.spendLevel(widgetArgs as SpendLevelWidgetParams)
-        return createWidgetPage(widgetType, widget, WIDGET_COLORS, ['v1', 'v2'])
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
 
       case 'tieredSpendLevel':
         widget = widgets.tieredSpendLevel(widgetArgs as TieredSpendLevelWidgetParams)
-        return createWidgetPage(widgetType, widget, WIDGET_COLORS, ['v1', 'v2'])
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
 
       case 'topStats':
         widget = widgets.topStats(widgetArgs as TopStatsWidgetParams)
-        return createWidgetPage(widgetType, widget, WIDGET_COLORS, ['v1'])
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, [{ version: 'v1' }])
 
       default:
         widget = widgets.byPercentage(widgetArgs as ByPercentageWidgetParams)
-        return createWidgetPage(widgetType, widget, WIDGET_COLORS, ['v1', 'v2'])
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
     }
 
   },

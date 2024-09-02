@@ -8,6 +8,7 @@ export class SpendLevelWidget extends Widget implements SpendLevelWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   currency: string
   withPopup?: boolean
+  simplified?: boolean
   version?: string
 
   constructor(params: WidgetConfig & SpendLevelWidgetParams) {
@@ -15,6 +16,7 @@ export class SpendLevelWidget extends Widget implements SpendLevelWidgetParams {
     this.color = params.color
     this.currency = params.currency
     this.withPopup = params.withPopup ?? true
+    this.simplified = params.simplified ?? true
     this.version = params.version
   }
 
@@ -23,14 +25,16 @@ export class SpendLevelWidget extends Widget implements SpendLevelWidgetParams {
       color: this.color,
       currency: this.currency,
       withPopup: this.withPopup,
+      simplified: this.simplified,
       version: this.version,
     }
   }
 
-  updateDefaults({ color, currency, withPopup, version }: Partial<SpendLevelWidgetParams>) {
+  updateDefaults({ color, currency, withPopup, simplified, version }: Partial<SpendLevelWidgetParams>) {
     this.color = color ?? this.color
     this.currency = currency ?? this.currency
     this.withPopup = withPopup ?? this.withPopup
+    this.simplified = simplified ?? this.simplified
     this.version = version ?? this.version
   }
 

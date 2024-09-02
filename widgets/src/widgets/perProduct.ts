@@ -8,6 +8,7 @@ export class PerProductWidget extends Widget implements PerProductWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   productId: string
   withPopup?: boolean
+  simplified?: boolean
   version?: string
 
   constructor(params: WidgetConfig & PerProductWidgetParams) {
@@ -15,6 +16,7 @@ export class PerProductWidget extends Widget implements PerProductWidgetParams {
     this.color = params.color
     this.productId = params.productId
     this.withPopup = params.withPopup ?? true
+    this.simplified = params.simplified ?? true
     this.version = params.version
   }
 
@@ -23,14 +25,16 @@ export class PerProductWidget extends Widget implements PerProductWidgetParams {
       color: this.color,
       productId: this.productId,
       withPopup: this.withPopup,
+      simplified: this.simplified,
       version: this.version,
     }
   }
 
-  updateDefaults({ color, productId, withPopup, version }: Partial<PerProductWidgetParams>) {
+  updateDefaults({ color, productId, withPopup, simplified, version }: Partial<PerProductWidgetParams>) {
     this.color = color ?? this.color
     this.productId = productId ?? this.productId
     this.withPopup = withPopup ?? this.withPopup
+    this.simplified = simplified ?? this.simplified
     this.version = version ?? this.version
   }
 

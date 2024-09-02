@@ -1,22 +1,26 @@
 import type { WidgetTemplate } from '@/widgets/base'
 import './widgets.css'
 
-export const createWidgetPage = (id: string, widget: WidgetTemplate, colors: Readonly<string[]>, versions: string[]) => {
+export const createWidgetPage = (id: string, widget: WidgetTemplate, colors: Readonly<string[]>, variants: { version?: string, simplified?: boolean }[]) => {
   const article = document.createElement('article')
 
-  versions.forEach(version => {
-    const versionContainer = document.createElement('div')
-    const versionContainerClass = `widget-container-${id}-${version}`
-    if (!versionContainer.classList.contains(versionContainerClass)) versionContainer.classList.add(versionContainerClass)
-    article.appendChild(versionContainer)
+  variants.forEach((optionsForVariant, index) => {
+    const variantDefinitions = document.createElement('pre')
+    variantDefinitions.innerHTML = JSON.stringify(optionsForVariant)
+    article.appendChild(variantDefinitions)
+
+    const variantContainer = document.createElement('div')
+    const versionContainerClass = `widget-container-${id}-${index}`
+    if (!variantContainer.classList.contains(versionContainerClass)) variantContainer.classList.add(versionContainerClass)
+    article.appendChild(variantContainer)
     
     colors.forEach(color => {
       const colorContainer = document.createElement('div')
-      const colorContainerClass = `widget-color-${id}-${color}-${version}`
+      const colorContainerClass = `widget-color-${id}-${index}-${color}`
       if (!colorContainer.classList.contains(colorContainerClass)) colorContainer.classList.add(colorContainerClass)
-      versionContainer.appendChild(colorContainer)
+      variantContainer.appendChild(colorContainer)
 
-      widget.render({ color, version }, `.${colorContainerClass}`).catch((error) => console.error(error))
+      widget.render({ color, ...optionsForVariant }, `.${colorContainerClass}`).catch((error) => console.error(error))
     })
   })
   return article

@@ -25,6 +25,7 @@ export interface CartWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   order: StoreOrder
   withPopup?: boolean
+  simplified?: boolean
   version?: string
 }
 
@@ -32,6 +33,7 @@ export interface SpendLevelWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   currency: string
   withPopup?: boolean
+  simplified?: boolean
   version?: string
 }
 
@@ -39,12 +41,14 @@ export interface PerOrderWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   currency: string
   withPopup?: boolean
+  simplified?: boolean
   version?: string
 }
 
 export interface ByPercentageWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   withPopup?: boolean
+  simplified?: boolean
   version?: string
 }
 
@@ -52,6 +56,7 @@ export interface TieredSpendLevelWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   currency: string
   withPopup?: boolean
+  simplified?: boolean
   version?: string
 }
 
@@ -59,6 +64,7 @@ export interface PerProductWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   productId: string
   withPopup?: boolean
+  simplified?: boolean
   version?: string
 }
 
