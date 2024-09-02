@@ -1,11 +1,11 @@
 import { Widget } from '@/widgets/base'
-import { WIDGET_COLORS, DEFAULT_CONTAINER_CSS_SELECTOR } from '@/constants'
+import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
 import type { OrderProduct, CartWidgetParams, StoreOrder } from '@/interfaces'
 
 export class CartWidget extends Widget implements CartWidgetParams {
-  color: (typeof WIDGET_COLORS.cart)[number]
+  color: (typeof WIDGET_COLORS)[number]
   order: StoreOrder
   withPopup?: boolean
 
@@ -31,11 +31,11 @@ export class CartWidget extends Widget implements CartWidgetParams {
   }
 
   validateOptions() {
-    if (!WIDGET_COLORS.cart.includes(this.color)) {
+    if (!WIDGET_COLORS.includes(this.color)) {
       throw new Error(
         `Greenspark - "${
           this.color
-        }" was selected as the color for the Cart Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.cart.join(
+        }" was selected as the color for the Cart Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.join(
           ', ',
         )}`,
       )
@@ -72,25 +72,8 @@ export class CartWidget extends Widget implements CartWidgetParams {
     }
   }
 
-  inject(widget: Node, containerSelector?: string) {
-    this.containerSelector = containerSelector ?? this.containerSelector
-    const container = document.querySelector(this.containerSelector)
-    if (!container) {
-      throw new Error(
-        `Greenspark - The document.querySelector('${this.containerSelector}') does not return an Element. Are you sure that you input the correct 'containerSelector'? The default selector is ${DEFAULT_CONTAINER_CSS_SELECTOR}`,
-      )
-    }
-
-    if (widget) {
-      while (container.firstChild) {
-        container.removeChild(container.firstChild)
-      }
-      container.appendChild(widget)
-    }
-  }
-
   async render(options?: Partial<CartWidgetParams>, containerSelector?: string): Promise<void> {
-    const node = await this.renderToNode(options)
+    const node = await this.renderToElement(options)
     this.inject(node, containerSelector)
   }
 
@@ -101,18 +84,8 @@ export class CartWidget extends Widget implements CartWidgetParams {
     return response.data
   }
 
-  async renderToNode(options?: Partial<CartWidgetParams>): Promise<Node> {
+  async renderToElement(options?: Partial<CartWidgetParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
-    const parser = new DOMParser()
-    const parsedWidget = parser.parseFromString(html, 'text/html')
-
-    const { firstChild } = parsedWidget.body
-    if (firstChild === null) {
-      throw new Error(
-        `Greenspark - An error occurred when trying to execute 'renderToNode'. Failed to render ${html} `,
-      )
-    }
-
-    return firstChild
+    return this.parseHtml(html)
   }
 }

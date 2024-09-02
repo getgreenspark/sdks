@@ -1,1 +1,8 @@
 export { CartWidget } from './cart'
+export { SpendLevelWidget } from './spendLevel'
+export { PerOrderWidget } from './perOrder'
+export { ByPercentageWidget } from './byPercentage'
+export { TieredSpendLevelWidget } from './tieredSpendLevel'
+export { PerProductWidget } from './perProduct'
+export { TopStatsWidget } from './topStats'
+export { FullWidthBannerWidget } from './fullWidthBanner'

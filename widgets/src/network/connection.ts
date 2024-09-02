@@ -1,8 +1,25 @@
-import axios, { AxiosHeaders } from 'axios'
+import axios from 'axios'
 
-import { AVAILABLE_LOCALES } from '@/constants'
-
-import type { CartWidgetRequestBody, CartWidgetParams } from '@/interfaces'
+import type { AxiosHeaders } from 'axios'
+import type { AVAILABLE_LOCALES } from '@/constants'
+import type {
+  CartWidgetRequestBody,
+  CartWidgetParams,
+  SpendLevelWidgetParams,
+  SpendLevelRequestBody,
+  PerOrderWidgetParams,
+  PerOrderRequestBody,
+  ByPercentageWidgetParams,
+  ByPercentageRequestBody,
+  TieredSpendLevelWidgetParams,
+  TieredSpendLevelRequestBody,
+  PerProductWidgetParams,
+  PerProductRequestBody,
+  TopStatsWidgetParams,
+  TopStatsRequestBody,
+  FullWidthBannerWidgetParams,
+  FullWidthBannerRequestBody,
+} from '@/interfaces'
 import type { AxiosInstance, AxiosResponse } from 'axios'
 
 export class ConnectionHandler {
@@ -38,6 +55,104 @@ export class ConnectionHandler {
     return this.api.post<string, AxiosResponse<string>, CartWidgetRequestBody>(
       '/widgets/cart-widget',
       Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
+      {
+        params: { lng: this.locale },
+        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
+      },
+    )
+  }
+
+  async fetchSpendLevelWidget(
+    body: SpendLevelWidgetParams,
+    headers?: AxiosHeaders,
+  ): Promise<AxiosResponse<string>> {
+    return this.api.post<string, AxiosResponse<string>, SpendLevelRequestBody>(
+      '/widgets/spend-level-widget',
+      Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
+      {
+        params: { lng: this.locale },
+        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
+      },
+    )
+  }
+
+  async fetchPerOrderWidget(
+    body: PerOrderWidgetParams,
+    headers?: AxiosHeaders,
+  ): Promise<AxiosResponse<string>> {
+    return this.api.post<string, AxiosResponse<string>, PerOrderRequestBody>(
+      '/widgets/per-order-widget',
+      Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
+      {
+        params: { lng: this.locale },
+        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
+      },
+    )
+  }
+
+  async fetchByPercentageWidget(
+    body: ByPercentageWidgetParams,
+    headers?: AxiosHeaders,
+  ): Promise<AxiosResponse<string>> {
+    return this.api.post<string, AxiosResponse<string>, ByPercentageRequestBody>(
+      '/widgets/by-percentage-widget',
+      Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
+      {
+        params: { lng: this.locale },
+        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
+      },
+    )
+  }
+
+  async fetchTieredSpendLevelWidget(
+    body: TieredSpendLevelWidgetParams,
+    headers?: AxiosHeaders,
+  ): Promise<AxiosResponse<string>> {
+    return this.api.post<string, AxiosResponse<string>, TieredSpendLevelRequestBody>(
+      '/widgets/tiered-spend-level-widget',
+      Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
+      {
+        params: { lng: this.locale },
+        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
+      },
+    )
+  }
+
+  async fetchPerProductWidget(
+    body: PerProductWidgetParams,
+    headers?: AxiosHeaders,
+  ): Promise<AxiosResponse<string>> {
+    return this.api.post<string, AxiosResponse<string>, PerProductRequestBody>(
+      '/widgets/per-product-widget',
+      Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
+      {
+        params: { lng: this.locale },
+        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
+      },
+    )
+  }
+
+  async fetchTopStatsWidget(
+    body: TopStatsWidgetParams,
+    headers?: AxiosHeaders,
+  ): Promise<AxiosResponse<string>> {
+    return this.api.post<string, AxiosResponse<string>, TopStatsRequestBody>(
+      '/widgets/stats-widget',
+      body,
+      {
+        params: { lng: this.locale },
+        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
+      },
+    )
+  }
+
+  async fetchFullWidthBannerWidget(
+    body: FullWidthBannerWidgetParams,
+    headers?: AxiosHeaders,
+  ): Promise<AxiosResponse<string>> {
+    return this.api.post<string, AxiosResponse<string>, FullWidthBannerRequestBody>(
+      '/widgets/full-width-banner',
+      body,
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },

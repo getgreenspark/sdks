@@ -1,4 +1,4 @@
-import type { GreensparkWidgets } from './index'
+import type GreensparkWidgets from './index'
 
 declare global {
   interface Window {

@@ -1,29 +1,34 @@
+import { DOMInjector } from '@/dom'
 import type { ConnectionHandler } from '@/network'
-import type { CartWidgetParams } from '@/interfaces'
 
 export interface WidgetConfig {
   containerSelector: string
   api: ConnectionHandler
 }
 
-export class Widget {
+export interface WidgetTemplate {
+  render(options?: unknown, containerSelector?: string): Promise<void>
+  renderToString(options?: unknown): Promise<string>
+  renderToElement(options?: unknown): Promise<HTMLElement>
+}
+
+export class Widget extends DOMInjector implements WidgetTemplate {
   api: ConnectionHandler
-  containerSelector: string
 
   constructor({ api, containerSelector }: WidgetConfig) {
+    super({ containerSelector })
     this.api = api
-    this.containerSelector = containerSelector
   }
 
-  render(options?: unknown, containerSelector?: string): Promise<void> {
+  render(): Promise<void> {
     throw new Error(`Greenspark - This widget does not support the 'render' method`)
   }
 
-  renderToString(options?: unknown): Promise<string> {
+  renderToString(): Promise<string> {
     throw new Error(`Greenspark - This widget does not support the 'renderToString' method`)
   }
 
-  renderToNode(options?: unknown): Promise<Node> {
-    throw new Error(`Greenspark - This widget does not support the 'renderToNode' method`)
+  renderToElement(): Promise<HTMLElement> {
+    throw new Error(`Greenspark - This widget does not support the 'renderToElement' method`)
   }
 }
