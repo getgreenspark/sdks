@@ -8,12 +8,14 @@ export class CartWidget extends Widget implements CartWidgetParams {
   color: (typeof WIDGET_COLORS.cart)[number]
   order: StoreOrder
   withPopup?: boolean
+  version?: string
 
   constructor(params: WidgetConfig & CartWidgetParams) {
     super(params)
     this.color = params.color
     this.order = params.order
     this.withPopup = params.withPopup ?? true
+    this.version = params.version
   }
 
   get cartWidgetRequestBody(): CartWidgetParams {
@@ -21,13 +23,15 @@ export class CartWidget extends Widget implements CartWidgetParams {
       color: this.color,
       order: this.order,
       withPopup: this.withPopup,
+      version: this.version,
     }
   }
 
-  updateDefaults({ color, order, withPopup }: Partial<CartWidgetParams>) {
+  updateDefaults({ color, order, withPopup, version }: Partial<CartWidgetParams>) {
     this.color = color ?? this.color
     this.order = order ?? this.order
     this.withPopup = withPopup ?? this.withPopup
+    this.version = version ?? this.version
   }
 
   validateOptions() {

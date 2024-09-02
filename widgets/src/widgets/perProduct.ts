@@ -8,12 +8,14 @@ export class PerProductWidget extends Widget implements PerProductWidgetParams {
   color: (typeof WIDGET_COLORS.perProduct)[number]
   productId: string
   withPopup?: boolean
+  version?: string
 
   constructor(params: WidgetConfig & PerProductWidgetParams) {
     super(params)
     this.color = params.color
     this.productId = params.productId
     this.withPopup = params.withPopup ?? true
+    this.version = params.version
   }
 
   get perProductWidgetRequestBody(): PerProductWidgetParams {
@@ -21,13 +23,15 @@ export class PerProductWidget extends Widget implements PerProductWidgetParams {
       color: this.color,
       productId: this.productId,
       withPopup: this.withPopup,
+      version: this.version,
     }
   }
 
-  updateDefaults({ color, productId, withPopup }: Partial<PerProductWidgetParams>) {
+  updateDefaults({ color, productId, withPopup, version }: Partial<PerProductWidgetParams>) {
     this.color = color ?? this.color
     this.productId = productId ?? this.productId
     this.withPopup = withPopup ?? this.withPopup
+    this.version = version ?? this.version
   }
 
   validateOptions() {

@@ -43,42 +43,41 @@ const meta = {
     switch (widgetType) {
       case 'byPercentage':
         widget = widgets.byPercentage(widgetArgs as ByPercentageWidgetParams)
-        break
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS.byPercentage, ['v1', 'v2'])
 
       case 'cart':
         widget = widgets.cart(widgetArgs as CartWidgetParams)
-        break
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS.cart, ['v1', 'v2'])
 
       case 'fullWidthBanner':
         widget = widgets.fullWidthBanner(widgetArgs as FullWidthBannerWidgetParams)
-        break
+        return createWidgetPage(widgetType, widget, ['default'], ['v1'])
 
       case 'perOrder':
         widget = widgets.perOrder(widgetArgs as PerOrderWidgetParams)
-        break
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS.perOrder, ['v1', 'v2'])
 
       case 'perProduct':
         widget = widgets.perProduct(widgetArgs as PerProductWidgetParams)
-        break
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS.perProduct, ['v1', 'v2'])
 
       case 'spendLevel':
         widget = widgets.spendLevel(widgetArgs as SpendLevelWidgetParams)
-        break
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS.spendLevel, ['v1', 'v2'])
 
       case 'tieredSpendLevel':
         widget = widgets.tieredSpendLevel(widgetArgs as TieredSpendLevelWidgetParams)
-        break
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS.tieredSpendLevel, ['v1', 'v2'])
 
       case 'topStats':
         widget = widgets.topStats(widgetArgs as TopStatsWidgetParams)
-        break
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS.topStats, ['v1'])
 
       default:
         widget = widgets.byPercentage(widgetArgs as ByPercentageWidgetParams)
-        break
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS.byPercentage, ['v1', 'v2'])
     }
 
-    return createWidgetPage(widgetType, widget)
   },
   argTypes: {
     apiKey: { control: 'text' },

@@ -25,35 +25,41 @@ export interface CartWidgetParams {
   color: (typeof WIDGET_COLORS.cart)[number]
   order: StoreOrder
   withPopup?: boolean
+  version?: string
 }
 
 export interface SpendLevelWidgetParams {
   color: (typeof WIDGET_COLORS.spendLevel)[number]
   currency: string
   withPopup?: boolean
+  version?: string
 }
 
 export interface PerOrderWidgetParams {
   color: (typeof WIDGET_COLORS.spendLevel)[number]
   currency: string
   withPopup?: boolean
+  version?: string
 }
 
 export interface ByPercentageWidgetParams {
   color: (typeof WIDGET_COLORS.spendLevel)[number]
   withPopup?: boolean
+  version?: string
 }
 
 export interface TieredSpendLevelWidgetParams {
   color: (typeof WIDGET_COLORS.spendLevel)[number]
   currency: string
   withPopup?: boolean
+  version?: string
 }
 
 export interface PerProductWidgetParams {
   color: (typeof WIDGET_COLORS.spendLevel)[number]
   productId: string
   withPopup?: boolean
+  version?: string
 }
 
 export interface TopStatsWidgetParams {

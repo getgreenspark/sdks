@@ -7,23 +7,27 @@ import type { ByPercentageWidgetParams } from '@/interfaces'
 export class ByPercentageWidget extends Widget implements ByPercentageWidgetParams {
   color: (typeof WIDGET_COLORS.byPercentage)[number]
   withPopup?: boolean
+  version?: string
 
   constructor(params: WidgetConfig & ByPercentageWidgetParams) {
     super(params)
     this.color = params.color
     this.withPopup = params.withPopup ?? true
+    this.version = params.version
   }
 
   get byPercentageWidgetRequestBody(): ByPercentageWidgetParams {
     return {
       color: this.color,
       withPopup: this.withPopup,
+      version: this.version,
     }
   }
 
-  updateDefaults({ color, withPopup }: Partial<ByPercentageWidgetParams>) {
+  updateDefaults({ color, withPopup, version }: Partial<ByPercentageWidgetParams>) {
     this.color = color ?? this.color
     this.withPopup = withPopup ?? this.withPopup
+    this.version = version ?? this.version
   }
 
   validateOptions() {
