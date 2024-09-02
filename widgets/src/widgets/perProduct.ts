@@ -5,7 +5,7 @@ import type { WidgetConfig } from '@/widgets/base'
 import type { PerProductWidgetParams } from '@/interfaces'
 
 export class PerProductWidget extends Widget implements PerProductWidgetParams {
-  color: (typeof WIDGET_COLORS.perProduct)[number]
+  color: (typeof WIDGET_COLORS)[number]
   productId: string
   withPopup?: boolean
   version?: string
@@ -35,11 +35,11 @@ export class PerProductWidget extends Widget implements PerProductWidgetParams {
   }
 
   validateOptions() {
-    if (!WIDGET_COLORS.perProduct.includes(this.color)) {
+    if (!WIDGET_COLORS.includes(this.color)) {
       throw new Error(
         `Greenspark - "${
           this.color
-        }" was selected as the color for the Per Product Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.perProduct.join(
+        }" was selected as the color for the Per Product Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.join(
           ', ',
         )}`,
       )

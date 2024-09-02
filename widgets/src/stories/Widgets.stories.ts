@@ -16,7 +16,7 @@ import GreensparkWidgets from '@/index'
 import type { Widget } from '@/widgets/base'
 
 const WIDGET_API_KEY =
-  '8vCV2KQpfDz%2F3dPn1cb1vz3%2FbjkKQUb9r%2BUAbuNfkn5WFmB%2BRE7oR90hkSd1Wc4vFfeipmOB'
+  '6kQypJppcK9F5FMGHxUM53rc3Kx%2FPFz%2Bi3wni6geNSf%2FIbUq06e5KES8IyR7bKViR11ZM5AabP'
 const SHOP_UNIQUE_NAME = 'greenspark-development-store-widget-sdk-storybook.myshopify.com'
 type WIDGET_VARIANTS =
   | 'byPercentage'
@@ -43,11 +43,11 @@ const meta = {
     switch (widgetType) {
       case 'byPercentage':
         widget = widgets.byPercentage(widgetArgs as ByPercentageWidgetParams)
-        return createWidgetPage(widgetType, widget, WIDGET_COLORS.byPercentage, ['v1', 'v2'])
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, ['v1', 'v2'])
 
       case 'cart':
         widget = widgets.cart(widgetArgs as CartWidgetParams)
-        return createWidgetPage(widgetType, widget, WIDGET_COLORS.cart, ['v1', 'v2'])
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, ['v1', 'v2'])
 
       case 'fullWidthBanner':
         widget = widgets.fullWidthBanner(widgetArgs as FullWidthBannerWidgetParams)
@@ -55,27 +55,27 @@ const meta = {
 
       case 'perOrder':
         widget = widgets.perOrder(widgetArgs as PerOrderWidgetParams)
-        return createWidgetPage(widgetType, widget, WIDGET_COLORS.perOrder, ['v1', 'v2'])
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, ['v1', 'v2'])
 
       case 'perProduct':
         widget = widgets.perProduct(widgetArgs as PerProductWidgetParams)
-        return createWidgetPage(widgetType, widget, WIDGET_COLORS.perProduct, ['v1', 'v2'])
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, ['v1', 'v2'])
 
       case 'spendLevel':
         widget = widgets.spendLevel(widgetArgs as SpendLevelWidgetParams)
-        return createWidgetPage(widgetType, widget, WIDGET_COLORS.spendLevel, ['v1', 'v2'])
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, ['v1', 'v2'])
 
       case 'tieredSpendLevel':
         widget = widgets.tieredSpendLevel(widgetArgs as TieredSpendLevelWidgetParams)
-        return createWidgetPage(widgetType, widget, WIDGET_COLORS.tieredSpendLevel, ['v1', 'v2'])
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, ['v1', 'v2'])
 
       case 'topStats':
         widget = widgets.topStats(widgetArgs as TopStatsWidgetParams)
-        return createWidgetPage(widgetType, widget, WIDGET_COLORS.topStats, ['v1'])
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, ['v1'])
 
       default:
         widget = widgets.byPercentage(widgetArgs as ByPercentageWidgetParams)
-        return createWidgetPage(widgetType, widget, WIDGET_COLORS.byPercentage, ['v1', 'v2'])
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, ['v1', 'v2'])
     }
 
   },
@@ -101,7 +101,7 @@ export const ByPercentage: StoryObj<{
       withPopup: { control: 'boolean' },
       color: {
         control: { type: 'select' },
-        options: WIDGET_COLORS.spendLevel,
+        options: WIDGET_COLORS,
       },
     },
   },
@@ -121,7 +121,7 @@ export const Cart: StoryObj<{ widgetArgs: CartWidgetParams; widgetType: keyof Gr
         withPopup: { control: 'boolean' },
         color: {
           control: { type: 'select' },
-          options: WIDGET_COLORS.spendLevel,
+          options: WIDGET_COLORS,
         },
         order: {
           lineItems: { control: 'text' },
@@ -171,7 +171,7 @@ export const PerOrder: StoryObj<{
       currency: { control: 'text' },
       color: {
         control: { type: 'select' },
-        options: WIDGET_COLORS.spendLevel,
+        options: WIDGET_COLORS,
       },
     },
   },
@@ -195,7 +195,7 @@ export const PerProduct: StoryObj<{
       withPopup: { control: 'boolean' },
       color: {
         control: { type: 'select' },
-        options: WIDGET_COLORS.spendLevel,
+        options: WIDGET_COLORS,
       },
     },
   },
@@ -219,7 +219,7 @@ export const SpendLevel: StoryObj<{
       withPopup: { control: 'boolean' },
       color: {
         control: { type: 'select' },
-        options: WIDGET_COLORS.spendLevel,
+        options: WIDGET_COLORS,
       },
     },
   },
@@ -243,7 +243,7 @@ export const TieredSpendLevel: StoryObj<{
       currency: { control: 'text' },
       color: {
         control: { type: 'select' },
-        options: WIDGET_COLORS.spendLevel,
+        options: WIDGET_COLORS,
       },
     },
   },
@@ -265,7 +265,7 @@ export const TopStats: StoryObj<{
     widgetArgs: {
       color: {
         control: { type: 'select' },
-        options: WIDGET_COLORS.spendLevel,
+        options: WIDGET_COLORS,
       },
     },
   },
