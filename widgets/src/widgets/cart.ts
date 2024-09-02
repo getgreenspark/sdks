@@ -5,7 +5,7 @@ import type { WidgetConfig } from '@/widgets/base'
 import type { OrderProduct, CartWidgetParams, StoreOrder } from '@/interfaces'
 
 export class CartWidget extends Widget implements CartWidgetParams {
-  color: (typeof WIDGET_COLORS.cart)[number]
+  color: (typeof WIDGET_COLORS)[number]
   order: StoreOrder
   withPopup?: boolean
 
@@ -31,11 +31,11 @@ export class CartWidget extends Widget implements CartWidgetParams {
   }
 
   validateOptions() {
-    if (!WIDGET_COLORS.cart.includes(this.color)) {
+    if (!WIDGET_COLORS.includes(this.color)) {
       throw new Error(
         `Greenspark - "${
           this.color
-        }" was selected as the color for the Cart Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.cart.join(
+        }" was selected as the color for the Cart Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.join(
           ', ',
         )}`,
       )

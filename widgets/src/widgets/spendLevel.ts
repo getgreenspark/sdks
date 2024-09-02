@@ -5,7 +5,7 @@ import type { WidgetConfig } from '@/widgets/base'
 import type { SpendLevelWidgetParams } from '@/interfaces'
 
 export class SpendLevelWidget extends Widget implements SpendLevelWidgetParams {
-  color: (typeof WIDGET_COLORS.spendLevel)[number]
+  color: (typeof WIDGET_COLORS)[number]
   currency: string
   withPopup?: boolean
 
@@ -31,11 +31,11 @@ export class SpendLevelWidget extends Widget implements SpendLevelWidgetParams {
   }
 
   validateOptions() {
-    if (!WIDGET_COLORS.spendLevel.includes(this.color)) {
+    if (!WIDGET_COLORS.includes(this.color)) {
       throw new Error(
         `Greenspark - "${
           this.color
-        }" was selected as the color for the Spend Level Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.spendLevel.join(
+        }" was selected as the color for the Spend Level Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.join(
           ', ',
         )}`,
       )

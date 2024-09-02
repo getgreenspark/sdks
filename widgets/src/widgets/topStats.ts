@@ -5,7 +5,7 @@ import type { WidgetConfig } from '@/widgets/base'
 import type { TopStatsWidgetParams } from '@/interfaces'
 
 export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
-  color: (typeof WIDGET_COLORS.topStats)[number]
+  color: (typeof WIDGET_COLORS)[number]
 
   constructor(params: WidgetConfig & TopStatsWidgetParams) {
     super(params)
@@ -23,20 +23,19 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
   }
 
   validateOptions() {
-    if (!WIDGET_COLORS.topStats.includes(this.color)) {
+    if (!WIDGET_COLORS.includes(this.color)) {
       throw new Error(
         `Greenspark - "${
           this.color
-        }" was selected as the color for the Top Stats Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.topStats.join(
+        }" was selected as the color for the Top Stats Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.join(
           ', ',
         )}`,
       )
     }
   }
 
-  async render(options?: Partial<TopStatsWidgetParams>, containerSelector?: string): Promise<void> {
-    const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
+  render(options?: Partial<TopStatsWidgetParams>, containerSelector?: string): Promise<void> {
+    return super.render(options, containerSelector)
   }
 
   async renderToString(options?: Partial<TopStatsWidgetParams>): Promise<string> {
@@ -47,7 +46,6 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
   }
 
   async renderToElement(options?: Partial<TopStatsWidgetParams>): Promise<HTMLElement> {
-    const html = await this.renderToString(options)
-    return this.parseHtml(html)
+    return super.renderToElement(options)
   }
 }

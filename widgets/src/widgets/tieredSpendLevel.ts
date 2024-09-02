@@ -5,7 +5,7 @@ import type { WidgetConfig } from '@/widgets/base'
 import type { TieredSpendLevelWidgetParams } from '@/interfaces'
 
 export class TieredSpendLevelWidget extends Widget implements TieredSpendLevelWidgetParams {
-  color: (typeof WIDGET_COLORS.tieredSpendLevel)[number]
+  color: (typeof WIDGET_COLORS)[number]
   currency: string
   withPopup?: boolean
 
@@ -31,11 +31,11 @@ export class TieredSpendLevelWidget extends Widget implements TieredSpendLevelWi
   }
 
   validateOptions() {
-    if (!WIDGET_COLORS.tieredSpendLevel.includes(this.color)) {
+    if (!WIDGET_COLORS.includes(this.color)) {
       throw new Error(
         `Greenspark - "${
           this.color
-        }" was selected as the color for the Tiered Spend Level Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.tieredSpendLevel.join(
+        }" was selected as the color for the Tiered Spend Level Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.join(
           ', ',
         )}`,
       )

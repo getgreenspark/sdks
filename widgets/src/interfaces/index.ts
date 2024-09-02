@@ -22,42 +22,42 @@ export interface StoreOrder {
 }
 
 export interface CartWidgetParams {
-  color: (typeof WIDGET_COLORS.cart)[number]
+  color: (typeof WIDGET_COLORS)[number]
   order: StoreOrder
   withPopup?: boolean
 }
 
 export interface SpendLevelWidgetParams {
-  color: (typeof WIDGET_COLORS.spendLevel)[number]
+  color: (typeof WIDGET_COLORS)[number]
   currency: string
   withPopup?: boolean
 }
 
 export interface PerOrderWidgetParams {
-  color: (typeof WIDGET_COLORS.spendLevel)[number]
+  color: (typeof WIDGET_COLORS)[number]
   currency: string
   withPopup?: boolean
 }
 
 export interface ByPercentageWidgetParams {
-  color: (typeof WIDGET_COLORS.spendLevel)[number]
+  color: (typeof WIDGET_COLORS)[number]
   withPopup?: boolean
 }
 
 export interface TieredSpendLevelWidgetParams {
-  color: (typeof WIDGET_COLORS.spendLevel)[number]
+  color: (typeof WIDGET_COLORS)[number]
   currency: string
   withPopup?: boolean
 }
 
 export interface PerProductWidgetParams {
-  color: (typeof WIDGET_COLORS.spendLevel)[number]
+  color: (typeof WIDGET_COLORS)[number]
   productId: string
   withPopup?: boolean
 }
 
 export interface TopStatsWidgetParams {
-  color: (typeof WIDGET_COLORS.spendLevel)[number]
+  color: (typeof WIDGET_COLORS)[number]
 }
 
 export interface FullWidthBannerWidgetParams {

@@ -5,7 +5,7 @@ import type { WidgetConfig } from '@/widgets/base'
 import type { PerOrderWidgetParams } from '@/interfaces'
 
 export class PerOrderWidget extends Widget implements PerOrderWidgetParams {
-  color: (typeof WIDGET_COLORS.perOrder)[number]
+  color: (typeof WIDGET_COLORS)[number]
   currency: string
   withPopup?: boolean
 
@@ -31,11 +31,11 @@ export class PerOrderWidget extends Widget implements PerOrderWidgetParams {
   }
 
   validateOptions() {
-    if (!WIDGET_COLORS.perOrder.includes(this.color)) {
+    if (!WIDGET_COLORS.includes(this.color)) {
       throw new Error(
         `Greenspark - "${
           this.color
-        }" was selected as the color for the Per Order Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.spendLevel.join(
+        }" was selected as the color for the Per Order Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.join(
           ', ',
         )}`,
       )

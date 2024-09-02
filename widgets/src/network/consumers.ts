@@ -37,11 +37,11 @@ export class ApiConsumer {
     return newLocale
   }
 
-  get locale(): (typeof AVAILABLE_LOCALES)[number] {
+  get locale(): ValidLanguage {
     return this.currentLocale
   }
 
-  set locale(newLocale: (typeof AVAILABLE_LOCALES)[number]) {
+  set locale(newLocale: ValidLanguage) {
     this.currentLocale = this.validateLocale(newLocale)
     this.api = this.instanciateApi()
   }

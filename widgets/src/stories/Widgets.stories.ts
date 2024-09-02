@@ -16,7 +16,7 @@ import GreensparkWidgets from '@/index'
 import type { Widget } from '@/widgets/base'
 
 const WIDGET_API_KEY =
-  '8vCV2KQpfDz%2F3dPn1cb1vz3%2FbjkKQUb9r%2BUAbuNfkn5WFmB%2BRE7oR90hkSd1Wc4vFfeipmOB'
+  '6kQypJppcK9F5FMGHxUM53rc3Kx%2FPFz%2Bi3wni6geNSf%2FIbUq06e5KES8IyR7bKViR11ZM5AabP'
 const SHOP_UNIQUE_NAME = 'greenspark-development-store-widget-sdk-storybook.myshopify.com'
 type WIDGET_VARIANTS =
   | 'byPercentage'
@@ -102,7 +102,7 @@ export const ByPercentage: StoryObj<{
       withPopup: { control: 'boolean' },
       color: {
         control: { type: 'select' },
-        options: WIDGET_COLORS.spendLevel,
+        options: WIDGET_COLORS,
       },
     },
   },
@@ -122,7 +122,7 @@ export const Cart: StoryObj<{ widgetArgs: CartWidgetParams; widgetType: keyof Gr
         withPopup: { control: 'boolean' },
         color: {
           control: { type: 'select' },
-          options: WIDGET_COLORS.spendLevel,
+          options: WIDGET_COLORS,
         },
         order: {
           lineItems: { control: 'text' },
@@ -172,7 +172,7 @@ export const PerOrder: StoryObj<{
       currency: { control: 'text' },
       color: {
         control: { type: 'select' },
-        options: WIDGET_COLORS.spendLevel,
+        options: WIDGET_COLORS,
       },
     },
   },
@@ -196,7 +196,7 @@ export const PerProduct: StoryObj<{
       withPopup: { control: 'boolean' },
       color: {
         control: { type: 'select' },
-        options: WIDGET_COLORS.spendLevel,
+        options: WIDGET_COLORS,
       },
     },
   },
@@ -220,7 +220,7 @@ export const SpendLevel: StoryObj<{
       withPopup: { control: 'boolean' },
       color: {
         control: { type: 'select' },
-        options: WIDGET_COLORS.spendLevel,
+        options: WIDGET_COLORS,
       },
     },
   },
@@ -244,7 +244,7 @@ export const TieredSpendLevel: StoryObj<{
       currency: { control: 'text' },
       color: {
         control: { type: 'select' },
-        options: WIDGET_COLORS.spendLevel,
+        options: WIDGET_COLORS,
       },
     },
   },
@@ -266,7 +266,7 @@ export const TopStats: StoryObj<{
     widgetArgs: {
       color: {
         control: { type: 'select' },
-        options: WIDGET_COLORS.spendLevel,
+        options: WIDGET_COLORS,
       },
     },
   },

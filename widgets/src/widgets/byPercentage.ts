@@ -5,7 +5,7 @@ import type { WidgetConfig } from '@/widgets/base'
 import type { ByPercentageWidgetParams } from '@/interfaces'
 
 export class ByPercentageWidget extends Widget implements ByPercentageWidgetParams {
-  color: (typeof WIDGET_COLORS.byPercentage)[number]
+  color: (typeof WIDGET_COLORS)[number]
   withPopup?: boolean
 
   constructor(params: WidgetConfig & ByPercentageWidgetParams) {
@@ -27,11 +27,11 @@ export class ByPercentageWidget extends Widget implements ByPercentageWidgetPara
   }
 
   validateOptions() {
-    if (!WIDGET_COLORS.byPercentage.includes(this.color)) {
+    if (!WIDGET_COLORS.includes(this.color)) {
       throw new Error(
         `Greenspark - "${
           this.color
-        }" was selected as the color for the By Percentage Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.byPercentage.join(
+        }" was selected as the color for the By Percentage Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.join(
           ', ',
         )}`,
       )
