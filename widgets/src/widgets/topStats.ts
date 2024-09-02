@@ -34,8 +34,9 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
     }
   }
 
-  render(options?: Partial<TopStatsWidgetParams>, containerSelector?: string): Promise<void> {
-    return super.render(options, containerSelector)
+  async render(options?: Partial<TopStatsWidgetParams>, containerSelector?: string): Promise<void> {
+    const node = await this.renderToElement(options)
+    this.inject(node, containerSelector)
   }
 
   async renderToString(options?: Partial<TopStatsWidgetParams>): Promise<string> {
@@ -46,6 +47,7 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
   }
 
   async renderToElement(options?: Partial<TopStatsWidgetParams>): Promise<HTMLElement> {
-    return super.renderToElement(options)
+    const html = await this.renderToString(options)
+    return this.parseHtml(html)
   }
 }

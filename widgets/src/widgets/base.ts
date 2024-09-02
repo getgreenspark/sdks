@@ -20,17 +20,15 @@ export class Widget extends DOMInjector implements WidgetTemplate {
     this.api = api
   }
 
-  async render(options?: unknown, containerSelector?: string): Promise<void> {
-    const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
+  render(): Promise<void> {
+    throw new Error(`Greenspark - This widget does not support the 'render' method`)
   }
 
-  renderToString(options: unknown): Promise<string> {
+  renderToString(): Promise<string> {
     throw new Error(`Greenspark - This widget does not support the 'renderToString' method`)
   }
 
-  async renderToElement(options?: unknown): Promise<HTMLElement> {
-    const html = await this.renderToString(options)
-    return this.parseHtml(html)
+  renderToElement(): Promise<HTMLElement> {
+    throw new Error(`Greenspark - This widget does not support the 'renderToElement' method`)
   }
 }
