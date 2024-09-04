@@ -75,6 +75,10 @@ export interface TopStatsWidgetParams {
 export interface FullWidthBannerWidgetParams {
   options: Array<(typeof AVAILABLE_STATISTIC_TYPES)[number]>
   imageUrl?: string
+  title?: string
+  description?: string
+  showButton?: boolean
+  version?: string
 }
 
 export interface CartWidgetRequestBody extends ExternalShopContext, CartWidgetParams {}

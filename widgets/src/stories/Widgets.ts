@@ -3,10 +3,13 @@ import './widgets.css'
 
 export const createWidgetPage = (id: string, widget: WidgetTemplate, colors: Readonly<string[]>, variants: { version?: string, simplified?: boolean }[]) => {
   const article = document.createElement('article')
+  article.style.maxWidth = '100%';
 
   variants.forEach((optionsForVariant, index) => {
     const variantDefinitions = document.createElement('pre')
     variantDefinitions.innerHTML = JSON.stringify(optionsForVariant)
+    variantDefinitions.style.maxWidth = '100%';
+    variantDefinitions.style.whiteSpace = 'break-spaces';
     article.appendChild(variantDefinitions)
 
     const variantContainer = document.createElement('div')

@@ -1,4 +1,4 @@
-[class^=widget-container-] {
+[class^=widget-container-]:not([class^=widget-container-fullWidthBanner]) {
   border-radius: 8px;
   background-color: #f4f4f4;
   padding: 16px;

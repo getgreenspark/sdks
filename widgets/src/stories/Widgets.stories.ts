@@ -45,6 +45,13 @@ const meta = {
       { version: 'v2', simplified: true },
     ]
 
+    const fullWidthBannerVariants = [
+      { version: 'v1' },
+      { version: 'v2' },
+      { version: 'v2', title: 'Our positive climate impact', description: 'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!' },
+      { version: 'v2', title: 'Our positive climate impact', description: 'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!', showButton: true },
+    ]
+
     let widget: Widget
     switch (widgetType) {
       case 'byPercentage':
@@ -57,7 +64,7 @@ const meta = {
 
       case 'fullWidthBanner':
         widget = widgets.fullWidthBanner(widgetArgs as FullWidthBannerWidgetParams)
-        return createWidgetPage(widgetType, widget, ['default'], [{ version: 'v1' }])
+        return createWidgetPage(widgetType, widget, ['default'], fullWidthBannerVariants)
 
       case 'perOrder':
         widget = widgets.perOrder(widgetArgs as PerOrderWidgetParams)
