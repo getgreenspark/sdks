@@ -5,6 +5,7 @@ export const DEFAULT_CONTAINER_CSS_SELECTOR = '[data-greenspark-widget-container
 
 export const WIDGET_TYPES = ['cart'] as const
 export const WIDGET_COLORS = ['beige', 'green', 'blue', 'white', 'black'] as const
+export const WIDGET_COLORS_EXTENDED = [...WIDGET_COLORS, 'grey', 'transparent'] as const
 export const AVAILABLE_STATISTIC_TYPES = [
   'monthsEarthPositive',
   'trees',

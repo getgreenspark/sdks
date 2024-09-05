@@ -8,3 +8,7 @@
   margin-bottom: 32px;
   overflow: scroll;
 }
+
+[class^=widget-container-topStats] {
+  grid-template-columns: repeat(2, 1fr) !important;
+}

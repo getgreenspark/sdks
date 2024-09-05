@@ -1,5 +1,5 @@
 import { createWidgetPage } from '@/stories/Widgets'
-import { AVAILABLE_STATISTIC_TYPES, WIDGET_COLORS } from '@/constants'
+import { AVAILABLE_STATISTIC_TYPES, WIDGET_COLORS, WIDGET_COLORS_EXTENDED } from '@/constants'
 
 import type { StoryObj, Meta } from '@storybook/html'
 import type {
@@ -45,11 +45,18 @@ const meta = {
       { version: 'v2', simplified: true },
     ]
 
+    const fullWidthIcons = ["monthsEarthPositive", "trees", "plastic", "carbon", "straws"]
     const fullWidthBannerVariants = [
+      { version: 'v1', options: fullWidthIcons },
+      { version: 'v2', options: fullWidthIcons },
+      { version: 'v2', options: fullWidthIcons, title: 'Our positive climate impact', description: 'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!' },
+      { version: 'v2', options: fullWidthIcons, title: 'Our positive climate impact', description: 'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!', showButton: true },
+    ]
+
+    const topStatsVariants = [
       { version: 'v1' },
       { version: 'v2' },
-      { version: 'v2', title: 'Our positive climate impact', description: 'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!' },
-      { version: 'v2', title: 'Our positive climate impact', description: 'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!', showButton: true },
+      { version: 'v2', withPopup: true },
     ]
 
     let widget: Widget
@@ -84,7 +91,7 @@ const meta = {
 
       case 'topStats':
         widget = widgets.topStats(widgetArgs as TopStatsWidgetParams)
-        return createWidgetPage(widgetType, widget, WIDGET_COLORS, [{ version: 'v1' }])
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS_EXTENDED, topStatsVariants)
 
       default:
         widget = widgets.byPercentage(widgetArgs as ByPercentageWidgetParams)
@@ -278,7 +285,8 @@ export const TopStats: StoryObj<{
     widgetArgs: {
       color: {
         control: { type: 'select' },
-        options: WIDGET_COLORS,
+        options: WIDGET_COLORS_EXTENDED,
+        withPopup: { control: 'boolean' },
       },
     },
   },
