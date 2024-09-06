@@ -1,4 +1,6 @@
-import type { AVAILABLE_LOCALES, AVAILABLE_STATISTIC_TYPES, WIDGET_COLORS, WIDGET_COLORS_EXTENDED } from '@/constants'
+import type { AVAILABLE_LOCALES, AVAILABLE_STATISTIC_TYPES, WIDGET_COLORS, WIDGET_STYLES } from '@/constants'
+
+export type WidgetStyle = (typeof WIDGET_STYLES)[number]
 
 export interface ApiSettings {
   apiKey: string
@@ -22,54 +24,53 @@ export interface StoreOrder {
 }
 
 export interface WidgetParams {
-  version?: string
+  version?: 'v2'
 }
 
 export interface CartWidgetParams extends WidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   order: StoreOrder
   withPopup?: boolean
-  simplified?: boolean
+  style?: WidgetStyle
 }
 
 export interface SpendLevelWidgetParams extends WidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   currency: string
   withPopup?: boolean
-  simplified?: boolean
+  style?: WidgetStyle
 }
 
 export interface PerOrderWidgetParams extends WidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   currency: string
   withPopup?: boolean
-  simplified?: boolean
+  style?: WidgetStyle
 }
 
 export interface ByPercentageWidgetParams extends WidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   withPopup?: boolean
-  simplified?: boolean
+  style?: WidgetStyle
 }
 
 export interface TieredSpendLevelWidgetParams extends WidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   currency: string
   withPopup?: boolean
-  simplified?: boolean
+  style?: WidgetStyle
 }
 
 export interface PerProductWidgetParams extends WidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   productId: string
   withPopup?: boolean
-  simplified?: boolean
+  style?: WidgetStyle
 }
 
 export interface TopStatsWidgetParams extends WidgetParams {
-  color: (typeof WIDGET_COLORS_EXTENDED)[number]
+  color: (typeof WIDGET_COLORS)[number]
   withPopup?: boolean
-  version?: string
 }
 
 export interface FullWidthBannerWidgetParams extends WidgetParams{

@@ -2,13 +2,13 @@ import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
-import type { PerOrderWidgetParams } from '@/interfaces'
+import type { PerOrderWidgetParams, WidgetStyle } from '@/interfaces'
 
 export class PerOrderWidget extends Widget implements PerOrderWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   currency: string
   withPopup?: boolean
-  simplified?: boolean
+  style?: WidgetStyle
   version?: string
 
   constructor(params: WidgetConfig & PerOrderWidgetParams) {
@@ -16,7 +16,7 @@ export class PerOrderWidget extends Widget implements PerOrderWidgetParams {
     this.color = params.color
     this.currency = params.currency
     this.withPopup = params.withPopup ?? true
-    this.simplified = params.simplified ?? true
+    this.style = params.style ?? 'default'
     this.version = params.version
   }
 
@@ -25,16 +25,16 @@ export class PerOrderWidget extends Widget implements PerOrderWidgetParams {
       color: this.color,
       currency: this.currency,
       withPopup: this.withPopup,
-      simplified: this.simplified,
+      style: this.style,
       version: this.version,
     }
   }
 
-  updateDefaults({ color, currency, withPopup, simplified, version }: Partial<PerOrderWidgetParams>) {
+  updateDefaults({ color, currency, withPopup, style, version }: Partial<PerOrderWidgetParams>) {
     this.color = color ?? this.color
     this.currency = currency ?? this.currency
     this.withPopup = withPopup ?? this.withPopup
-    this.simplified = simplified ?? this.simplified
+    this.style = style ?? this.style
     this.version = version ?? this.version
   }
 

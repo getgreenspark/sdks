@@ -1,11 +1,11 @@
 import { Widget } from '@/widgets/base'
-import { WIDGET_COLORS_EXTENDED } from '@/constants'
+import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
 import type { TopStatsWidgetParams } from '@/interfaces'
 
 export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
-  color: (typeof WIDGET_COLORS_EXTENDED)[number]
+  color: (typeof WIDGET_COLORS)[number]
   withPopup?: boolean
   version?: string
 
@@ -31,11 +31,11 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
   }
 
   validateOptions() {
-    if (!WIDGET_COLORS_EXTENDED.includes(this.color)) {
+    if (!WIDGET_COLORS.includes(this.color)) {
       throw new Error(
         `Greenspark - "${
           this.color
-        }" was selected as the color for the Top Stats Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS_EXTENDED.join(
+        }" was selected as the color for the Top Stats Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.join(
           ', ',
         )}`,
       )

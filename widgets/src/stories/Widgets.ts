@@ -1,7 +1,7 @@
 import type { WidgetTemplate } from '@/widgets/base'
 import './widgets.css'
 
-export const createWidgetPage = (id: string, widget: WidgetTemplate, colors: Readonly<string[]>, variants: { version?: string, simplified?: boolean }[]) => {
+export const createWidgetPage = (id: string, widget: WidgetTemplate, colors: Readonly<string[]>, variants: { version?: string, style?: string }[]) => {
   const article = document.createElement('article')
   article.style.maxWidth = '100%';
 
