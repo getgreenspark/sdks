@@ -9,7 +9,7 @@ export class SpendLevelWidget extends Widget implements SpendLevelWidgetParams {
   currency: string
   withPopup?: boolean
   style?: WidgetStyle
-  version?: string
+  version?: 'v2'
 
   constructor(params: WidgetConfig & SpendLevelWidgetParams) {
     super(params)

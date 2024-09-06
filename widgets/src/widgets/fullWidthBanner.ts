@@ -10,7 +10,7 @@ export class FullWidthBannerWidget extends Widget implements FullWidthBannerWidg
   title?: string
   description?: string
   showButton?: boolean
-  version?: string
+  version?: 'v2'
 
   constructor(params: WidgetConfig & FullWidthBannerWidgetParams) {
     super(params)

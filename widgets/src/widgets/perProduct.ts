@@ -9,7 +9,7 @@ export class PerProductWidget extends Widget implements PerProductWidgetParams {
   productId: string
   withPopup?: boolean
   style?: WidgetStyle
-  version?: string
+  version?: 'v2'
 
   constructor(params: WidgetConfig & PerProductWidgetParams) {
     super(params)

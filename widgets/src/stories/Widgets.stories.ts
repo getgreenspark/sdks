@@ -54,7 +54,7 @@ const meta = {
     ]
 
     const topStatsVariants = [
-      {},
+      { withPopup: true },
       { version: 'v2' },
       { version: 'v2', withPopup: true },
     ]

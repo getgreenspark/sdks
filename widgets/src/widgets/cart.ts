@@ -9,7 +9,7 @@ export class CartWidget extends Widget implements CartWidgetParams {
   order: StoreOrder
   withPopup?: boolean
   style?: WidgetStyle
-  version?: string
+  version?: 'v2'
 
   constructor(params: WidgetConfig & CartWidgetParams) {
     super(params)

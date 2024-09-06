@@ -9,7 +9,7 @@ export class PerOrderWidget extends Widget implements PerOrderWidgetParams {
   currency: string
   withPopup?: boolean
   style?: WidgetStyle
-  version?: string
+  version?: 'v2'
 
   constructor(params: WidgetConfig & PerOrderWidgetParams) {
     super(params)

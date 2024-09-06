@@ -2,13 +2,14 @@ import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
-import type { TieredSpendLevelWidgetParams } from '@/interfaces'
+import type { TieredSpendLevelWidgetParams, WidgetStyle } from '@/interfaces'
 
 export class TieredSpendLevelWidget extends Widget implements TieredSpendLevelWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   currency: string
   withPopup?: boolean
-  version?: string
+  style?: WidgetStyle
+  version?: 'v2'
 
   constructor(params: WidgetConfig & TieredSpendLevelWidgetParams) {
     super(params)
@@ -16,6 +17,7 @@ export class TieredSpendLevelWidget extends Widget implements TieredSpendLevelWi
     this.currency = params.currency
     this.withPopup = params.withPopup ?? true
     this.version = params.version
+    this.style = params.style
   }
 
   get tieredSpendLevelWidgetRequestBody(): TieredSpendLevelWidgetParams {
@@ -24,14 +26,16 @@ export class TieredSpendLevelWidget extends Widget implements TieredSpendLevelWi
       currency: this.currency,
       withPopup: this.withPopup,
       version: this.version,
+      style: this.style,
     }
   }
 
-  updateDefaults({ color, currency, withPopup, version }: Partial<TieredSpendLevelWidgetParams>) {
+  updateDefaults({ color, currency, withPopup, version, style }: Partial<TieredSpendLevelWidgetParams>) {
     this.color = color ?? this.color
     this.currency = currency ?? this.currency
     this.withPopup = withPopup ?? this.withPopup
     this.version = version
+    this.style = style
   }
 
   validateOptions() {

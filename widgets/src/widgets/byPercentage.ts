@@ -8,7 +8,7 @@ export class ByPercentageWidget extends Widget implements ByPercentageWidgetPara
   color: (typeof WIDGET_COLORS)[number]
   withPopup?: boolean
   style?: WidgetStyle
-  version?: string
+  version?: 'v2'
 
   constructor(params: WidgetConfig & ByPercentageWidgetParams) {
     super(params)

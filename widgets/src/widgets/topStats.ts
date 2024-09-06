@@ -7,7 +7,7 @@ import type { TopStatsWidgetParams } from '@/interfaces'
 export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   withPopup?: boolean
-  version?: string
+  version?: 'v2'
 
   constructor(params: WidgetConfig & TopStatsWidgetParams) {
     super(params)

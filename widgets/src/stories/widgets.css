@@ -1,6 +1,6 @@
 [class^=widget-container-]:not([class^=widget-container-fullWidthBanner]) {
   border-radius: 8px;
-  background-color: #f4f4f4;
+  background-color: rgb(246 247 236);
   padding: 16px;
   display: grid;
   gap: 16px;
