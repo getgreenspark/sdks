@@ -7,23 +7,39 @@ import type { FullWidthBannerWidgetParams } from '@/interfaces'
 export class FullWidthBannerWidget extends Widget implements FullWidthBannerWidgetParams {
   options: Array<(typeof AVAILABLE_STATISTIC_TYPES)[number]>
   imageUrl?: string
+  title?: string
+  description?: string
+  showButton?: boolean
+  version?: 'v2'
 
   constructor(params: WidgetConfig & FullWidthBannerWidgetParams) {
     super(params)
     this.options = params.options
     this.imageUrl = params.imageUrl
+    this.title = params.title
+    this.description = params.description
+    this.showButton = params.showButton
+    this.version = params.version
   }
 
   get fullWidthBannerWidgetRequestBody(): FullWidthBannerWidgetParams {
     return {
       options: this.options,
       imageUrl: this.imageUrl,
+      title: this.title,
+      description: this.description,
+      showButton: this.showButton,
+      version: this.version,
     }
   }
 
-  updateDefaults({ options, imageUrl }: Partial<FullWidthBannerWidgetParams>) {
+  updateDefaults({ options, imageUrl, title, description, showButton, version }: Partial<FullWidthBannerWidgetParams>) {
     this.options = options ?? this.options
     this.imageUrl = imageUrl ?? this.imageUrl
+    this.title = title ?? this.title
+    this.description = description ?? this.description
+    this.showButton = showButton ?? this.showButton
+    this.version = version ?? this.version
   }
 
   validateOptions() {

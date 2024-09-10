@@ -1,0 +1,14 @@
+[class^=widget-container-]:not([class^=widget-container-fullWidthBanner]) {
+  border-radius: 8px;
+  background-color: rgb(246 247 236);
+  padding: 16px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, 1fr);
+  margin-bottom: 32px;
+  overflow: scroll;
+}
+
+[class^=widget-container-topStats] {
+  grid-template-columns: repeat(2, 1fr) !important;
+}

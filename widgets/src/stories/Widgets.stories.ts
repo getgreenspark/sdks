@@ -39,46 +39,65 @@ const meta = {
       shopUniqueName,
     })
 
+    const basicVariants = [
+      {},
+      { version: 'v2', style: 'default' },
+      { version: 'v2', style: 'simplified' },
+    ]
+
+    const fullWidthIcons = ["monthsEarthPositive", "trees", "plastic", "carbon", "straws"]
+    const fullWidthBannerVariants = [
+      { options: fullWidthIcons },
+      { version: 'v2', options: fullWidthIcons },
+      { version: 'v2', options: fullWidthIcons, title: 'Our positive climate impact', description: 'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!' },
+      { version: 'v2', options: fullWidthIcons, title: 'Our positive climate impact', description: 'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!', showButton: true },
+    ]
+
+    const topStatsVariants = [
+      { withPopup: true },
+      { version: 'v2' },
+      { version: 'v2', withPopup: true },
+    ]
+
     let widget: Widget
     switch (widgetType) {
       case 'byPercentage':
         widget = widgets.byPercentage(widgetArgs as ByPercentageWidgetParams)
-        break
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
 
       case 'cart':
         widget = widgets.cart(widgetArgs as CartWidgetParams)
-        break
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
 
       case 'fullWidthBanner':
         widget = widgets.fullWidthBanner(widgetArgs as FullWidthBannerWidgetParams)
-        break
+        return createWidgetPage(widgetType, widget, ['default'], fullWidthBannerVariants)
 
       case 'perOrder':
         widget = widgets.perOrder(widgetArgs as PerOrderWidgetParams)
-        break
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
 
       case 'perProduct':
         widget = widgets.perProduct(widgetArgs as PerProductWidgetParams)
-        break
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
 
       case 'spendLevel':
         widget = widgets.spendLevel(widgetArgs as SpendLevelWidgetParams)
-        break
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
 
       case 'tieredSpendLevel':
         widget = widgets.tieredSpendLevel(widgetArgs as TieredSpendLevelWidgetParams)
-        break
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
 
       case 'topStats':
         widget = widgets.topStats(widgetArgs as TopStatsWidgetParams)
-        break
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, topStatsVariants)
 
       default:
         widget = widgets.byPercentage(widgetArgs as ByPercentageWidgetParams)
-        break
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
     }
 
-    return createWidgetPage(widgetType, widget)
   },
   argTypes: {
     apiKey: { control: 'text' },
@@ -267,6 +286,7 @@ export const TopStats: StoryObj<{
       color: {
         control: { type: 'select' },
         options: WIDGET_COLORS,
+        withPopup: { control: 'boolean' },
       },
     },
   },

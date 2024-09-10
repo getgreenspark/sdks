@@ -49,11 +49,11 @@ export class ConnectionHandler {
   }
 
   async fetchCartWidget(
-    body: CartWidgetParams,
+    { version, ...body}: CartWidgetParams,
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, CartWidgetRequestBody>(
-      '/widgets/cart-widget',
+      `${version ? `/${version}` : ''}/widgets/cart-widget`,
       Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
       {
         params: { lng: this.locale },
@@ -63,11 +63,11 @@ export class ConnectionHandler {
   }
 
   async fetchSpendLevelWidget(
-    body: SpendLevelWidgetParams,
+    { version, ...body}: SpendLevelWidgetParams,
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, SpendLevelRequestBody>(
-      '/widgets/spend-level-widget',
+      `${version ? `/${version}` : ''}/widgets/spend-level-widget`,
       Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
       {
         params: { lng: this.locale },
@@ -77,11 +77,11 @@ export class ConnectionHandler {
   }
 
   async fetchPerOrderWidget(
-    body: PerOrderWidgetParams,
+    { version, ...body}: PerOrderWidgetParams,
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, PerOrderRequestBody>(
-      '/widgets/per-order-widget',
+      `${version ? `/${version}` : ''}/widgets/per-order-widget`,
       Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
       {
         params: { lng: this.locale },
@@ -91,11 +91,11 @@ export class ConnectionHandler {
   }
 
   async fetchByPercentageWidget(
-    body: ByPercentageWidgetParams,
+    { version, ...body}: ByPercentageWidgetParams,
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, ByPercentageRequestBody>(
-      '/widgets/by-percentage-widget',
+      `${version ? `/${version}` : ''}/widgets/by-percentage-widget`,
       Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
       {
         params: { lng: this.locale },
@@ -105,11 +105,11 @@ export class ConnectionHandler {
   }
 
   async fetchTieredSpendLevelWidget(
-    body: TieredSpendLevelWidgetParams,
+    { version, ...body}: TieredSpendLevelWidgetParams,
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, TieredSpendLevelRequestBody>(
-      '/widgets/tiered-spend-level-widget',
+      `${version ? `/${version}` : ''}/widgets/tiered-spend-level-widget`,
       Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
       {
         params: { lng: this.locale },
@@ -119,11 +119,11 @@ export class ConnectionHandler {
   }
 
   async fetchPerProductWidget(
-    body: PerProductWidgetParams,
+    { version, ...body}: PerProductWidgetParams,
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, PerProductRequestBody>(
-      '/widgets/per-product-widget',
+      `${version ? `/${version}` : ''}/widgets/per-product-widget`,
       Object.assign({}, body, this.shopUniqueName ? { shopUniqueName: this.shopUniqueName } : null),
       {
         params: { lng: this.locale },
@@ -133,11 +133,11 @@ export class ConnectionHandler {
   }
 
   async fetchTopStatsWidget(
-    body: TopStatsWidgetParams,
+    { version, ...body}: TopStatsWidgetParams,
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, TopStatsRequestBody>(
-      '/widgets/stats-widget',
+      `${version ? `/${version}` : ''}/widgets/stats-widget`,
       body,
       {
         params: { lng: this.locale },
@@ -147,11 +147,11 @@ export class ConnectionHandler {
   }
 
   async fetchFullWidthBannerWidget(
-    body: FullWidthBannerWidgetParams,
+    { version, ...body}: FullWidthBannerWidgetParams,
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, FullWidthBannerRequestBody>(
-      '/widgets/full-width-banner',
+      `${version ? `/${version}` : ''}/widgets/full-width-banner`,
       body,
       {
         params: { lng: this.locale },

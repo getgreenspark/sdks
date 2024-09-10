@@ -2,18 +2,22 @@ import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
-import type { SpendLevelWidgetParams } from '@/interfaces'
+import type { SpendLevelWidgetParams, WidgetStyle } from '@/interfaces'
 
 export class SpendLevelWidget extends Widget implements SpendLevelWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   currency: string
   withPopup?: boolean
+  style?: WidgetStyle
+  version?: 'v2'
 
   constructor(params: WidgetConfig & SpendLevelWidgetParams) {
     super(params)
     this.color = params.color
     this.currency = params.currency
     this.withPopup = params.withPopup ?? true
+    this.style = params.style ?? 'default'
+    this.version = params.version
   }
 
   get spendLevelRequestBody(): SpendLevelWidgetParams {
@@ -21,13 +25,17 @@ export class SpendLevelWidget extends Widget implements SpendLevelWidgetParams {
       color: this.color,
       currency: this.currency,
       withPopup: this.withPopup,
+      style: this.style,
+      version: this.version,
     }
   }
 
-  updateDefaults({ color, currency, withPopup }: Partial<SpendLevelWidgetParams>) {
+  updateDefaults({ color, currency, withPopup, style, version }: Partial<SpendLevelWidgetParams>) {
     this.color = color ?? this.color
     this.currency = currency ?? this.currency
     this.withPopup = withPopup ?? this.withPopup
+    this.style = style ?? this.style
+    this.version = version ?? this.version
   }
 
   validateOptions() {

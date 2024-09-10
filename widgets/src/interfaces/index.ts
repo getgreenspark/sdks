@@ -1,4 +1,6 @@
-import type { AVAILABLE_LOCALES, AVAILABLE_STATISTIC_TYPES, WIDGET_COLORS } from '@/constants'
+import type { AVAILABLE_LOCALES, AVAILABLE_STATISTIC_TYPES, WIDGET_COLORS, WIDGET_STYLES } from '@/constants'
+
+export type WidgetStyle = (typeof WIDGET_STYLES)[number]
 
 export interface ApiSettings {
   apiKey: string
@@ -21,48 +23,62 @@ export interface StoreOrder {
   lineItems: Array<OrderProduct>
 }
 
-export interface CartWidgetParams {
+export interface WidgetParams {
+  version?: 'v2'
+}
+
+export interface CartWidgetParams extends WidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   order: StoreOrder
   withPopup?: boolean
+  style?: WidgetStyle
 }
 
-export interface SpendLevelWidgetParams {
+export interface SpendLevelWidgetParams extends WidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   currency: string
   withPopup?: boolean
+  style?: WidgetStyle
 }
 
-export interface PerOrderWidgetParams {
+export interface PerOrderWidgetParams extends WidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   currency: string
   withPopup?: boolean
+  style?: WidgetStyle
 }
 
-export interface ByPercentageWidgetParams {
+export interface ByPercentageWidgetParams extends WidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   withPopup?: boolean
+  style?: WidgetStyle
 }
 
-export interface TieredSpendLevelWidgetParams {
+export interface TieredSpendLevelWidgetParams extends WidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   currency: string
   withPopup?: boolean
+  style?: WidgetStyle
 }
 
-export interface PerProductWidgetParams {
+export interface PerProductWidgetParams extends WidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   productId: string
   withPopup?: boolean
+  style?: WidgetStyle
 }
 
-export interface TopStatsWidgetParams {
+export interface TopStatsWidgetParams extends WidgetParams {
   color: (typeof WIDGET_COLORS)[number]
+  withPopup?: boolean
 }
 
-export interface FullWidthBannerWidgetParams {
+export interface FullWidthBannerWidgetParams extends WidgetParams{
   options: Array<(typeof AVAILABLE_STATISTIC_TYPES)[number]>
   imageUrl?: string
+  title?: string
+  description?: string
+  showButton?: boolean
 }
 
 export interface CartWidgetRequestBody extends ExternalShopContext, CartWidgetParams {}

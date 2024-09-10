@@ -6,20 +6,28 @@ import type { TopStatsWidgetParams } from '@/interfaces'
 
 export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
+  withPopup?: boolean
+  version?: 'v2'
 
   constructor(params: WidgetConfig & TopStatsWidgetParams) {
     super(params)
     this.color = params.color
+    this.withPopup = params.withPopup
+    this.version = params.version
   }
 
   get topStatsWidgetRequestBody(): TopStatsWidgetParams {
     return {
       color: this.color,
+      withPopup: this.withPopup,
+      version: this.version,
     }
   }
 
-  updateDefaults({ color }: Partial<TopStatsWidgetParams>) {
+  updateDefaults({ color, withPopup, version }: Partial<TopStatsWidgetParams>) {
     this.color = color ?? this.color
+    this.withPopup = withPopup ?? this.withPopup
+    this.version = version ?? this.version
   }
 
   validateOptions() {
