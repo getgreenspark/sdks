@@ -37,7 +37,7 @@
   "homepage": "https://github.com/getgreenspark/sdks",
   "repository": {
     "type": "git",
-    "url": "git@github.com:getgreenspark/sdks.git"
+    "url": "git+ssh://git@github.com/getgreenspark/sdks.git"
   },
   "typings": "./dist/index.d.ts",
   "devDependencies": {
