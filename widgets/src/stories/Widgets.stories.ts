@@ -17,7 +17,7 @@ import type { Widget } from '@/widgets/base'
 
 const WIDGET_API_KEY =
   '6kQypJppcK9F5FMGHxUM53rc3Kx%2FPFz%2Bi3wni6geNSf%2FIbUq06e5KES8IyR7bKViR11ZM5AabP'
-const SHOP_UNIQUE_NAME = 'greenspark-development-store-widget-sdk-storybook.myshopify.com'
+const INTEGRATION_SLUG = 'greenspark-development-store-widget-sdk-storybook.myshopify.com'
 type WIDGET_VARIANTS =
   | 'byPercentage'
   | 'cart'
@@ -32,11 +32,11 @@ const meta = {
   title: 'Widget SDK/Widgets',
   tags: ['autodocs'],
   render: (args) => {
-    const { apiKey, shopUniqueName, widgetType, widgetArgs } = args
+    const { apiKey, integrationSlug, widgetType, widgetArgs } = args
 
     const widgets = new GreensparkWidgets({
       apiKey,
-      shopUniqueName,
+      integrationSlug,
     })
 
     const basicVariants = [
@@ -101,11 +101,11 @@ const meta = {
   },
   argTypes: {
     apiKey: { control: 'text' },
-    shopUniqueName: { control: 'text' },
+    integrationSlug: { control: 'text' },
   },
   args: {
     apiKey: WIDGET_API_KEY,
-    shopUniqueName: SHOP_UNIQUE_NAME,
+    integrationSlug: INTEGRATION_SLUG,
   },
 } satisfies Meta<GreensparkWidgets & { widgetType: WIDGET_VARIANTS; widgetArgs: unknown }>
 

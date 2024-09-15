@@ -5,11 +5,11 @@ export type WidgetStyle = (typeof WIDGET_STYLES)[number]
 export interface ApiSettings {
   apiKey: string
   locale?: (typeof AVAILABLE_LOCALES)[number]
-  shopUniqueName?: string
+  integrationSlug?: string
 }
 
 export interface ExternalShopContext {
-  shopUniqueName: string
+  integrationSlug: string
 }
 
 export interface OrderProduct {

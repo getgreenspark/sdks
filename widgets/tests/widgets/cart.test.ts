@@ -13,7 +13,7 @@ jest.mock('axios')
 const axiosMock = axios as jest.Mocked<typeof axios>
 
 const API_KEY = apiFixtures.default.apiKey as string
-const SHOP_UNIQUE_NAME = apiFixtures.default.shopUniqueName as string
+const INTEGRATION_SLUG = apiFixtures.default.integrationSlug as string
 const EMPTY_ORDER = orderFixtures.empty as StoreOrder
 const BASIC_ORDER = orderFixtures.basic as StoreOrder
 const ORDER_WITH_INVALID_PRICE = orderFixtures.invalidPrice as StoreOrder
@@ -23,7 +23,7 @@ const ORDER_WITH_INVALID_QUANTITIES = orderFixtures.invalidQuantities as StoreOr
 let widgets: GreensparkWidgets
 describe('Cart Widget', () => {
   beforeAll(() => {
-    widgets = new GreensparkWidgets({ apiKey: API_KEY, shopUniqueName: SHOP_UNIQUE_NAME })
+    widgets = new GreensparkWidgets({ apiKey: API_KEY, integrationSlug: INTEGRATION_SLUG })
   })
 
   test('can render a cart widget', async () => {

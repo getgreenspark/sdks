@@ -9,7 +9,7 @@ import type { StoreOrder } from '@/interfaces'
 import { SpendLevelWidget } from '@/widgets/spendLevel'
 
 const API_KEY = apiFixtures.default.apiKey as string
-const SHOP_UNIQUE_NAME = apiFixtures.default.shopUniqueName as string
+const INTEGRATION_SLUG = apiFixtures.default.integrationSlug as string
 const EMPTY_ORDER = orderFixture.empty as StoreOrder
 const BASIC_ORDER = orderFixture.basic as StoreOrder
 
@@ -19,7 +19,7 @@ describe('GreensparkWidgets', () => {
     expect(widgets instanceof GreensparkWidgets).toBe(true)
     expect(widgets.apiKey).toEqual(API_KEY)
     expect(widgets.currentLocale).toEqual(DEFAULT_LOCALE)
-    expect(widgets.shopUniqueName).toBeUndefined()
+    expect(widgets.integrationSlug).toBeUndefined()
   })
 
   test('can initialize the package through the window object', () => {
@@ -27,7 +27,7 @@ describe('GreensparkWidgets', () => {
     expect(widgets instanceof GreensparkWidgets).toBe(true)
     expect(widgets.apiKey).toEqual(API_KEY)
     expect(widgets.currentLocale).toEqual(DEFAULT_LOCALE)
-    expect(widgets.shopUniqueName).toBeUndefined()
+    expect(widgets.integrationSlug).toBeUndefined()
   })
 
   test('can initialize the package in german', () => {
@@ -51,7 +51,7 @@ describe('GreensparkWidgets', () => {
   })
 
   test('can create individual widget instances', () => {
-    const widgets = new GreensparkWidgets({ apiKey: API_KEY, shopUniqueName: SHOP_UNIQUE_NAME })
+    const widgets = new GreensparkWidgets({ apiKey: API_KEY, integrationSlug: INTEGRATION_SLUG })
     expect(typeof widgets.cart).toEqual('function')
     const cart = widgets.cart({ color: 'beige', order: EMPTY_ORDER })
     expect(cart instanceof CartWidget).toBe(true)
