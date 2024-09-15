@@ -9,6 +9,10 @@ export interface ApiSettings {
 }
 
 export interface ExternalShopContext {
+  shopUniqueName: string
+}
+
+export interface ExternalShopContextV2 {
   integrationSlug: string
 }
 
@@ -82,12 +86,16 @@ export interface FullWidthBannerWidgetParams extends WidgetParams{
 }
 
 export interface CartWidgetRequestBody extends ExternalShopContext, CartWidgetParams {}
+export interface CartWidgetRequestBodyV2 extends ExternalShopContextV2, CartWidgetParams {}
 export interface SpendLevelRequestBody extends ExternalShopContext, SpendLevelWidgetParams {}
+export interface SpendLevelRequestBodyV2 extends ExternalShopContextV2, SpendLevelWidgetParams {}
 export interface PerOrderRequestBody extends ExternalShopContext, PerOrderWidgetParams {}
+export interface PerOrderRequestBodyV2 extends ExternalShopContextV2, PerOrderWidgetParams {}
 export interface ByPercentageRequestBody extends ExternalShopContext, ByPercentageWidgetParams {}
-export interface TieredSpendLevelRequestBody
-  extends ExternalShopContext,
-    TieredSpendLevelWidgetParams {}
+export interface ByPercentageRequestBodyV2 extends ExternalShopContextV2, ByPercentageWidgetParams {}
+export interface TieredSpendLevelRequestBody extends ExternalShopContext, TieredSpendLevelWidgetParams {}
+export interface TieredSpendLevelRequestBodyV2 extends ExternalShopContextV2, TieredSpendLevelWidgetParams {}
 export interface PerProductRequestBody extends ExternalShopContext, PerProductWidgetParams {}
+export interface PerProductRequestBodyV2 extends ExternalShopContextV2, PerProductWidgetParams {}
 export type TopStatsRequestBody = TopStatsWidgetParams
 export type FullWidthBannerRequestBody = FullWidthBannerWidgetParams
