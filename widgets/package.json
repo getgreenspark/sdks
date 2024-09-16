@@ -85,7 +85,10 @@
       "tagAnnotation": "@getgreenspark/widgets v${version}"
     },
     "npm": {
-      "publish": true
+      "publish": true,
+      "publishArgs": [
+        "--include-workspace-root=false"
+      ]
     },
     "hooks": {
       "before:init": [
