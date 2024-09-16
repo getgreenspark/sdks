@@ -7,19 +7,25 @@ import type {
 
 export type WidgetStyle = (typeof WIDGET_STYLES)[number]
 
-export interface ApiSettings {
+type ApiSettingsBase = {
   apiKey: string
   locale?: (typeof AVAILABLE_LOCALES)[number]
-  integrationSlug?: string
 }
 
-export interface ExternalShopContext {
+export type ApiSettings = ApiSettingsBase &
+  (Partial<ExternalShopContextV1> | Partial<ExternalShopContextV2>)
+
+interface ExternalShopContextV1 {
   shopUniqueName: string
+  integrationSlug?: never
 }
 
-export interface ExternalShopContextV2 {
+interface ExternalShopContextV2 {
+  shopUniqueName?: never
   integrationSlug: string
 }
+
+export type ExternalShopContext = ExternalShopContextV1 | ExternalShopContextV2
 
 export interface OrderProduct {
   productId: string
@@ -97,24 +103,12 @@ export interface FullWidthBannerWidgetParams extends WidgetParams {
   showButton?: boolean
 }
 
-export interface CartWidgetRequestBody extends ExternalShopContext, CartWidgetParams {}
-export interface CartWidgetRequestBodyV2 extends ExternalShopContextV2, CartWidgetParams {}
-export interface SpendLevelRequestBody extends ExternalShopContext, SpendLevelWidgetParams {}
-export interface SpendLevelRequestBodyV2 extends ExternalShopContextV2, SpendLevelWidgetParams {}
-export interface PerOrderRequestBody extends ExternalShopContext, PerOrderWidgetParams {}
-export interface PerOrderRequestBodyV2 extends ExternalShopContextV2, PerOrderWidgetParams {}
-export interface PerPurchaseRequestBodyV2 extends ExternalShopContextV2, PerPurchaseWidgetParams {}
-export interface ByPercentageRequestBody extends ExternalShopContext, ByPercentageWidgetParams {}
-export interface ByPercentageRequestBodyV2
-  extends ExternalShopContextV2,
-    ByPercentageWidgetParams {}
-export interface TieredSpendLevelRequestBody
-  extends ExternalShopContext,
-    TieredSpendLevelWidgetParams {}
-export interface TieredSpendLevelRequestBodyV2
-  extends ExternalShopContextV2,
-    TieredSpendLevelWidgetParams {}
-export interface PerProductRequestBody extends ExternalShopContext, PerProductWidgetParams {}
-export interface PerProductRequestBodyV2 extends ExternalShopContextV2, PerProductWidgetParams {}
+export type CartWidgetRequestBody = ExternalShopContext & CartWidgetParams
+export type SpendLevelRequestBody = ExternalShopContext & SpendLevelWidgetParams
+export type PerOrderRequestBody = ExternalShopContext & PerOrderWidgetParams
+export type PerPurchaseRequestBody = ExternalShopContext & PerPurchaseWidgetParams
+export type ByPercentageRequestBody = ExternalShopContext & ByPercentageWidgetParams
+export type TieredSpendLevelRequestBody = ExternalShopContext & TieredSpendLevelWidgetParams
+export type PerProductRequestBody = ExternalShopContext & PerProductWidgetParams
 export type TopStatsRequestBody = TopStatsWidgetParams
 export type FullWidthBannerRequestBody = FullWidthBannerWidgetParams

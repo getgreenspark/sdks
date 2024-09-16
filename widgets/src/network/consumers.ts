@@ -10,10 +10,10 @@ export class ApiConsumer {
   currentLocale: ValidLanguage
   api: ConnectionHandler
 
-  constructor({ apiKey, locale = DEFAULT_LOCALE, integrationSlug }: ApiSettings) {
+  constructor({ apiKey, locale = DEFAULT_LOCALE, integrationSlug, shopUniqueName }: ApiSettings) {
     this.apiKey = apiKey
     this.currentLocale = this.validateLocale(locale)
-    this.integrationSlug = integrationSlug
+    this.integrationSlug = integrationSlug || shopUniqueName
     this.api = this.instanciateApi()
   }
 

@@ -6,7 +6,6 @@ import apiFixtures from '@tests/fixtures/api.json'
 import orderFixture from '@tests/fixtures/order.json'
 
 import type { StoreOrder } from '@/interfaces'
-import { SpendLevelWidget } from '@/widgets/spendLevel'
 
 const API_KEY = apiFixtures.default.apiKey as string
 const INTEGRATION_SLUG = apiFixtures.default.integrationSlug as string
