@@ -30,7 +30,7 @@
     "test": "jest --config=jest.config.ts",
     "lint": "eslint src",
     "dev": "webpack --mode=development",
-    "build": "webpack --mode=production",
+    "build": "rm -r dist; webpack --mode=production",
     "release": "release-it",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
