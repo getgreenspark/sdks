@@ -104,6 +104,6 @@
     ]
   },
   "directories": {
-    "test": "tests"
+    "src": "src"
   }
 }
