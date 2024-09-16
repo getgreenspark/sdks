@@ -1,10 +1,12 @@
 {
   "name": "@getgreenspark/widgets",
   "version": "1.1.0",
-  "bugs": "https://github.com/getgreenspark/sdks/issues",
+  "bugs": {
+    "url": "https://github.com/getgreenspark/sdks/issues"
+  },
   "main": "./dist/index.js",
   "description": "An SDK design to help the use of Greenspark's widget API in the browser",
-  "author": "Greenspark <support@getgreenspark.com> (https://getgreenspark.com/",
+  "author": "Greenspark <support@getgreenspark.com>",
   "keywords": [
     "greenspark",
     "getgreenspark",
@@ -97,5 +99,8 @@
     "extends": [
       "plugin:storybook/recommended"
     ]
+  },
+  "directories": {
+    "test": "tests"
   }
 }
