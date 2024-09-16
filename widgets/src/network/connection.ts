@@ -55,27 +55,19 @@ export class ConnectionHandler {
     { version, ...body }: CartWidgetParams,
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
-    if (version) {
-      return this.api.post<string, AxiosResponse<string>, CartWidgetRequestBody>(
-        `${version}/widgets/cart-widget`,
-        Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        ),
-        {
-          params: { lng: this.locale },
-          headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-        },
-      )
-    }
     return this.api.post<string, AxiosResponse<string>, CartWidgetRequestBody>(
-      `/widgets/cart-widget`,
-      Object.assign(
-        {},
-        body,
-        this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-      ),
+      `${version ? `/${version}` : ''}/widgets/cart-widget`,
+      version
+        ? Object.assign(
+            {},
+            body,
+            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+          )
+        : Object.assign(
+            {},
+            body,
+            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+          ),
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
@@ -87,27 +79,19 @@ export class ConnectionHandler {
     { version, ...body }: SpendLevelWidgetParams,
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
-    if (version) {
-      return this.api.post<string, AxiosResponse<string>, SpendLevelRequestBody>(
-        `${version}/widgets/spend-level-widget`,
-        Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        ),
-        {
-          params: { lng: this.locale },
-          headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-        },
-      )
-    }
     return this.api.post<string, AxiosResponse<string>, SpendLevelRequestBody>(
-      `/widgets/spend-level-widget`,
-      Object.assign(
-        {},
-        body,
-        this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-      ),
+      `${version ? `/${version}` : ''}/widgets/spend-level-widget`,
+      version
+        ? Object.assign(
+            {},
+            body,
+            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+          )
+        : Object.assign(
+            {},
+            body,
+            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+          ),
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
@@ -119,27 +103,19 @@ export class ConnectionHandler {
     { version, ...body }: PerOrderWidgetParams,
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
-    if (version) {
-      return this.api.post<string, AxiosResponse<string>, PerOrderRequestBody>(
-        `${version}/widgets/per-order-widget`,
-        Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        ),
-        {
-          params: { lng: this.locale },
-          headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-        },
-      )
-    }
     return this.api.post<string, AxiosResponse<string>, PerOrderRequestBody>(
-      `/widgets/per-order-widget`,
-      Object.assign(
-        {},
-        body,
-        this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-      ),
+      `${version ? `/${version}` : ''}/widgets/per-order-widget`,
+      version
+        ? Object.assign(
+            {},
+            body,
+            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+          )
+        : Object.assign(
+            {},
+            body,
+            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+          ),
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
@@ -169,27 +145,19 @@ export class ConnectionHandler {
     { version, ...body }: ByPercentageWidgetParams,
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
-    if (version) {
-      return this.api.post<string, AxiosResponse<string>, ByPercentageRequestBody>(
-        `${version}/widgets/by-percentage-widget`,
-        Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        ),
-        {
-          params: { lng: this.locale },
-          headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-        },
-      )
-    }
     return this.api.post<string, AxiosResponse<string>, ByPercentageRequestBody>(
-      `/widgets/by-percentage-widget`,
-      Object.assign(
-        {},
-        body,
-        this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-      ),
+      `${version ? `/${version}` : ''}/widgets/by-percentage-widget`,
+      version
+        ? Object.assign(
+            {},
+            body,
+            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+          )
+        : Object.assign(
+            {},
+            body,
+            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+          ),
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
@@ -201,27 +169,19 @@ export class ConnectionHandler {
     { version, ...body }: TieredSpendLevelWidgetParams,
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
-    if (version) {
-      return this.api.post<string, AxiosResponse<string>, TieredSpendLevelRequestBody>(
-        `${version}/widgets/tiered-spend-level-widget`,
-        Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        ),
-        {
-          params: { lng: this.locale },
-          headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-        },
-      )
-    }
     return this.api.post<string, AxiosResponse<string>, TieredSpendLevelRequestBody>(
-      `/widgets/tiered-spend-level-widget`,
-      Object.assign(
-        {},
-        body,
-        this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-      ),
+      `${version ? `/${version}` : ''}/widgets/tiered-spend-level-widget`,
+      version
+        ? Object.assign(
+            {},
+            body,
+            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+          )
+        : Object.assign(
+            {},
+            body,
+            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+          ),
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
@@ -233,27 +193,19 @@ export class ConnectionHandler {
     { version, ...body }: PerProductWidgetParams,
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
-    if (version) {
-      return this.api.post<string, AxiosResponse<string>, PerProductRequestBody>(
-        `${version}/widgets/per-product-widget`,
-        Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        ),
-        {
-          params: { lng: this.locale },
-          headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-        },
-      )
-    }
     return this.api.post<string, AxiosResponse<string>, PerProductRequestBody>(
-      `/widgets/per-product-widget`,
-      Object.assign(
-        {},
-        body,
-        this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-      ),
+      `${version ? `/${version}` : ''}/widgets/per-product-widget`,
+      version
+        ? Object.assign(
+            {},
+            body,
+            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+          )
+        : Object.assign(
+            {},
+            body,
+            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+          ),
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
