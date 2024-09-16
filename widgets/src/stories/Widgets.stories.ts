@@ -23,7 +23,6 @@ type WIDGET_VARIANTS =
   | 'cart'
   | 'fullWidthBanner'
   | 'perOrder'
-  | 'perPurchase'
   | 'perProduct'
   | 'spendLevel'
   | 'tieredSpendLevel'

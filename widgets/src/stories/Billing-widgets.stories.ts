@@ -15,16 +15,7 @@ import type { Widget } from '@/widgets/base'
 const WIDGET_API_KEY =
   '6kQypJppcK9F5FMGHxUM53rc3Kx%2FPFz%2Bi3wni6geNSf%2FIbUq06e5KES8IyR7bKViR11ZM5AabP'
 const INTEGRATION_SLUG = 'storybook-demo-stripe-54511'
-type WIDGET_VARIANTS =
-  | 'byPercentage'
-  | 'cart'
-  | 'fullWidthBanner'
-  | 'perOrder'
-  | 'perPurchase'
-  | 'perProduct'
-  | 'spendLevel'
-  | 'tieredSpendLevel'
-  | 'topStats'
+type WIDGET_VARIANTS = 'byPercentage' | 'perPurchase' | 'spendLevel' | 'tieredSpendLevel'
 
 const meta = {
   title: 'Widget SDK/Billing Widgets',
