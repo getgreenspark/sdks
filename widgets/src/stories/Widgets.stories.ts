@@ -32,7 +32,7 @@ type WIDGET_VARIANTS =
   | 'topStats'
 
 const meta = {
-  title: 'Widget SDK/Widgets',
+  title: 'Widget SDK/Store Widgets',
   tags: ['autodocs'],
   render: (args) => {
     const { apiKey, integrationSlug, widgetType, widgetArgs } = args
