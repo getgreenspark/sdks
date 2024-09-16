@@ -8,9 +8,11 @@ import type {
   FullWidthBannerWidgetParams,
   PerOrderWidgetParams,
   PerProductWidgetParams,
+  PerPurchaseWidgetParams,
   SpendLevelWidgetParams,
   TieredSpendLevelWidgetParams,
   TopStatsWidgetParams,
+  WidgetParams,
 } from '@/interfaces'
 import GreensparkWidgets from '@/index'
 import type { Widget } from '@/widgets/base'
@@ -23,6 +25,7 @@ type WIDGET_VARIANTS =
   | 'cart'
   | 'fullWidthBanner'
   | 'perOrder'
+  | 'perPurchase'
   | 'perProduct'
   | 'spendLevel'
   | 'tieredSpendLevel'
@@ -45,12 +48,25 @@ const meta = {
       { version: 'v2', style: 'simplified' },
     ]
 
-    const fullWidthIcons = ["monthsEarthPositive", "trees", "plastic", "carbon", "straws"]
+    const fullWidthIcons = ['monthsEarthPositive', 'trees', 'plastic', 'carbon', 'straws']
     const fullWidthBannerVariants = [
       { options: fullWidthIcons },
       { version: 'v2', options: fullWidthIcons },
-      { version: 'v2', options: fullWidthIcons, title: 'Our positive climate impact', description: 'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!' },
-      { version: 'v2', options: fullWidthIcons, title: 'Our positive climate impact', description: 'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!', showButton: true },
+      {
+        version: 'v2',
+        options: fullWidthIcons,
+        title: 'Our positive climate impact',
+        description:
+          'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!',
+      },
+      {
+        version: 'v2',
+        options: fullWidthIcons,
+        title: 'Our positive climate impact',
+        description:
+          'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!',
+        showButton: true,
+      },
     ]
 
     const topStatsVariants = [
@@ -77,6 +93,10 @@ const meta = {
         widget = widgets.perOrder(widgetArgs as PerOrderWidgetParams)
         return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
 
+      case 'perPurchase':
+        widget = widgets.perPurchase(widgetArgs as PerPurchaseWidgetParams & Required<WidgetParams>)
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
+
       case 'perProduct':
         widget = widgets.perProduct(widgetArgs as PerProductWidgetParams)
         return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
@@ -97,7 +117,6 @@ const meta = {
         widget = widgets.byPercentage(widgetArgs as ByPercentageWidgetParams)
         return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
     }
-
   },
   argTypes: {
     apiKey: { control: 'text' },
@@ -202,6 +221,30 @@ export const PerOrder: StoryObj<{
       color: 'beige',
     },
     widgetType: 'perOrder',
+  },
+}
+
+export const PerPurchase: StoryObj<{
+  widgetArgs: PerPurchaseWidgetParams
+  widgetType: keyof GreensparkWidgets
+}> = {
+  argTypes: {
+    widgetArgs: {
+      withPopup: { control: 'boolean' },
+      currency: { control: 'text' },
+      color: {
+        control: { type: 'select' },
+        options: WIDGET_COLORS,
+      },
+    },
+  },
+  args: {
+    widgetArgs: {
+      currency: 'EUR',
+      withPopup: true,
+      color: 'beige',
+    },
+    widgetType: 'perPurchase',
   },
 }
 
