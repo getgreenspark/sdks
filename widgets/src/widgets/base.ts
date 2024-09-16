@@ -1,4 +1,5 @@
 import { DOMInjector } from '@/dom'
+import type { LayoutConfig } from '@/interfaces'
 import type { ConnectionHandler } from '@/network'
 
 export interface WidgetConfig {
@@ -7,7 +8,11 @@ export interface WidgetConfig {
 }
 
 export interface WidgetTemplate {
-  render(options?: unknown, containerSelector?: string): Promise<void>
+  render(
+    options?: unknown,
+    containerSelector?: string,
+    layout?: Partial<LayoutConfig>,
+  ): Promise<void>
   renderToString(options?: unknown): Promise<string>
   renderToElement(options?: unknown): Promise<HTMLElement>
 }

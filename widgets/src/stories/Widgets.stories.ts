@@ -6,6 +6,7 @@ import type {
   ByPercentageWidgetParams,
   CartWidgetParams,
   FullWidthBannerWidgetParams,
+  LayoutConfig,
   PerOrderWidgetParams,
   PerProductWidgetParams,
   SpendLevelWidgetParams,
@@ -39,18 +40,31 @@ const meta = {
       shopUniqueName,
     })
 
-    const basicVariants = [
+    const basicVariants: { version?: string; style?: string }[] = [
       {},
       { version: 'v2', style: 'default' },
       { version: 'v2', style: 'simplified' },
     ]
 
-    const fullWidthIcons = ["monthsEarthPositive", "trees", "plastic", "carbon", "straws"]
+    const fullWidthIcons = ['monthsEarthPositive', 'trees', 'plastic', 'carbon', 'straws']
     const fullWidthBannerVariants = [
       { options: fullWidthIcons },
       { version: 'v2', options: fullWidthIcons },
-      { version: 'v2', options: fullWidthIcons, title: 'Our positive climate impact', description: 'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!' },
-      { version: 'v2', options: fullWidthIcons, title: 'Our positive climate impact', description: 'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!', showButton: true },
+      {
+        version: 'v2',
+        options: fullWidthIcons,
+        title: 'Our positive climate impact',
+        description:
+          'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!',
+      },
+      {
+        version: 'v2',
+        options: fullWidthIcons,
+        title: 'Our positive climate impact',
+        description:
+          'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!',
+        showButton: true,
+      },
     ]
 
     const topStatsVariants = [
@@ -97,7 +111,6 @@ const meta = {
         widget = widgets.byPercentage(widgetArgs as ByPercentageWidgetParams)
         return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
     }
-
   },
   argTypes: {
     apiKey: { control: 'text' },

@@ -1,4 +1,5 @@
 import { DEFAULT_CONTAINER_CSS_SELECTOR } from '@/constants'
+import type { LayoutConfig } from '@/interfaces'
 
 export class DOMInjector {
   containerSelector: string
@@ -7,7 +8,16 @@ export class DOMInjector {
     this.containerSelector = containerSelector
   }
 
-  inject(widget: HTMLElement, containerSelector?: string) {
+  static getLayoutClasses(layout: Partial<LayoutConfig>): string[] {
+    const { horizontalAlignment, size, justifyContent } = layout
+    return [
+      horizontalAlignment ? `gs-horizontal-alignment-${horizontalAlignment}` : null,
+      size ? `gs-size-${size}` : null,
+      justifyContent ? `gs-justify-content-${justifyContent}` : null,
+    ].filter<string>((v) => v !== null)
+  }
+
+  inject(widget: HTMLElement, containerSelector?: string, layout?: Partial<LayoutConfig>) {
     if (!widget) return
 
     this.containerSelector = containerSelector ?? this.containerSelector
@@ -26,6 +36,11 @@ export class DOMInjector {
     const nonScripts = [...widget.children].filter((el) => el.tagName !== 'SCRIPT')
     const shadow = container.shadowRoot ?? container.attachShadow({ mode: 'open' })
     shadow.append(...nonScripts)
+
+    if (layout) {
+      const widgetContainer = shadow.querySelector('.root-container')
+      if (widgetContainer) widgetContainer.classList.add(...DOMInjector.getLayoutClasses(layout))
+    }
 
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
       scripts.forEach((s) => eval(s.innerHTML))
