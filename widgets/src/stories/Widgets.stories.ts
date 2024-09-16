@@ -224,30 +224,6 @@ export const PerOrder: StoryObj<{
   },
 }
 
-export const PerPurchase: StoryObj<{
-  widgetArgs: PerPurchaseWidgetParams
-  widgetType: keyof GreensparkWidgets
-}> = {
-  argTypes: {
-    widgetArgs: {
-      withPopup: { control: 'boolean' },
-      currency: { control: 'text' },
-      color: {
-        control: { type: 'select' },
-        options: WIDGET_COLORS,
-      },
-    },
-  },
-  args: {
-    widgetArgs: {
-      currency: 'EUR',
-      withPopup: true,
-      color: 'beige',
-    },
-    widgetType: 'perPurchase',
-  },
-}
-
 export const PerProduct: StoryObj<{
   widgetArgs: PerProductWidgetParams
   widgetType: keyof GreensparkWidgets
