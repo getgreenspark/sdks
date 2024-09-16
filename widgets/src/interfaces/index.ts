@@ -1,9 +1,4 @@
-import type {
-  AVAILABLE_LOCALES,
-  AVAILABLE_STATISTIC_TYPES,
-  WIDGET_COLORS,
-  WIDGET_STYLES,
-} from '@/constants'
+import type { AVAILABLE_LOCALES, AVAILABLE_STATISTIC_TYPES, WIDGET_COLORS, WIDGET_STYLES } from '@/constants'
 
 export type WidgetStyle = (typeof WIDGET_STYLES)[number]
 
@@ -26,12 +21,6 @@ export interface StoreOrder {
   currency: string
   totalPrice: number
   lineItems: Array<OrderProduct>
-}
-
-export interface LayoutConfig {
-  horizontalAlignment: 'left' | 'center' | 'right'
-  size: 'small' | 'medium' | 'large' | 'full-width'
-  justifyContent: 'start' | 'center' | 'end'
 }
 
 export interface WidgetParams {
@@ -84,7 +73,7 @@ export interface TopStatsWidgetParams extends WidgetParams {
   withPopup?: boolean
 }
 
-export interface FullWidthBannerWidgetParams extends WidgetParams {
+export interface FullWidthBannerWidgetParams extends WidgetParams{
   options: Array<(typeof AVAILABLE_STATISTIC_TYPES)[number]>
   imageUrl?: string
   title?: string

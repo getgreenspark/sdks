@@ -2,7 +2,7 @@ import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
-import type { LayoutConfig, SpendLevelWidgetParams, WidgetStyle } from '@/interfaces'
+import type { SpendLevelWidgetParams, WidgetStyle } from '@/interfaces'
 
 export class SpendLevelWidget extends Widget implements SpendLevelWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
@@ -59,10 +59,9 @@ export class SpendLevelWidget extends Widget implements SpendLevelWidgetParams {
   async render(
     options?: Partial<SpendLevelWidgetParams>,
     containerSelector?: string,
-    layout?: Partial<LayoutConfig>,
   ): Promise<void> {
     const node = await this.renderToElement(options)
-    this.inject(node, containerSelector, layout)
+    this.inject(node, containerSelector)
   }
 
   async renderToString(options?: Partial<SpendLevelWidgetParams>): Promise<string> {

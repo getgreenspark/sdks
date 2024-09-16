@@ -2,7 +2,7 @@ import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
-import type { LayoutConfig, PerProductWidgetParams, WidgetStyle } from '@/interfaces'
+import type { PerProductWidgetParams, WidgetStyle } from '@/interfaces'
 
 export class PerProductWidget extends Widget implements PerProductWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
@@ -59,10 +59,9 @@ export class PerProductWidget extends Widget implements PerProductWidgetParams {
   async render(
     options?: Partial<PerProductWidgetParams>,
     containerSelector?: string,
-    layout?: Partial<LayoutConfig>,
   ): Promise<void> {
     const node = await this.renderToElement(options)
-    this.inject(node, containerSelector, layout)
+    this.inject(node, containerSelector)
   }
 
   async renderToString(options?: Partial<PerProductWidgetParams>): Promise<string> {
