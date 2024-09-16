@@ -8,11 +8,9 @@ import type {
   FullWidthBannerWidgetParams,
   PerOrderWidgetParams,
   PerProductWidgetParams,
-  PerPurchaseWidgetParams,
   SpendLevelWidgetParams,
   TieredSpendLevelWidgetParams,
   TopStatsWidgetParams,
-  WidgetParams,
 } from '@/interfaces'
 import GreensparkWidgets from '@/index'
 import type { Widget } from '@/widgets/base'
@@ -91,10 +89,6 @@ const meta = {
 
       case 'perOrder':
         widget = widgets.perOrder(widgetArgs as PerOrderWidgetParams)
-        return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
-
-      case 'perPurchase':
-        widget = widgets.perPurchase(widgetArgs as PerPurchaseWidgetParams & Required<WidgetParams>)
         return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
 
       case 'perProduct':
