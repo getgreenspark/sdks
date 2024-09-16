@@ -19,14 +19,8 @@ import type {
   TopStatsRequestBody,
   FullWidthBannerWidgetParams,
   FullWidthBannerRequestBody,
-  PerOrderRequestBodyV2,
-  ByPercentageRequestBodyV2,
-  TieredSpendLevelRequestBodyV2,
-  PerProductRequestBodyV2,
-  SpendLevelRequestBodyV2,
-  CartWidgetRequestBodyV2,
   PerPurchaseWidgetParams,
-  PerPurchaseRequestBodyV2,
+  PerPurchaseRequestBody,
   WidgetParams,
 } from '@/interfaces'
 import type { AxiosInstance, AxiosResponse } from 'axios'
@@ -62,7 +56,7 @@ export class ConnectionHandler {
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     if (version) {
-      return this.api.post<string, AxiosResponse<string>, CartWidgetRequestBodyV2>(
+      return this.api.post<string, AxiosResponse<string>, CartWidgetRequestBody>(
         `${version}/widgets/cart-widget`,
         Object.assign(
           {},
@@ -94,7 +88,7 @@ export class ConnectionHandler {
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     if (version) {
-      return this.api.post<string, AxiosResponse<string>, SpendLevelRequestBodyV2>(
+      return this.api.post<string, AxiosResponse<string>, SpendLevelRequestBody>(
         `${version}/widgets/spend-level-widget`,
         Object.assign(
           {},
@@ -126,7 +120,7 @@ export class ConnectionHandler {
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     if (version) {
-      return this.api.post<string, AxiosResponse<string>, PerOrderRequestBodyV2>(
+      return this.api.post<string, AxiosResponse<string>, PerOrderRequestBody>(
         `${version}/widgets/per-order-widget`,
         Object.assign(
           {},
@@ -157,7 +151,7 @@ export class ConnectionHandler {
     { version, ...body }: PerPurchaseWidgetParams & Required<WidgetParams>,
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, PerPurchaseRequestBodyV2>(
+    return this.api.post<string, AxiosResponse<string>, PerPurchaseRequestBody>(
       `${version}/widgets/per-purchase-widget`,
       Object.assign(
         {},
@@ -176,7 +170,7 @@ export class ConnectionHandler {
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     if (version) {
-      return this.api.post<string, AxiosResponse<string>, ByPercentageRequestBodyV2>(
+      return this.api.post<string, AxiosResponse<string>, ByPercentageRequestBody>(
         `${version}/widgets/by-percentage-widget`,
         Object.assign(
           {},
@@ -208,7 +202,7 @@ export class ConnectionHandler {
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     if (version) {
-      return this.api.post<string, AxiosResponse<string>, TieredSpendLevelRequestBodyV2>(
+      return this.api.post<string, AxiosResponse<string>, TieredSpendLevelRequestBody>(
         `${version}/widgets/tiered-spend-level-widget`,
         Object.assign(
           {},
@@ -240,7 +234,7 @@ export class ConnectionHandler {
     headers?: AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     if (version) {
-      return this.api.post<string, AxiosResponse<string>, PerProductRequestBodyV2>(
+      return this.api.post<string, AxiosResponse<string>, PerProductRequestBody>(
         `${version}/widgets/per-product-widget`,
         Object.assign(
           {},
