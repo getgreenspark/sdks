@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 import GreensparkWidgets from '@/index'
-import { PerProductWidget } from '@/widgets'
+import { PerPurchaseWidget } from '@/widgets'
 
 import apiFixtures from '@tests/fixtures/api.json'
 import { createContainer } from '@tests/utilities/dom'
@@ -14,79 +14,87 @@ const INTEGRATION_SLUG = apiFixtures.default.integrationSlug as string
 
 let widgets: GreensparkWidgets
 
-describe('Per product level Widget', () => {
+describe('Per purchase Widget', () => {
   beforeAll(() => {
     widgets = new GreensparkWidgets({ apiKey: API_KEY, integrationSlug: INTEGRATION_SLUG })
   })
 
-  test('can render a per product widget', async () => {
-    expect(typeof widgets.perProduct).toEqual('function')
+  test('can render a per purchase widget', async () => {
+    expect(typeof widgets.perPurchase).toEqual('function')
     const containerSelector = createContainer()
-    const perProduct = widgets.perProduct({
+    const perPurchase = widgets.perPurchase({
       color: 'beige',
-      productId: 'id-for-some-product',
+      currency: 'USD',
       containerSelector: containerSelector,
+      version: 'v2',
     })
 
-    expect(perProduct instanceof PerProductWidget).toBe(true)
+    expect(perPurchase instanceof PerPurchaseWidget).toBe(true)
 
     const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
-    await perProduct.render()
+    await perPurchase.render()
     expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
   })
 
-  test('can render a per product widget to a string', async () => {
-    expect(typeof widgets.perProduct).toEqual('function')
+  test('can render a per purchase widget to a string', async () => {
+    expect(typeof widgets.perPurchase).toEqual('function')
     const containerSelector = createContainer()
-    const perProduct = widgets.perProduct({
+    const perPurchase = widgets.perPurchase({
       color: 'beige',
-      productId: 'id-for-some-product',
+      currency: 'USD',
       containerSelector: containerSelector,
+      version: 'v2',
     })
 
     const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
-    expect(await perProduct.renderToString()).toEqual(mockHtml)
+    expect(await perPurchase.renderToString()).toEqual(mockHtml)
   })
 
-  test('can render a per product widget to an HTML Node', async () => {
-    expect(typeof widgets.perProduct).toEqual('function')
+  test('can render a per purchase widget to an HTML Node', async () => {
+    expect(typeof widgets.perPurchase).toEqual('function')
     const containerSelector = createContainer()
-    const perProduct = widgets.perProduct({
+    const perPurchase = widgets.perPurchase({
       color: 'beige',
-      productId: 'id-for-some-product',
+      currency: 'USD',
       containerSelector: containerSelector,
+      version: 'v2',
     })
 
     const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
-    const renderNode = await perProduct.renderToElement()
+    const renderNode = await perPurchase.renderToElement()
     expect(renderNode.textContent).toBe('Hi there!')
   })
 
-  test('cannot render a color that is not allowed or an invalid product id', async () => {
-    expect(typeof widgets.perProduct).toEqual('function')
+  test('cannot render a color that is not allowed or an invalid currency code', async () => {
+    expect(typeof widgets.perPurchase).toEqual('function')
     const containerSelector = createContainer()
-    const perProduct = widgets.perProduct({
+    const perPurchase = widgets.perPurchase({
       color: 'yellow' as 'beige',
-      productId: 'something-something',
+      currency: 'USD',
       containerSelector: containerSelector,
+      version: 'v2',
     })
 
     const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
-    expect(perProduct.render).rejects.toThrow()
 
+    expect(perPurchase.render).rejects.toThrow()
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
-    await perProduct.render({ color: 'beige', productId: '123' })
+    await perPurchase.render({ color: 'beige', version: 'v2' })
     expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
-    expect(() => perProduct.render({ color: '3' as 'black' })).rejects.toThrow()
-    expect(() => perProduct.render({ productId: 123 as unknown as string })).rejects.toThrow()
-    expect(() => perProduct.render({ productId: '' as unknown as string })).rejects.toThrow()
-    expect(() => perProduct.render({ productId: undefined as unknown as string })).rejects.toThrow()
 
+    expect(() => perPurchase.render({ color: '3' as 'black', version: 'v2' })).rejects.toThrow()
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
-    await perProduct.render({ color: 'beige', productId: '123' })
+    await perPurchase.render({ color: 'beige', version: 'v2' })
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
+
+    expect(() =>
+      perPurchase.render({ color: 'black', currency: 3 as unknown as string, version: 'v2' }),
+    ).rejects.toThrow()
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    await perPurchase.render({ color: 'beige', currency: 'USD', version: 'v2' })
     expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
   })
 })

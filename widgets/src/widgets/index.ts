@@ -1,6 +1,7 @@
 export { CartWidget } from './cart'
 export { SpendLevelWidget } from './spendLevel'
 export { PerOrderWidget } from './perOrder'
+export { PerPurchaseWidget } from './perPurchase'
 export { ByPercentageWidget } from './byPercentage'
 export { TieredSpendLevelWidget } from './tieredSpendLevel'
 export { PerProductWidget } from './perProduct'

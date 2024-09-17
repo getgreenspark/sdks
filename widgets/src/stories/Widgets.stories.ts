@@ -17,7 +17,7 @@ import type { Widget } from '@/widgets/base'
 
 const WIDGET_API_KEY =
   '6kQypJppcK9F5FMGHxUM53rc3Kx%2FPFz%2Bi3wni6geNSf%2FIbUq06e5KES8IyR7bKViR11ZM5AabP'
-const SHOP_UNIQUE_NAME = 'greenspark-development-store-widget-sdk-storybook.myshopify.com'
+const INTEGRATION_SLUG = 'greenspark-development-store-widget-sdk-storybook.myshopify.com'
 type WIDGET_VARIANTS =
   | 'byPercentage'
   | 'cart'
@@ -29,14 +29,14 @@ type WIDGET_VARIANTS =
   | 'topStats'
 
 const meta = {
-  title: 'Widget SDK/Widgets',
+  title: 'Widget SDK/Store Widgets',
   tags: ['autodocs'],
   render: (args) => {
-    const { apiKey, shopUniqueName, widgetType, widgetArgs } = args
+    const { apiKey, integrationSlug, widgetType, widgetArgs } = args
 
     const widgets = new GreensparkWidgets({
       apiKey,
-      shopUniqueName,
+      integrationSlug,
     })
 
     const basicVariants = [
@@ -45,12 +45,25 @@ const meta = {
       { version: 'v2', style: 'simplified' },
     ]
 
-    const fullWidthIcons = ["monthsEarthPositive", "trees", "plastic", "carbon", "straws"]
+    const fullWidthIcons = ['monthsEarthPositive', 'trees', 'plastic', 'carbon', 'straws']
     const fullWidthBannerVariants = [
       { options: fullWidthIcons },
       { version: 'v2', options: fullWidthIcons },
-      { version: 'v2', options: fullWidthIcons, title: 'Our positive climate impact', description: 'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!' },
-      { version: 'v2', options: fullWidthIcons, title: 'Our positive climate impact', description: 'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!', showButton: true },
+      {
+        version: 'v2',
+        options: fullWidthIcons,
+        title: 'Our positive climate impact',
+        description:
+          'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!',
+      },
+      {
+        version: 'v2',
+        options: fullWidthIcons,
+        title: 'Our positive climate impact',
+        description:
+          'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!',
+        showButton: true,
+      },
     ]
 
     const topStatsVariants = [
@@ -97,15 +110,14 @@ const meta = {
         widget = widgets.byPercentage(widgetArgs as ByPercentageWidgetParams)
         return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
     }
-
   },
   argTypes: {
     apiKey: { control: 'text' },
-    shopUniqueName: { control: 'text' },
+    integrationSlug: { control: 'text' },
   },
   args: {
     apiKey: WIDGET_API_KEY,
-    shopUniqueName: SHOP_UNIQUE_NAME,
+    integrationSlug: INTEGRATION_SLUG,
   },
 } satisfies Meta<GreensparkWidgets & { widgetType: WIDGET_VARIANTS; widgetArgs: unknown }>
 
