@@ -6,21 +6,21 @@ import type { ApiSettings } from '@/interfaces'
 type ValidLanguage = (typeof AVAILABLE_LOCALES)[number]
 export class ApiConsumer {
   apiKey: string
-  shopUniqueName?: string
+  integrationSlug?: string
   currentLocale: ValidLanguage
   api: ConnectionHandler
 
-  constructor({ apiKey, locale = DEFAULT_LOCALE, shopUniqueName }: ApiSettings) {
+  constructor({ apiKey, locale = DEFAULT_LOCALE, integrationSlug, shopUniqueName }: ApiSettings) {
     this.apiKey = apiKey
     this.currentLocale = this.validateLocale(locale)
-    this.shopUniqueName = shopUniqueName
+    this.integrationSlug = integrationSlug || shopUniqueName
     this.api = this.instanciateApi()
   }
 
   instanciateApi(): ConnectionHandler {
     return new ConnectionHandler({
       apiKey: this.apiKey,
-      shopUniqueName: this.shopUniqueName,
+      integrationSlug: this.integrationSlug,
       locale: this.locale,
     })
   }

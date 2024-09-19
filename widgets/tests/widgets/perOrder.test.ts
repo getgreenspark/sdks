@@ -10,13 +10,13 @@ jest.mock('axios')
 const axiosMock = axios as jest.Mocked<typeof axios>
 
 const API_KEY = apiFixtures.default.apiKey as string
-const SHOP_UNIQUE_NAME = apiFixtures.default.shopUniqueName as string
+const INTEGRATION_SLUG = apiFixtures.default.integrationSlug as string
 
 let widgets: GreensparkWidgets
 
 describe('Per order Widget', () => {
   beforeAll(() => {
-    widgets = new GreensparkWidgets({ apiKey: API_KEY, shopUniqueName: SHOP_UNIQUE_NAME })
+    widgets = new GreensparkWidgets({ apiKey: API_KEY, integrationSlug: INTEGRATION_SLUG })
   })
 
   test('can render a per order widget', async () => {
