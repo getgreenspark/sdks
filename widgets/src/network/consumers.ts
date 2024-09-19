@@ -9,11 +9,19 @@ export class ApiConsumer {
   integrationSlug?: string
   currentLocale: ValidLanguage
   api: ConnectionHandler
+  isShopifyIntegration?: boolean
 
-  constructor({ apiKey, locale = DEFAULT_LOCALE, integrationSlug, shopUniqueName }: ApiSettings) {
+  constructor({
+    apiKey,
+    locale = DEFAULT_LOCALE,
+    integrationSlug,
+    shopUniqueName,
+    isShopifyIntegration = false,
+  }: ApiSettings) {
     this.apiKey = apiKey
     this.currentLocale = this.validateLocale(locale)
     this.integrationSlug = integrationSlug || shopUniqueName
+    this.isShopifyIntegration = isShopifyIntegration
     this.api = this.instanciateApi()
   }
 
@@ -22,6 +30,7 @@ export class ApiConsumer {
       apiKey: this.apiKey,
       integrationSlug: this.integrationSlug,
       locale: this.locale,
+      isShopifyIntegration: this.isShopifyIntegration,
     })
   }
 

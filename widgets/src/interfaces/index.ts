@@ -10,6 +10,7 @@ export type WidgetStyle = (typeof WIDGET_STYLES)[number]
 type ApiSettingsBase = {
   apiKey: string
   locale?: (typeof AVAILABLE_LOCALES)[number]
+  isShopifyIntegration?: boolean
 }
 
 export type ApiSettings = ApiSettingsBase &

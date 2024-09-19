@@ -35,10 +35,12 @@ export class ConnectionHandler {
     apiKey,
     integrationSlug,
     locale = 'en',
+    isShopifyIntegration = false,
   }: {
     apiKey: string
     integrationSlug?: string
     locale: (typeof AVAILABLE_LOCALES)[number]
+    isShopifyIntegration?: boolean
   }) {
     this.apiKey = apiKey
     this.integrationSlug = integrationSlug
@@ -48,7 +50,11 @@ export class ConnectionHandler {
       timeout: 10000,
     })
 
-    this.api.defaults.headers.common['x-api-key'] = this.apiKey
+    if (isShopifyIntegration) {
+      this.api.defaults.headers.common['x-shop-unique-name'] = this.integrationSlug
+    } else {
+      this.api.defaults.headers.common['x-api-key'] = this.apiKey
+    }
   }
 
   async fetchCartWidget(
