@@ -2,7 +2,7 @@ import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
-import type { TopStatsWidgetParams } from '@/interfaces'
+import type { LayoutConfig, TopStatsWidgetParams } from '@/interfaces'
 
 export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
@@ -42,9 +42,13 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
     }
   }
 
-  async render(options?: Partial<TopStatsWidgetParams>, containerSelector?: string): Promise<void> {
+  async render(
+    options?: Partial<TopStatsWidgetParams>,
+    containerSelector?: string,
+    layout?: Partial<LayoutConfig>,
+  ): Promise<void> {
     const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
+    this.inject(node, containerSelector, layout)
   }
 
   async renderToString(options?: Partial<TopStatsWidgetParams>): Promise<string> {
