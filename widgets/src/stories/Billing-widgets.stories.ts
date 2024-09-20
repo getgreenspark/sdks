@@ -30,7 +30,7 @@ const meta = {
     })
 
     const basicVariants = [
-      {},
+      { version: '', style: 'default' },
       { version: 'v2', style: 'default' },
       { version: 'v2', style: 'simplified' },
     ]
