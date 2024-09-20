@@ -1,5 +1,5 @@
 import { createWidgetPage } from '@/stories/Widgets'
-import { WIDGET_COLORS } from '@/constants'
+import {AVAILABLE_LOCALES, WIDGET_COLORS} from '@/constants'
 
 import type { StoryObj, Meta } from '@storybook/html'
 import type {
@@ -21,15 +21,16 @@ const meta = {
   title: 'Widget SDK/Billing Widgets',
   tags: ['autodocs'],
   render: (args) => {
-    const { apiKey, integrationSlug, widgetType, widgetArgs } = args
+    const { apiKey, integrationSlug, widgetType, widgetArgs, locale } = args
 
     const widgets = new GreensparkWidgets({
       apiKey,
       integrationSlug,
+      locale
     })
 
     const basicVariants = [
-      {},
+      { version: '', style: 'default' },
       { version: 'v2', style: 'default' },
       { version: 'v2', style: 'simplified' },
     ]
@@ -60,12 +61,17 @@ const meta = {
   argTypes: {
     apiKey: { control: 'text' },
     integrationSlug: { control: 'text' },
+    locale: {
+      control: { type: 'select' },
+      options: AVAILABLE_LOCALES,
+    },
   },
   args: {
     apiKey: WIDGET_API_KEY,
     integrationSlug: INTEGRATION_SLUG,
+    locale: 'en'
   },
-} satisfies Meta<GreensparkWidgets & { widgetType: WIDGET_VARIANTS; widgetArgs: unknown }>
+} satisfies Meta<GreensparkWidgets & { widgetType: WIDGET_VARIANTS; widgetArgs: unknown, locale: typeof AVAILABLE_LOCALES[number] }>
 
 export default meta
 
