@@ -1,5 +1,6 @@
 import type { WidgetTemplate } from '@/widgets/base'
 import './widgets.css'
+import {WIDGET_COLORS_V1} from "@/constants";
 
 export const createWidgetPage = (id: string, widget: WidgetTemplate, colors: Readonly<string[]>, variants: { version?: string, style?: string }[]) => {
   const article = document.createElement('article')
@@ -16,8 +17,8 @@ export const createWidgetPage = (id: string, widget: WidgetTemplate, colors: Rea
     const versionContainerClass = `widget-container-${id}-${index}`
     if (!variantContainer.classList.contains(versionContainerClass)) variantContainer.classList.add(versionContainerClass)
     article.appendChild(variantContainer)
-    
-    colors.forEach(color => {
+
+    colors.filter(color => optionsForVariant.version === '' ? ([...WIDGET_COLORS_V1] as string[]).includes(color) : true).forEach(color => {
       const colorContainer = document.createElement('div')
       const colorContainerClass = `widget-color-${id}-${index}-${color}`
       if (!colorContainer.classList.contains(colorContainerClass)) colorContainer.classList.add(colorContainerClass)
