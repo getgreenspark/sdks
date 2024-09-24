@@ -51,7 +51,7 @@ export class ConnectionHandler {
     })
 
     if (isShopifyIntegration) {
-      this.api.defaults.headers.common['x-shop-unique-name'] = this.integrationSlug
+      this.api.defaults.headers.common['x-integration-slug'] = this.integrationSlug
     } else {
       this.api.defaults.headers.common['x-api-key'] = this.apiKey
     }
