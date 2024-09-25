@@ -137,7 +137,7 @@ export default meta
 
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const ByPercentage: StoryObj<{
-  widgetArgs: ByPercentageWidgetParams
+  widgetArgs: ByPercentageWidgetParams & { useShadowDom?: boolean }
   widgetType: keyof GreensparkWidgets
 }> = {
   argTypes: {
@@ -147,12 +147,14 @@ export const ByPercentage: StoryObj<{
         control: { type: 'select' },
         options: WIDGET_COLORS,
       },
+      useShadowDom: { control: 'boolean' },
     },
   },
   args: {
     widgetArgs: {
       withPopup: true,
       color: 'beige',
+      useShadowDom: false,
     },
     widgetType: 'byPercentage',
   },

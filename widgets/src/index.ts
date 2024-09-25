@@ -26,51 +26,62 @@ import type {
 } from '@/interfaces'
 
 export default class GreensparkWidgets extends ApiConsumer {
-  cart(params: CartWidgetParams & { containerSelector?: string }) {
-    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR } = params
-    return new CartWidget({ ...params, api: this.api, containerSelector })
+  cart(params: CartWidgetParams & { containerSelector?: string; useShadowDom?: boolean }) {
+    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
+    return new CartWidget({ ...params, api: this.api, containerSelector, useShadowDom })
   }
 
-  spendLevel(params: SpendLevelWidgetParams & { containerSelector?: string }) {
-    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR } = params
+  spendLevel(
+    params: SpendLevelWidgetParams & { containerSelector?: string; useShadowDom?: boolean },
+  ) {
+    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
     return new SpendLevelWidget({ ...params, api: this.api, containerSelector })
   }
 
-  perOrder(params: PerOrderWidgetParams & { containerSelector?: string }) {
-    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR } = params
-    return new PerOrderWidget({ ...params, api: this.api, containerSelector })
+  perOrder(params: PerOrderWidgetParams & { containerSelector?: string; useShadowDom?: boolean }) {
+    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
+    return new PerOrderWidget({ ...params, api: this.api, containerSelector, useShadowDom })
   }
 
   perPurchase(
-    params: PerPurchaseWidgetParams & Required<WidgetParams> & { containerSelector?: string },
+    params: PerPurchaseWidgetParams &
+      Required<WidgetParams> & { containerSelector?: string; useShadowDom?: boolean },
   ) {
-    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR } = params
-    return new PerPurchaseWidget({ ...params, api: this.api, containerSelector })
+    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
+    return new PerPurchaseWidget({ ...params, api: this.api, containerSelector, useShadowDom })
   }
 
-  byPercentage(params: ByPercentageWidgetParams & { containerSelector?: string }) {
-    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR } = params
-    return new ByPercentageWidget({ ...params, api: this.api, containerSelector })
+  byPercentage(
+    params: ByPercentageWidgetParams & { containerSelector?: string; useShadowDom?: boolean },
+  ) {
+    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
+    return new ByPercentageWidget({ ...params, api: this.api, containerSelector, useShadowDom })
   }
 
-  tieredSpendLevel(params: TieredSpendLevelWidgetParams & { containerSelector?: string }) {
-    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR } = params
-    return new TieredSpendLevelWidget({ ...params, api: this.api, containerSelector })
+  tieredSpendLevel(
+    params: TieredSpendLevelWidgetParams & { containerSelector?: string; useShadowDom?: boolean },
+  ) {
+    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
+    return new TieredSpendLevelWidget({ ...params, api: this.api, containerSelector, useShadowDom })
   }
 
-  perProduct(params: PerProductWidgetParams & { containerSelector?: string }) {
-    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR } = params
-    return new PerProductWidget({ ...params, api: this.api, containerSelector })
+  perProduct(
+    params: PerProductWidgetParams & { containerSelector?: string; useShadowDom?: boolean },
+  ) {
+    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
+    return new PerProductWidget({ ...params, api: this.api, containerSelector, useShadowDom })
   }
 
-  topStats(params: TopStatsWidgetParams & { containerSelector?: string }) {
-    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR } = params
-    return new TopStatsWidget({ ...params, api: this.api, containerSelector })
+  topStats(params: TopStatsWidgetParams & { containerSelector?: string; useShadowDom?: boolean }) {
+    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
+    return new TopStatsWidget({ ...params, api: this.api, containerSelector, useShadowDom })
   }
 
-  fullWidthBanner(params: FullWidthBannerWidgetParams & { containerSelector?: string }) {
-    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR } = params
-    return new FullWidthBannerWidget({ ...params, api: this.api, containerSelector })
+  fullWidthBanner(
+    params: FullWidthBannerWidgetParams & { containerSelector?: string; useShadowDom?: boolean },
+  ) {
+    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
+    return new FullWidthBannerWidget({ ...params, api: this.api, containerSelector, useShadowDom })
   }
 }
 
