@@ -35,7 +35,7 @@ export default class GreensparkWidgets extends ApiConsumer {
     params: SpendLevelWidgetParams & { containerSelector?: string; useShadowDom?: boolean },
   ) {
     const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
-    return new SpendLevelWidget({ ...params, api: this.api, containerSelector })
+    return new SpendLevelWidget({ ...params, api: this.api, containerSelector, useShadowDom })
   }
 
   perOrder(params: PerOrderWidgetParams & { containerSelector?: string; useShadowDom?: boolean }) {
