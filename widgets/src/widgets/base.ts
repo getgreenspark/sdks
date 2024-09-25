@@ -5,6 +5,7 @@ import type { ConnectionHandler } from '@/network'
 export interface WidgetConfig {
   containerSelector: string
   api: ConnectionHandler
+  useShadowDom?: boolean
 }
 
 export interface WidgetTemplate {
@@ -20,8 +21,8 @@ export interface WidgetTemplate {
 export class Widget extends DOMInjector implements WidgetTemplate {
   api: ConnectionHandler
 
-  constructor({ api, containerSelector }: WidgetConfig) {
-    super({ containerSelector })
+  constructor({ api, containerSelector, useShadowDom }: WidgetConfig) {
+    super({ containerSelector, useShadowDom })
     this.api = api
   }
 

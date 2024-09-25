@@ -3,9 +3,17 @@ import type { LayoutConfig } from '@/interfaces'
 
 export class DOMInjector {
   containerSelector: string
+  useShadowDom?: boolean
 
-  constructor({ containerSelector }: { containerSelector: string }) {
+  constructor({
+    containerSelector,
+    useShadowDom = true,
+  }: {
+    containerSelector: string
+    useShadowDom?: boolean
+  }) {
     this.containerSelector = containerSelector
+    this.useShadowDom = useShadowDom
   }
 
   static getLayoutClasses(layout: Partial<LayoutConfig>): string[] {
@@ -15,6 +23,14 @@ export class DOMInjector {
       size ? `gs-size-${size}` : null,
       justifyContent ? `gs-justify-content-${justifyContent}` : null,
     ].filter<string>((v) => v !== null)
+  }
+
+  getWrapper(container: Element): ShadowRoot | Element {
+    if (!this.useShadowDom) {
+      return container
+    }
+
+    return container.shadowRoot ?? container.attachShadow({ mode: 'open' })
   }
 
   inject(widget: HTMLElement, containerSelector?: string, layout?: Partial<LayoutConfig>) {
@@ -29,16 +45,16 @@ export class DOMInjector {
     }
 
     container.setAttribute('data-greenspark-shadow-dom-container', 'true')
-    while (container?.shadowRoot?.firstChild) {
-      container.shadowRoot.removeChild(container.shadowRoot.firstChild)
-    }
     const scripts = [...widget.children].filter((el) => el.tagName === 'SCRIPT')
     const nonScripts = [...widget.children].filter((el) => el.tagName !== 'SCRIPT')
-    const shadow = container.shadowRoot ?? container.attachShadow({ mode: 'open' })
-    shadow.append(...nonScripts)
+    const wrapper = this.getWrapper(container)
+    while (wrapper.firstChild) {
+      wrapper.removeChild(wrapper.firstChild)
+    }
+    wrapper.append(...nonScripts)
 
     if (layout) {
-      const widgetContainer = shadow.querySelector('.root-container')
+      const widgetContainer = wrapper.querySelector('.root-container')
       if (widgetContainer) widgetContainer.classList.add(...DOMInjector.getLayoutClasses(layout))
     }
 
