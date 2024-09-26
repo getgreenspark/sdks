@@ -20,6 +20,7 @@ export const AVAILABLE_STATISTIC_TYPES = [
   'trees',
   'plastic',
   'carbon',
+  'kelp',
   'straws',
   'miles',
   'footballPitches',

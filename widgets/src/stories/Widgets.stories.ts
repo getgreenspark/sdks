@@ -46,7 +46,7 @@ const meta = {
       { version: 'v2', style: 'simplified' },
     ]
 
-    const fullWidthIcons = ['monthsEarthPositive', 'trees', 'plastic', 'carbon', 'straws']
+    const fullWidthIcons = ['monthsEarthPositive', 'trees', 'plastic', 'carbon', 'kelp', 'straws']
     const fullWidthBannerVariants = [
       { options: fullWidthIcons },
       { version: 'v2', options: fullWidthIcons },
