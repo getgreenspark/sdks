@@ -39,12 +39,6 @@ export interface StoreOrder {
   lineItems: Array<OrderProduct>
 }
 
-export interface LayoutConfig {
-  horizontalAlignment: 'left' | 'center' | 'right'
-  size: 'small' | 'medium' | 'large' | 'full-width'
-  justifyContent: 'start' | 'center' | 'end'
-}
-
 export interface WidgetParams {
   version?: 'v2'
 }

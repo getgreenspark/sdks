@@ -1,5 +1,4 @@
 import { DEFAULT_CONTAINER_CSS_SELECTOR } from '@/constants'
-import type { LayoutConfig } from '@/interfaces'
 
 export class DOMInjector {
   containerSelector: string
@@ -16,15 +15,6 @@ export class DOMInjector {
     this.useShadowDom = useShadowDom
   }
 
-  static getLayoutClasses(layout: Partial<LayoutConfig>): string[] {
-    const { horizontalAlignment, size, justifyContent } = layout
-    return [
-      horizontalAlignment ? `gs-horizontal-alignment-${horizontalAlignment}` : null,
-      size ? `gs-size-${size}` : null,
-      justifyContent ? `gs-justify-content-${justifyContent}` : null,
-    ].filter<string>((v) => v !== null)
-  }
-
   getWrapper(container: Element): ShadowRoot | Element {
     if (!this.useShadowDom) {
       return container
@@ -33,7 +23,7 @@ export class DOMInjector {
     return container.shadowRoot ?? container.attachShadow({ mode: 'open' })
   }
 
-  inject(widget: HTMLElement, containerSelector?: string, layout?: Partial<LayoutConfig>) {
+  inject(widget: HTMLElement, containerSelector?: string) {
     if (!widget) return
 
     this.containerSelector = containerSelector ?? this.containerSelector
@@ -52,11 +42,6 @@ export class DOMInjector {
       wrapper.removeChild(wrapper.firstChild)
     }
     wrapper.append(...nonScripts)
-
-    if (layout) {
-      const widgetContainer = wrapper.querySelector('.root-container')
-      if (widgetContainer) widgetContainer.classList.add(...DOMInjector.getLayoutClasses(layout))
-    }
 
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
       scripts.forEach((s) => eval(s.innerHTML))

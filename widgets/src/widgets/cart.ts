@@ -2,13 +2,7 @@ import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
-import type {
-  OrderProduct,
-  CartWidgetParams,
-  StoreOrder,
-  WidgetStyle,
-  LayoutConfig,
-} from '@/interfaces'
+import type { OrderProduct, CartWidgetParams, StoreOrder, WidgetStyle } from '@/interfaces'
 
 export class CartWidget extends Widget implements CartWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
@@ -86,13 +80,9 @@ export class CartWidget extends Widget implements CartWidgetParams {
     }
   }
 
-  async render(
-    options?: Partial<CartWidgetParams>,
-    containerSelector?: string,
-    layout?: Partial<LayoutConfig>,
-  ): Promise<void> {
+  async render(options?: Partial<CartWidgetParams>, containerSelector?: string): Promise<void> {
     const node = await this.renderToElement(options)
-    this.inject(node, containerSelector, layout)
+    this.inject(node, containerSelector)
   }
 
   async renderToString(options?: Partial<CartWidgetParams>): Promise<string> {

@@ -2,13 +2,11 @@ import type { WidgetTemplate } from '@/widgets/base'
 import './widgets.css'
 import { WIDGET_COLORS_V1 } from '@/constants'
 
-import type { LayoutConfig } from '@/interfaces'
-
 export const createWidgetPage = (
   id: string,
   widget: WidgetTemplate,
   colors: Readonly<string[]>,
-  variants: { version?: string; style?: string; layout?: Partial<LayoutConfig> }[],
+  variants: { version?: string; style?: string }[],
 ) => {
   const article = document.createElement('article')
   article.style.maxWidth = '100%'
