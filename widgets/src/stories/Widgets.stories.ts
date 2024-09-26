@@ -63,7 +63,7 @@ const meta = {
         title: 'Our positive climate impact',
         description:
           'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!',
-        showButton: true,
+        callToActionUrl: 'some.url.com',
       },
     ]
 

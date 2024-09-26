@@ -107,7 +107,7 @@ export interface FullWidthBannerWidgetParams extends WidgetParams {
   imageUrl?: string
   title?: string
   description?: string
-  showButton?: boolean
+  callToActionUrl?: string
 }
 
 export type CartWidgetRequestBody = ExternalShopContext & CartWidgetParams

@@ -9,7 +9,7 @@ export class FullWidthBannerWidget extends Widget implements FullWidthBannerWidg
   imageUrl?: string
   title?: string
   description?: string
-  showButton?: boolean
+  callToActionUrl?: string
   version?: 'v2'
 
   constructor(params: WidgetConfig & FullWidthBannerWidgetParams) {
@@ -18,7 +18,7 @@ export class FullWidthBannerWidget extends Widget implements FullWidthBannerWidg
     this.imageUrl = params.imageUrl
     this.title = params.title
     this.description = params.description
-    this.showButton = params.showButton
+    this.callToActionUrl = params.callToActionUrl
     this.version = params.version
   }
 
@@ -28,17 +28,24 @@ export class FullWidthBannerWidget extends Widget implements FullWidthBannerWidg
       imageUrl: this.imageUrl,
       title: this.title,
       description: this.description,
-      showButton: this.showButton,
+      callToActionUrl: this.callToActionUrl,
       version: this.version,
     }
   }
 
-  updateDefaults({ options, imageUrl, title, description, showButton, version }: Partial<FullWidthBannerWidgetParams>) {
+  updateDefaults({
+    options,
+    imageUrl,
+    title,
+    description,
+    callToActionUrl,
+    version,
+  }: Partial<FullWidthBannerWidgetParams>) {
     this.options = options ?? this.options
     this.imageUrl = imageUrl ?? this.imageUrl
     this.title = title ?? this.title
     this.description = description ?? this.description
-    this.showButton = showButton ?? this.showButton
+    this.callToActionUrl = callToActionUrl ?? this.callToActionUrl
     this.version = version ?? this.version
   }
 
