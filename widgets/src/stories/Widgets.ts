@@ -38,7 +38,7 @@ export const createWidgetPage = (
         variantContainer.appendChild(colorContainer)
 
         widget
-          .render({ color, ...optionsForVariant }, `.${colorContainerClass}`, { size: 'large' })
+          .render({ color, ...optionsForVariant }, `.${colorContainerClass}`)
           .catch((error) => console.error(error))
       })
   })
