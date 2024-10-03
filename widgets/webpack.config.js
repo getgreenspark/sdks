@@ -27,7 +27,7 @@ module.exports = (env, { mode }) => {
       },
     },
     output: {
-      library: { name: '@getgreenspark/widgets', type: 'commonjs-module' },
+      library: { type: 'commonjs-static' },
       filename: 'widgets@[name].js',
       path: path.resolve(__dirname, 'dist'),
     },
