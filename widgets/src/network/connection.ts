@@ -59,7 +59,7 @@ export class ConnectionHandler {
 
   async fetchCartWidget(
     { version, ...body }: CartWidgetParams,
-    headers?: AxiosHeaders,
+    headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
     return this.api.post<string, AxiosResponse<string>, CartWidgetRequestBody>(
@@ -84,7 +84,7 @@ export class ConnectionHandler {
 
   async fetchSpendLevelWidget(
     { version, ...body }: SpendLevelWidgetParams,
-    headers?: AxiosHeaders,
+    headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
     return this.api.post<string, AxiosResponse<string>, SpendLevelRequestBody>(
@@ -109,7 +109,7 @@ export class ConnectionHandler {
 
   async fetchPerOrderWidget(
     { version, ...body }: PerOrderWidgetParams,
-    headers?: AxiosHeaders,
+    headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
     return this.api.post<string, AxiosResponse<string>, PerOrderRequestBody>(
@@ -134,7 +134,7 @@ export class ConnectionHandler {
 
   async fetchPerPurchaseWidget(
     { version, ...body }: PerPurchaseWidgetParams & Required<WidgetParams>,
-    headers?: AxiosHeaders,
+    headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
     return this.api.post<string, AxiosResponse<string>, PerPurchaseRequestBody>(
@@ -153,7 +153,7 @@ export class ConnectionHandler {
 
   async fetchByPercentageWidget(
     { version, ...body }: ByPercentageWidgetParams,
-    headers?: AxiosHeaders,
+    headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
     return this.api.post<string, AxiosResponse<string>, ByPercentageRequestBody>(
@@ -178,7 +178,7 @@ export class ConnectionHandler {
 
   async fetchTieredSpendLevelWidget(
     { version, ...body }: TieredSpendLevelWidgetParams,
-    headers?: AxiosHeaders,
+    headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
     return this.api.post<string, AxiosResponse<string>, TieredSpendLevelRequestBody>(
@@ -203,7 +203,7 @@ export class ConnectionHandler {
 
   async fetchPerProductWidget(
     { version, ...body }: PerProductWidgetParams,
-    headers?: AxiosHeaders,
+    headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
     return this.api.post<string, AxiosResponse<string>, PerProductRequestBody>(
@@ -228,7 +228,7 @@ export class ConnectionHandler {
 
   async fetchTopStatsWidget(
     { version, ...body }: TopStatsWidgetParams,
-    headers?: AxiosHeaders,
+    headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
     return this.api.post<string, AxiosResponse<string>, TopStatsRequestBody>(
@@ -243,7 +243,7 @@ export class ConnectionHandler {
 
   async fetchFullWidthBannerWidget(
     { version, ...body }: FullWidthBannerWidgetParams,
-    headers?: AxiosHeaders,
+    headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
     return this.api.post<string, AxiosResponse<string>, FullWidthBannerRequestBody>(
