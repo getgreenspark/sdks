@@ -4,7 +4,7 @@
   "bugs": {
     "url": "https://github.com/getgreenspark/sdks/issues"
   },
-  "main": "./dist/index.js",
+  "main": "./dist/widgets@latest.js",
   "description": "An SDK design to help the use of Greenspark's widget API in the browser",
   "author": "Greenspark <support@getgreenspark.com>",
   "keywords": [
