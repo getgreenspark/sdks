@@ -1,3 +1,4 @@
+import axios from 'axios'
 import { DEFAULT_LOCALE } from '@/constants'
 import GreensparkWidgets from '@/index'
 import { CartWidget } from '@/widgets'
@@ -6,6 +7,9 @@ import apiFixtures from '@tests/fixtures/api.json'
 import orderFixture from '@tests/fixtures/order.json'
 
 import type { StoreOrder } from '@/interfaces'
+
+jest.mock('axios')
+const axiosMock = axios as jest.Mocked<typeof axios>
 
 const API_KEY = apiFixtures.default.apiKey as string
 const INTEGRATION_SLUG = apiFixtures.default.integrationSlug as string
@@ -49,7 +53,7 @@ describe('GreensparkWidgets', () => {
     expect(() => (widgets.locale = 'es' as 'de')).toThrow()
   })
 
-  test('can create individual widget instances', () => {
+  test('can create individual widget instances', async () => {
     const widgets = new GreensparkWidgets({ apiKey: API_KEY, integrationSlug: INTEGRATION_SLUG })
     expect(typeof widgets.cart).toEqual('function')
     const cart = widgets.cart({ color: 'beige', order: EMPTY_ORDER })
@@ -61,5 +65,13 @@ describe('GreensparkWidgets', () => {
     expect(cartOldest).not.toBe(cartOld)
     expect(cartOld).not.toBe(cartNew)
     expect(cartOldest).not.toBe(cartNew)
+
+    const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    expect(await cartNew.renderToString()).toBe(mockHtml)
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    expect(await cartOld.renderToString()).toBe(mockHtml)
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    expect(await cartOldest.renderToString()).toBe(mockHtml)
   })
 })
