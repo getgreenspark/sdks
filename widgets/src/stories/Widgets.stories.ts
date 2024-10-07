@@ -3,6 +3,7 @@ import {AVAILABLE_LOCALES, AVAILABLE_STATISTIC_TYPES, WIDGET_COLORS} from '@/con
 
 import type { StoryObj, Meta } from '@storybook/html'
 import type {
+  ByPercentageOfRevenueWidgetParams,
   ByPercentageWidgetParams,
   CartWidgetParams,
   FullWidthBannerWidgetParams,
@@ -20,6 +21,7 @@ const WIDGET_API_KEY =
 const INTEGRATION_SLUG = 'greenspark-development-store-widget-sdk-storybook.myshopify.com'
 type WIDGET_VARIANTS =
   | 'byPercentage'
+  | 'byPercentageOfRevenue'
   | 'cart'
   | 'fullWidthBanner'
   | 'perOrder'
@@ -77,6 +79,10 @@ const meta = {
     switch (widgetType) {
       case 'byPercentage':
         widget = widgets.byPercentage(widgetArgs as ByPercentageWidgetParams)
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
+
+      case 'byPercentageOfRevenue':
+        widget = widgets.byPercentageOfRevenue(widgetArgs as ByPercentageOfRevenueWidgetParams)
         return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
 
       case 'cart':
@@ -149,6 +155,28 @@ export const ByPercentage: StoryObj<{
       color: 'beige',
     },
     widgetType: 'byPercentage',
+  },
+}
+
+export const ByPercentageOfRevenue: StoryObj<{
+  widgetArgs: ByPercentageOfRevenueWidgetParams
+  widgetType: keyof GreensparkWidgets
+}> = {
+  argTypes: {
+    widgetArgs: {
+      withPopup: { control: 'boolean' },
+      color: {
+        control: { type: 'select' },
+        options: WIDGET_COLORS,
+      },
+    },
+  },
+  args: {
+    widgetArgs: {
+      withPopup: true,
+      color: 'beige',
+    },
+    widgetType: 'byPercentageOfRevenue',
   },
 }
 

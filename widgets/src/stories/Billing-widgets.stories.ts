@@ -4,6 +4,7 @@ import {AVAILABLE_LOCALES, WIDGET_COLORS} from '@/constants'
 import type { StoryObj, Meta } from '@storybook/html'
 import type {
   ByPercentageWidgetParams,
+  ByPercentageOfRevenueWidgetParams,
   PerPurchaseWidgetParams,
   SpendLevelWidgetParams,
   TieredSpendLevelWidgetParams,
@@ -15,7 +16,7 @@ import type { Widget } from '@/widgets/base'
 const WIDGET_API_KEY =
   '6kQypJppcK9F5FMGHxUM53rc3Kx%2FPFz%2Bi3wni6geNSf%2FIbUq06e5KES8IyR7bKViR11ZM5AabP'
 const INTEGRATION_SLUG = 'storybook-demo-stripe-54511'
-type WIDGET_VARIANTS = 'byPercentage' | 'perPurchase' | 'spendLevel' | 'tieredSpendLevel'
+type WIDGET_VARIANTS = 'byPercentage' | 'byPercentageOfRevenue' | 'perPurchase' | 'spendLevel' | 'tieredSpendLevel'
 
 const meta = {
   title: 'Widget SDK/Billing Widgets',
@@ -39,6 +40,10 @@ const meta = {
     switch (widgetType) {
       case 'byPercentage':
         widget = widgets.byPercentage(widgetArgs as ByPercentageWidgetParams)
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
+
+      case 'byPercentageOfRevenue':
+        widget = widgets.byPercentageOfRevenue(widgetArgs as ByPercentageOfRevenueWidgetParams)
         return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
 
       case 'perPurchase':
@@ -95,6 +100,28 @@ export const ByPercentage: StoryObj<{
       color: 'beige',
     },
     widgetType: 'byPercentage',
+  },
+}
+
+export const ByPercentageOfRevenue: StoryObj<{
+  widgetArgs: ByPercentageOfRevenueWidgetParams
+  widgetType: keyof GreensparkWidgets
+}> = {
+  argTypes: {
+    widgetArgs: {
+      withPopup: { control: 'boolean' },
+      color: {
+        control: { type: 'select' },
+        options: WIDGET_COLORS,
+      },
+    },
+  },
+  args: {
+    widgetArgs: {
+      withPopup: true,
+      color: 'beige',
+    },
+    widgetType: 'byPercentageOfRevenue',
   },
 }
 
