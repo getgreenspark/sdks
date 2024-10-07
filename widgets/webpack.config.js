@@ -1,14 +1,16 @@
-const path = require('path');
-const Dotenv = require('dotenv-webpack');
-var PACKAGE = require('./package.json');
+const path = require('path')
+const Dotenv = require('dotenv-webpack')
+var PACKAGE = require('./package.json')
 
 module.exports = (env, { mode }) => {
-  const isProduction = mode === 'production';
+  const isProduction = mode === 'production'
   return {
-    entry: isProduction ? {
-      'latest': './src/index.ts',
-      [PACKAGE.version]: './src/index.ts',
-    } : { [PACKAGE.version]: './src/index.ts' },
+    entry: isProduction
+      ? {
+          latest: './src/index.ts',
+          [PACKAGE.version]: './src/index.ts',
+        }
+      : { [PACKAGE.version]: './src/index.ts' },
     module: {
       rules: [
         {
@@ -25,11 +27,10 @@ module.exports = (env, { mode }) => {
       },
     },
     output: {
+      library: { type: 'commonjs-static' },
       filename: 'widgets@[name].js',
       path: path.resolve(__dirname, 'dist'),
     },
-    plugins: [
-      new Dotenv()
-    ]
-  };
-};
+    plugins: [new Dotenv()],
+  }
+}

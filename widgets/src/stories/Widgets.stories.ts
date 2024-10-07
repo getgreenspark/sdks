@@ -1,5 +1,5 @@
 import { createWidgetPage } from '@/stories/Widgets'
-import {AVAILABLE_LOCALES, AVAILABLE_STATISTIC_TYPES, WIDGET_COLORS} from '@/constants'
+import { AVAILABLE_LOCALES, AVAILABLE_STATISTIC_TYPES, WIDGET_COLORS } from '@/constants'
 
 import type { StoryObj, Meta } from '@storybook/html'
 import type {
@@ -37,7 +37,7 @@ const meta = {
     const widgets = new GreensparkWidgets({
       apiKey,
       integrationSlug,
-      locale
+      locale,
     })
 
     const basicVariants = [
@@ -46,7 +46,7 @@ const meta = {
       { version: 'v2', style: 'simplified' },
     ]
 
-    const fullWidthIcons = ['monthsEarthPositive', 'trees', 'plastic', 'carbon', 'straws']
+    const fullWidthIcons = ['monthsEarthPositive', 'trees', 'plastic', 'carbon', 'kelp', 'straws']
     const fullWidthBannerVariants = [
       { options: fullWidthIcons },
       { version: 'v2', options: fullWidthIcons },
@@ -63,7 +63,7 @@ const meta = {
         title: 'Our positive climate impact',
         description:
           'We joined Greenspark to ensure a positive impact on our planet and its people. Check out our impact so far and join our journey!',
-        showButton: true,
+        callToActionUrl: 'some.url.com',
       },
     ]
 
@@ -123,9 +123,15 @@ const meta = {
   args: {
     apiKey: WIDGET_API_KEY,
     integrationSlug: INTEGRATION_SLUG,
-    locale: 'en'
+    locale: 'en',
   },
-} satisfies Meta<GreensparkWidgets & { widgetType: WIDGET_VARIANTS; widgetArgs: unknown, locale: typeof AVAILABLE_LOCALES[number] }>
+} satisfies Meta<
+  GreensparkWidgets & {
+    widgetType: WIDGET_VARIANTS
+    widgetArgs: unknown
+    locale: (typeof AVAILABLE_LOCALES)[number]
+  }
+>
 
 export default meta
 

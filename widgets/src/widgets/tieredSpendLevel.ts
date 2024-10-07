@@ -16,8 +16,8 @@ export class TieredSpendLevelWidget extends Widget implements TieredSpendLevelWi
     this.color = params.color
     this.currency = params.currency
     this.withPopup = params.withPopup ?? true
+    this.style = params.style ?? 'default'
     this.version = params.version
-    this.style = params.style
   }
 
   get tieredSpendLevelWidgetRequestBody(): TieredSpendLevelWidgetParams {
@@ -25,17 +25,23 @@ export class TieredSpendLevelWidget extends Widget implements TieredSpendLevelWi
       color: this.color,
       currency: this.currency,
       withPopup: this.withPopup,
-      version: this.version,
       style: this.style,
+      version: this.version,
     }
   }
 
-  updateDefaults({ color, currency, withPopup, version, style }: Partial<TieredSpendLevelWidgetParams>) {
+  updateDefaults({
+    color,
+    currency,
+    withPopup,
+    version,
+    style,
+  }: Partial<TieredSpendLevelWidgetParams>) {
     this.color = color ?? this.color
     this.currency = currency ?? this.currency
     this.withPopup = withPopup ?? this.withPopup
-    this.version = version
-    this.style = style
+    this.version = version ?? this.version
+    this.style = style ?? this.style
   }
 
   validateOptions() {

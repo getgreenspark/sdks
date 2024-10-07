@@ -1,0 +1,11 @@
+/tests
+
+.storybook/
+/src/stories
+
+
+.env.*
+.env
+.idea
+.vscode
+node_modules
