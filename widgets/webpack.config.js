@@ -8,9 +8,17 @@ module.exports = (env, { mode }) => {
     entry: isProduction
       ? {
           latest: './src/index.ts',
-          [PACKAGE.version]: './src/index.ts',
+          [PACKAGE.version]: {
+            import: './src/index.ts',
+            library: { type: 'commonjs-static' },
+          },
         }
-      : { [PACKAGE.version]: './src/index.ts' },
+      : {
+          [PACKAGE.version]: {
+            import: './src/index.ts',
+            library: { type: 'commonjs-static' },
+          },
+        },
     module: {
       rules: [
         {
@@ -27,7 +35,6 @@ module.exports = (env, { mode }) => {
       },
     },
     output: {
-      library: { type: 'commonjs-static' },
       filename: 'widgets@[name].js',
       path: path.resolve(__dirname, 'dist'),
     },
