@@ -18,6 +18,9 @@ module.exports = (env, { mode }) => {
             import: './src/index.ts',
             library: { type: 'commonjs-static' },
           },
+          [`${PACKAGE.version}-static`]: {
+            import: './src/index.ts',
+          },
         },
     module: {
       rules: [
