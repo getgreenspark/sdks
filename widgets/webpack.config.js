@@ -38,6 +38,6 @@ module.exports = (env, { mode }) => {
       filename: 'widgets@[name].js',
       path: path.resolve(__dirname, 'dist'),
     },
-    plugins: [new Dotenv()],
+    plugins: [new Dotenv({ path: isProduction ? '.env.production' : '.env' })],
   }
 }
