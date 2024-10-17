@@ -2,22 +2,26 @@ const path = require('path')
 const Dotenv = require('dotenv-webpack')
 var PACKAGE = require('./package.json')
 
+const versionedEntries = {
+  [PACKAGE.version]: {
+    import: './src/index.ts',
+    library: { type: 'commonjs-static' },
+  },
+  [`${PACKAGE.version}-umd`]: {
+    import: './src/index.ts',
+  },
+}
+
 module.exports = (env, { mode }) => {
   const isProduction = mode === 'production'
   return {
     entry: isProduction
       ? {
           latest: './src/index.ts',
-          [PACKAGE.version]: {
-            import: './src/index.ts',
-            library: { type: 'commonjs-static' },
-          },
+          ...versionedEntries,
         }
       : {
-          [PACKAGE.version]: {
-            import: './src/index.ts',
-            library: { type: 'commonjs-static' },
-          },
+          ...versionedEntries,
         },
     module: {
       rules: [
