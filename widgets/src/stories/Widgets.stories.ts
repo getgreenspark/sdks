@@ -75,6 +75,11 @@ const meta = {
       { version: 'v2', withPopup: true },
     ]
 
+    const newVariants = [
+      { version: 'v2', style: 'default', withPopup: true },
+      { version: 'v2', style: 'simplified', withPopup: true },
+    ]
+
     let widget: Widget
     switch (widgetType) {
       case 'byPercentage':
@@ -83,7 +88,7 @@ const meta = {
 
       case 'byPercentageOfRevenue':
         widget = widgets.byPercentageOfRevenue(widgetArgs as ByPercentageOfRevenueWidgetParams)
-        return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, newVariants)
 
       case 'cart':
         widget = widgets.cart(widgetArgs as CartWidgetParams)
