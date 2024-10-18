@@ -10,6 +10,7 @@ export type WidgetStyle = (typeof WIDGET_STYLES)[number]
 type ApiSettingsBase = {
   apiKey: string
   locale?: (typeof AVAILABLE_LOCALES)[number]
+  isShopifyIntegration?: boolean
 }
 
 export type ApiSettings = ApiSettingsBase &
@@ -106,7 +107,7 @@ export interface FullWidthBannerWidgetParams extends WidgetParams {
   imageUrl?: string
   title?: string
   description?: string
-  showButton?: boolean
+  callToActionUrl?: string
 }
 
 export type CartWidgetRequestBody = ExternalShopContext & CartWidgetParams

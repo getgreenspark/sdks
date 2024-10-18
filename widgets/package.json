@@ -1,10 +1,12 @@
 {
   "name": "@getgreenspark/widgets",
-  "version": "1.2.0",
-  "bugs": "https://github.com/getgreenspark/sdks/issues",
-  "main": "./dist/index.js",
+  "version": "1.4.2-2",
+  "bugs": {
+    "url": "https://github.com/getgreenspark/sdks/issues"
+  },
+  "main": "./dist/widgets@latest.js",
   "description": "An SDK design to help the use of Greenspark's widget API in the browser",
-  "author": "Greenspark <support@getgreenspark.com> (https://getgreenspark.com/",
+  "author": "Greenspark <support@getgreenspark.com>",
   "keywords": [
     "greenspark",
     "getgreenspark",
@@ -28,7 +30,7 @@
     "test": "jest --config=jest.config.ts",
     "lint": "eslint src",
     "dev": "webpack --mode=development",
-    "build": "webpack --mode=production",
+    "build": "rm -r dist; mkdir dist; webpack --mode=production",
     "release": "release-it",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
@@ -37,7 +39,7 @@
   "homepage": "https://github.com/getgreenspark/sdks",
   "repository": {
     "type": "git",
-    "url": "git@github.com:getgreenspark/sdks.git"
+    "url": "git+ssh://git@github.com/getgreenspark/sdks.git"
   },
   "typings": "./dist/index.d.ts",
   "devDependencies": {
@@ -83,7 +85,10 @@
       "tagAnnotation": "@getgreenspark/widgets v${version}"
     },
     "npm": {
-      "publish": false
+      "publish": true,
+      "publishArgs": [
+        "--include-workspace-root=false"
+      ]
     },
     "hooks": {
       "before:init": [
@@ -97,5 +102,8 @@
     "extends": [
       "plugin:storybook/recommended"
     ]
+  },
+  "directories": {
+    "src": "src"
   }
 }
