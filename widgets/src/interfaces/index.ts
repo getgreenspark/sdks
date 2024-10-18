@@ -77,6 +77,12 @@ export interface ByPercentageWidgetParams extends WidgetParams {
   style?: WidgetStyle
 }
 
+export interface ByPercentageOfRevenueWidgetParams extends WidgetParams {
+  color: (typeof WIDGET_COLORS)[number]
+  withPopup?: boolean
+  style?: WidgetStyle
+}
+
 export interface TieredSpendLevelWidgetParams extends WidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   currency: string
@@ -109,6 +115,7 @@ export type SpendLevelRequestBody = ExternalShopContext & SpendLevelWidgetParams
 export type PerOrderRequestBody = ExternalShopContext & PerOrderWidgetParams
 export type PerPurchaseRequestBody = ExternalShopContext & PerPurchaseWidgetParams
 export type ByPercentageRequestBody = ExternalShopContext & ByPercentageWidgetParams
+export type ByPercentageOfRevenueRequestBody = ExternalShopContext & ByPercentageOfRevenueWidgetParams
 export type TieredSpendLevelRequestBody = ExternalShopContext & TieredSpendLevelWidgetParams
 export type PerProductRequestBody = ExternalShopContext & PerProductWidgetParams
 export type TopStatsRequestBody = TopStatsWidgetParams

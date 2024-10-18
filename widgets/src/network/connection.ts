@@ -10,6 +10,7 @@ import type {
   PerOrderWidgetParams,
   PerOrderRequestBody,
   ByPercentageWidgetParams,
+  ByPercentageOfRevenueWidgetParams,
   ByPercentageRequestBody,
   TieredSpendLevelWidgetParams,
   TieredSpendLevelRequestBody,
@@ -158,6 +159,31 @@ export class ConnectionHandler {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
     return this.api.post<string, AxiosResponse<string>, ByPercentageRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/by-percentage-widget`,
+      version
+        ? Object.assign(
+            {},
+            body,
+            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+          )
+        : Object.assign(
+            {},
+            body,
+            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+          ),
+      {
+        params: { lng: this.locale },
+        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
+      },
+    )
+  }
+
+  async fetchByPercentageOfRevenueWidget(
+    { version, ...body }: ByPercentageOfRevenueWidgetParams,
+    headers?: typeof AxiosHeaders,
+  ): Promise<AxiosResponse<string>> {
+    const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
+    return this.api.post<string, AxiosResponse<string>, ByPercentageRequestBody>(
+      `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/by-percentage-of-revenue-widget`,
       version
         ? Object.assign(
             {},
