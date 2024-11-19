@@ -20,6 +20,7 @@ import { BatchImpactPurchaseResponses } from '../models';
 import { CreateImpactBatchRequestBody } from '../models';
 import { ImpactDto } from '../models';
 import { ImpactPurchaseDetail } from '../models';
+import { TransactionPurchase } from '../models';
 /**
  * ImpactsApi - axios parameter creator
  * @export
@@ -191,6 +192,96 @@ export const ImpactsApiAxiosParamCreator = function (configuration?: Configurati
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * Fetch a single impact purchase. [Read more about the domain object here.](https://greenspark.readme.io/reference/impacts)
+         * @summary Fetch Impact Purchase
+         * @param {string} purchaseId The id of the purchase.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getImpactPurchase: async (purchaseId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'purchaseId' is not null or undefined
+            if (purchaseId === null || purchaseId === undefined) {
+                throw new RequiredError('purchaseId','Required parameter purchaseId was null or undefined when calling getImpactPurchase.');
+            }
+            const localVarPath = `/v1/impacts/purchases/{purchaseId}`
+                .replace(`{${"purchaseId"}}`, encodeURIComponent(String(purchaseId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, 'https://example.com');
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+            const localVarRequestOptions :AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication access-key required
+            if (configuration && configuration.apiKey) {
+                const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+                    ? await configuration.apiKey("x-api-key")
+                    : await configuration.apiKey;
+                localVarHeaderParameter["x-api-key"] = localVarApiKeyValue;
+            }
+
+            const query = new URLSearchParams(localVarUrlObj.search);
+            for (const key in localVarQueryParameter) {
+                query.set(key, localVarQueryParameter[key]);
+            }
+            for (const key in options.params) {
+                query.set(key, options.params[key]);
+            }
+            localVarUrlObj.search = (new URLSearchParams(query)).toString();
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Fetch all impact purchases. [Read more about the domain object here.](https://greenspark.readme.io/reference/impacts)
+         * @summary Fetch Impact Purchases
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getImpactPurchases: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/v1/impacts/purchases`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, 'https://example.com');
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+            const localVarRequestOptions :AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication access-key required
+            if (configuration && configuration.apiKey) {
+                const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+                    ? await configuration.apiKey("x-api-key")
+                    : await configuration.apiKey;
+                localVarHeaderParameter["x-api-key"] = localVarApiKeyValue;
+            }
+
+            const query = new URLSearchParams(localVarUrlObj.search);
+            for (const key in localVarQueryParameter) {
+                query.set(key, localVarQueryParameter[key]);
+            }
+            for (const key in options.params) {
+                query.set(key, options.params[key]);
+            }
+            localVarUrlObj.search = (new URLSearchParams(query)).toString();
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -244,6 +335,33 @@ export const ImpactsApiFp = function(configuration?: Configuration) {
                 return axios.request(axiosRequestArgs);
             };
         },
+        /**
+         * Fetch a single impact purchase. [Read more about the domain object here.](https://greenspark.readme.io/reference/impacts)
+         * @summary Fetch Impact Purchase
+         * @param {string} purchaseId The id of the purchase.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getImpactPurchase(purchaseId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<TransactionPurchase>>> {
+            const localVarAxiosArgs = await ImpactsApiAxiosParamCreator(configuration).getImpactPurchase(purchaseId, options);
+            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+                const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
+                return axios.request(axiosRequestArgs);
+            };
+        },
+        /**
+         * Fetch all impact purchases. [Read more about the domain object here.](https://greenspark.readme.io/reference/impacts)
+         * @summary Fetch Impact Purchases
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getImpactPurchases(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<TransactionPurchase>>>> {
+            const localVarAxiosArgs = await ImpactsApiAxiosParamCreator(configuration).getImpactPurchases(options);
+            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+                const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
+                return axios.request(axiosRequestArgs);
+            };
+        },
     }
 };
 
@@ -284,6 +402,25 @@ export const ImpactsApiFactory = function (configuration?: Configuration, basePa
          */
         async createTailoredImpact(body: ImpactDto, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<ImpactPurchaseDetail>>> {
             return ImpactsApiFp(configuration).createTailoredImpact(body, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Fetch a single impact purchase. [Read more about the domain object here.](https://greenspark.readme.io/reference/impacts)
+         * @summary Fetch Impact Purchase
+         * @param {string} purchaseId The id of the purchase.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getImpactPurchase(purchaseId: string, options?: AxiosRequestConfig): Promise<AxiosResponse<TransactionPurchase>> {
+            return ImpactsApiFp(configuration).getImpactPurchase(purchaseId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Fetch all impact purchases. [Read more about the domain object here.](https://greenspark.readme.io/reference/impacts)
+         * @summary Fetch Impact Purchases
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getImpactPurchases(options?: AxiosRequestConfig): Promise<AxiosResponse<Array<TransactionPurchase>>> {
+            return ImpactsApiFp(configuration).getImpactPurchases(options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -329,5 +466,26 @@ export class ImpactsApi extends BaseAPI {
      */
     public async createTailoredImpact(body: ImpactDto, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<ImpactPurchaseDetail>>> {
         return ImpactsApiFp(this.configuration).createTailoredImpact(body, options).then((request) => request(this.axios, this.basePath));
+    }
+    /**
+     * Fetch a single impact purchase. [Read more about the domain object here.](https://greenspark.readme.io/reference/impacts)
+     * @summary Fetch Impact Purchase
+     * @param {string} purchaseId The id of the purchase.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ImpactsApi
+     */
+    public async getImpactPurchase(purchaseId: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<TransactionPurchase>> {
+        return ImpactsApiFp(this.configuration).getImpactPurchase(purchaseId, options).then((request) => request(this.axios, this.basePath));
+    }
+    /**
+     * Fetch all impact purchases. [Read more about the domain object here.](https://greenspark.readme.io/reference/impacts)
+     * @summary Fetch Impact Purchases
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ImpactsApi
+     */
+    public async getImpactPurchases(options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<TransactionPurchase>>> {
+        return ImpactsApiFp(this.configuration).getImpactPurchases(options).then((request) => request(this.axios, this.basePath));
     }
 }

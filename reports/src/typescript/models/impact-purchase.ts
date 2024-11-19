@@ -45,6 +45,7 @@ export enum ImpactPurchaseTypeEnum {
     Trees = 'trees',
     Carbon = 'carbon',
     Plastic = 'plastic',
-    Kelp = 'kelp'
+    Kelp = 'kelp',
+    Water = 'water'
 }
 
