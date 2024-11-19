@@ -18,15 +18,27 @@
  */
 export interface InlineResponse2004 {
     /**
-     * The name of the source.
+     * The type of the spending.
      * @type {string}
      * @memberof InlineResponse2004
      */
-    source?: string;
+    type?: string;
     /**
-     * The amount of impacts.
+     * The amount of the spending.
      * @type {number}
      * @memberof InlineResponse2004
      */
-    total?: number;
+    amount?: number;
+    /**
+     * The project of the spending.
+     * @type {string}
+     * @memberof InlineResponse2004
+     */
+    projectId?: string;
+    /**
+     * The month when your impacts were created.
+     * @type {string}
+     * @memberof InlineResponse2004
+     */
+    month?: string;
 }

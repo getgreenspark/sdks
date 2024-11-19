@@ -41,6 +41,12 @@ export interface ImpactPurchaseWithPrice {
      * @memberof ImpactPurchaseWithPrice
      */
     price: number;
+    /**
+     * The ids of the purchases what are made to for the impact.
+     * @type {Array<string>}
+     * @memberof ImpactPurchaseWithPrice
+     */
+    purchaseIds: Array<string>;
 }
 
 /**
@@ -51,6 +57,7 @@ export enum ImpactPurchaseWithPriceTypeEnum {
     Trees = 'trees',
     Carbon = 'carbon',
     Plastic = 'plastic',
-    Kelp = 'kelp'
+    Kelp = 'kelp',
+    Water = 'water'
 }
 

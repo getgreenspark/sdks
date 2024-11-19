@@ -8,6 +8,7 @@ export * from './inline-response2004';
 export * from './inline-response2005';
 export * from './inline-response2006';
 export * from './inline-response2007';
+export * from './inline-response2008';
 export * from './metadata';
 export * from './raw-report';
 export * from './raw-report-row';

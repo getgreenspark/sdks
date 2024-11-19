@@ -24,6 +24,7 @@ import { InlineResponse2004 } from '../models';
 import { InlineResponse2005 } from '../models';
 import { InlineResponse2006 } from '../models';
 import { InlineResponse2007 } from '../models';
+import { InlineResponse2008 } from '../models';
 import { RawReport } from '../models';
 import { RawReportV2 } from '../models';
 /**
@@ -300,6 +301,73 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
          */
         fetchImpactAmountByTypePerTriggerReport: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/reports/impact-amount-by-type-per-trigger`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, 'https://example.com');
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+            const localVarRequestOptions :AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication access-key required
+            if (configuration && configuration.apiKey) {
+                const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+                    ? await configuration.apiKey("x-api-key")
+                    : await configuration.apiKey;
+                localVarHeaderParameter["x-api-key"] = localVarApiKeyValue;
+            }
+
+            if (sourceId !== undefined) {
+                localVarQueryParameter['sourceId'] = sourceId;
+            }
+
+            if (triggerId !== undefined) {
+                localVarQueryParameter['triggerId'] = triggerId;
+            }
+
+            if (startDate !== undefined) {
+                localVarQueryParameter['startDate'] = startDate;
+            }
+
+            if (endDate !== undefined) {
+                localVarQueryParameter['endDate'] = endDate;
+            }
+
+            if (metadata !== undefined) {
+                localVarQueryParameter['metadata'] = metadata;
+            }
+
+            const query = new URLSearchParams(localVarUrlObj.search);
+            for (const key in localVarQueryParameter) {
+                query.set(key, localVarQueryParameter[key]);
+            }
+            for (const key in options.params) {
+                query.set(key, options.params[key]);
+            }
+            localVarUrlObj.search = (new URLSearchParams(query)).toString();
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Fetch the Array of spending on impacts per month.
+         * @summary Fetch Impacts By Interval
+         * @param {string} [sourceId] The id of the source associated with the impact.
+         * @param {string} [triggerId] The id of the trigger associated with the impact.
+         * @param {string} [startDate] The beginning of the date filter interval.
+         * @param {string} [endDate] The end of the date filter interval.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        fetchImpactsByInterval: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/v1/reports/impacts-by-interval`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, 'https://example.com');
             let baseOptions;
@@ -1007,7 +1075,7 @@ export const ReportsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchAverageSpendPerImpact(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2006>>>> {
+        async fetchAverageSpendPerImpact(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2007>>>> {
             const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchAverageSpendPerImpact(sourceId, triggerId, startDate, endDate, metadata, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
@@ -1063,6 +1131,24 @@ export const ReportsApiFp = function(configuration?: Configuration) {
          */
         async fetchImpactAmountByTypePerTriggerReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2002>>>> {
             const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchImpactAmountByTypePerTriggerReport(sourceId, triggerId, startDate, endDate, metadata, options);
+            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+                const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
+                return axios.request(axiosRequestArgs);
+            };
+        },
+        /**
+         * Fetch the Array of spending on impacts per month.
+         * @summary Fetch Impacts By Interval
+         * @param {string} [sourceId] The id of the source associated with the impact.
+         * @param {string} [triggerId] The id of the trigger associated with the impact.
+         * @param {string} [startDate] The beginning of the date filter interval.
+         * @param {string} [endDate] The end of the date filter interval.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async fetchImpactsByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2004>>>> {
+            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchImpactsByInterval(sourceId, triggerId, startDate, endDate, metadata, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1136,7 +1222,7 @@ export const ReportsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchTotalImpactBySources(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2004>>>> {
+        async fetchTotalImpactBySources(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2005>>>> {
             const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchTotalImpactBySources(sourceId, triggerId, startDate, endDate, metadata, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
@@ -1154,7 +1240,7 @@ export const ReportsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchTotalImpactByTriggers(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2005>>>> {
+        async fetchTotalImpactByTriggers(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2006>>>> {
             const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchTotalImpactByTriggers(sourceId, triggerId, startDate, endDate, metadata, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
@@ -1190,7 +1276,7 @@ export const ReportsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchTotalImpactsCount(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<InlineResponse2007>>> {
+        async fetchTotalImpactsCount(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<InlineResponse2008>>> {
             const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchTotalImpactsCount(sourceId, triggerId, startDate, endDate, metadata, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
@@ -1208,7 +1294,7 @@ export const ReportsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchTotalSpendOnImpacts(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2006>>>> {
+        async fetchTotalSpendOnImpacts(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2007>>>> {
             const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchTotalSpendOnImpacts(sourceId, triggerId, startDate, endDate, metadata, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
@@ -1264,7 +1350,7 @@ export const ReportsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchAverageSpendPerImpact(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2006>>> {
+        async fetchAverageSpendPerImpact(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2007>>> {
             return ReportsApiFp(configuration).fetchAverageSpendPerImpact(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1308,6 +1394,20 @@ export const ReportsApiFactory = function (configuration?: Configuration, basePa
          */
         async fetchImpactAmountByTypePerTriggerReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2002>>> {
             return ReportsApiFp(configuration).fetchImpactAmountByTypePerTriggerReport(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Fetch the Array of spending on impacts per month.
+         * @summary Fetch Impacts By Interval
+         * @param {string} [sourceId] The id of the source associated with the impact.
+         * @param {string} [triggerId] The id of the trigger associated with the impact.
+         * @param {string} [startDate] The beginning of the date filter interval.
+         * @param {string} [endDate] The end of the date filter interval.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async fetchImpactsByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2004>>> {
+            return ReportsApiFp(configuration).fetchImpactsByInterval(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(axios, basePath));
         },
         /**
          * Fetch the Array of spending on impacts of plastic per month.
@@ -1365,7 +1465,7 @@ export const ReportsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchTotalImpactBySources(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2004>>> {
+        async fetchTotalImpactBySources(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2005>>> {
             return ReportsApiFp(configuration).fetchTotalImpactBySources(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1379,7 +1479,7 @@ export const ReportsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchTotalImpactByTriggers(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2005>>> {
+        async fetchTotalImpactByTriggers(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2006>>> {
             return ReportsApiFp(configuration).fetchTotalImpactByTriggers(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1407,7 +1507,7 @@ export const ReportsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchTotalImpactsCount(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<InlineResponse2007>> {
+        async fetchTotalImpactsCount(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<InlineResponse2008>> {
             return ReportsApiFp(configuration).fetchTotalImpactsCount(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1421,7 +1521,7 @@ export const ReportsApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchTotalSpendOnImpacts(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2006>>> {
+        async fetchTotalSpendOnImpacts(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2007>>> {
             return ReportsApiFp(configuration).fetchTotalSpendOnImpacts(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1472,7 +1572,7 @@ export class ReportsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof ReportsApi
      */
-    public async fetchAverageSpendPerImpact(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2006>>> {
+    public async fetchAverageSpendPerImpact(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2007>>> {
         return ReportsApiFp(this.configuration).fetchAverageSpendPerImpact(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(this.axios, this.basePath));
     }
     /**
@@ -1519,6 +1619,21 @@ export class ReportsApi extends BaseAPI {
      */
     public async fetchImpactAmountByTypePerTriggerReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2002>>> {
         return ReportsApiFp(this.configuration).fetchImpactAmountByTypePerTriggerReport(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(this.axios, this.basePath));
+    }
+    /**
+     * Fetch the Array of spending on impacts per month.
+     * @summary Fetch Impacts By Interval
+     * @param {string} [sourceId] The id of the source associated with the impact.
+     * @param {string} [triggerId] The id of the trigger associated with the impact.
+     * @param {string} [startDate] The beginning of the date filter interval.
+     * @param {string} [endDate] The end of the date filter interval.
+     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ReportsApi
+     */
+    public async fetchImpactsByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2004>>> {
+        return ReportsApiFp(this.configuration).fetchImpactsByInterval(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(this.axios, this.basePath));
     }
     /**
      * Fetch the Array of spending on impacts of plastic per month.
@@ -1580,7 +1695,7 @@ export class ReportsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof ReportsApi
      */
-    public async fetchTotalImpactBySources(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2004>>> {
+    public async fetchTotalImpactBySources(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2005>>> {
         return ReportsApiFp(this.configuration).fetchTotalImpactBySources(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(this.axios, this.basePath));
     }
     /**
@@ -1595,7 +1710,7 @@ export class ReportsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof ReportsApi
      */
-    public async fetchTotalImpactByTriggers(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2005>>> {
+    public async fetchTotalImpactByTriggers(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2006>>> {
         return ReportsApiFp(this.configuration).fetchTotalImpactByTriggers(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(this.axios, this.basePath));
     }
     /**
@@ -1625,7 +1740,7 @@ export class ReportsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof ReportsApi
      */
-    public async fetchTotalImpactsCount(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<InlineResponse2007>> {
+    public async fetchTotalImpactsCount(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<InlineResponse2008>> {
         return ReportsApiFp(this.configuration).fetchTotalImpactsCount(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(this.axios, this.basePath));
     }
     /**
@@ -1640,7 +1755,7 @@ export class ReportsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof ReportsApi
      */
-    public async fetchTotalSpendOnImpacts(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2006>>> {
+    public async fetchTotalSpendOnImpacts(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2007>>> {
         return ReportsApiFp(this.configuration).fetchTotalSpendOnImpacts(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(this.axios, this.basePath));
     }
     /**

@@ -14,19 +14,13 @@
 /**
  * 
  * @export
- * @interface InlineResponse2005
+ * @interface InlineResponse2008
  */
-export interface InlineResponse2005 {
+export interface InlineResponse2008 {
     /**
-     * The name of the source.
-     * @type {string}
-     * @memberof InlineResponse2005
-     */
-    source?: string;
-    /**
-     * The amount of impacts.
+     * The total number of impacts.
      * @type {number}
-     * @memberof InlineResponse2005
+     * @memberof InlineResponse2008
      */
-    total?: number;
+    value?: number;
 }

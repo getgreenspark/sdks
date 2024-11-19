@@ -97,6 +97,12 @@ export interface ProjectDetails {
      */
     _default?: boolean;
     /**
+     * Defines the project status.
+     * @type {string}
+     * @memberof ProjectDetails
+     */
+    status: ProjectDetailsStatusEnum;
+    /**
      * Defines project specific additional information.
      * @type {Array<ProjectMetadata>}
      * @memberof ProjectDetails
@@ -112,6 +118,15 @@ export enum ProjectDetailsTypeEnum {
     Trees = 'trees',
     Carbon = 'carbon',
     Plastic = 'plastic',
-    Kelp = 'kelp'
+    Kelp = 'kelp',
+    Water = 'water'
+}
+/**
+    * @export
+    * @enum {string}
+    */
+export enum ProjectDetailsStatusEnum {
+    Approved = 'approved',
+    Deprecated = 'deprecated'
 }
 
