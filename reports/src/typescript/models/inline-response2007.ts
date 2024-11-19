@@ -18,7 +18,7 @@
  */
 export interface InlineResponse2007 {
     /**
-     * The total number of impacts.
+     * The spending on impacts.
      * @type {number}
      * @memberof InlineResponse2007
      */

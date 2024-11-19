@@ -18,9 +18,15 @@
  */
 export interface InlineResponse2006 {
     /**
-     * The spending on impacts.
+     * The name of the trigger.
+     * @type {string}
+     * @memberof InlineResponse2006
+     */
+    trigger?: string;
+    /**
+     * The amount of impacts.
      * @type {number}
      * @memberof InlineResponse2006
      */
-    value?: number;
+    total?: number;
 }
