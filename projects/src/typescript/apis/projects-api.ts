@@ -130,10 +130,11 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
          * @param {string} [currency] The currency in which the project prices are returned. Returns in the account&#x27;s currency for an authenticated call, otherwise in USD if it&#x27;s not provided.
          * @param {string} [lng] The locale what the project is returned in.
          * @param {string} [plan] The subscription plan to fetch the project prices for.
+         * @param {string} [statuses] Comma separated list of the project statuses. Default to approved.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getProjects: async (country?: string, projectCategoryId?: string, type?: string, vintage?: number, currency?: string, lng?: string, plan?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getProjects: async (country?: string, projectCategoryId?: string, type?: string, vintage?: number, currency?: string, lng?: string, plan?: string, statuses?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/projects`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, 'https://example.com');
@@ -179,6 +180,10 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
 
             if (plan !== undefined) {
                 localVarQueryParameter['plan'] = plan;
+            }
+
+            if (statuses !== undefined) {
+                localVarQueryParameter['statuses'] = statuses;
             }
 
             const query = new URLSearchParams(localVarUrlObj.search);
@@ -244,11 +249,12 @@ export const ProjectsApiFp = function(configuration?: Configuration) {
          * @param {string} [currency] The currency in which the project prices are returned. Returns in the account&#x27;s currency for an authenticated call, otherwise in USD if it&#x27;s not provided.
          * @param {string} [lng] The locale what the project is returned in.
          * @param {string} [plan] The subscription plan to fetch the project prices for.
+         * @param {string} [statuses] Comma separated list of the project statuses. Default to approved.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getProjects(country?: string, projectCategoryId?: string, type?: string, vintage?: number, currency?: string, lng?: string, plan?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<Project>>>> {
-            const localVarAxiosArgs = await ProjectsApiAxiosParamCreator(configuration).getProjects(country, projectCategoryId, type, vintage, currency, lng, plan, options);
+        async getProjects(country?: string, projectCategoryId?: string, type?: string, vintage?: number, currency?: string, lng?: string, plan?: string, statuses?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<Project>>>> {
+            const localVarAxiosArgs = await ProjectsApiAxiosParamCreator(configuration).getProjects(country, projectCategoryId, type, vintage, currency, lng, plan, statuses, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -293,11 +299,12 @@ export const ProjectsApiFactory = function (configuration?: Configuration, baseP
          * @param {string} [currency] The currency in which the project prices are returned. Returns in the account&#x27;s currency for an authenticated call, otherwise in USD if it&#x27;s not provided.
          * @param {string} [lng] The locale what the project is returned in.
          * @param {string} [plan] The subscription plan to fetch the project prices for.
+         * @param {string} [statuses] Comma separated list of the project statuses. Default to approved.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getProjects(country?: string, projectCategoryId?: string, type?: string, vintage?: number, currency?: string, lng?: string, plan?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Project>>> {
-            return ProjectsApiFp(configuration).getProjects(country, projectCategoryId, type, vintage, currency, lng, plan, options).then((request) => request(axios, basePath));
+        async getProjects(country?: string, projectCategoryId?: string, type?: string, vintage?: number, currency?: string, lng?: string, plan?: string, statuses?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Project>>> {
+            return ProjectsApiFp(configuration).getProjects(country, projectCategoryId, type, vintage, currency, lng, plan, statuses, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -341,11 +348,12 @@ export class ProjectsApi extends BaseAPI {
      * @param {string} [currency] The currency in which the project prices are returned. Returns in the account&#x27;s currency for an authenticated call, otherwise in USD if it&#x27;s not provided.
      * @param {string} [lng] The locale what the project is returned in.
      * @param {string} [plan] The subscription plan to fetch the project prices for.
+     * @param {string} [statuses] Comma separated list of the project statuses. Default to approved.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ProjectsApi
      */
-    public async getProjects(country?: string, projectCategoryId?: string, type?: string, vintage?: number, currency?: string, lng?: string, plan?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<Project>>> {
-        return ProjectsApiFp(this.configuration).getProjects(country, projectCategoryId, type, vintage, currency, lng, plan, options).then((request) => request(this.axios, this.basePath));
+    public async getProjects(country?: string, projectCategoryId?: string, type?: string, vintage?: number, currency?: string, lng?: string, plan?: string, statuses?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<Project>>> {
+        return ProjectsApiFp(this.configuration).getProjects(country, projectCategoryId, type, vintage, currency, lng, plan, statuses, options).then((request) => request(this.axios, this.basePath));
     }
 }

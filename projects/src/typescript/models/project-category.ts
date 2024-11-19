@@ -58,6 +58,7 @@ export enum ProjectCategoryTypeEnum {
     Trees = 'trees',
     Carbon = 'carbon',
     Plastic = 'plastic',
-    Kelp = 'kelp'
+    Kelp = 'kelp',
+    Water = 'water'
 }
 
