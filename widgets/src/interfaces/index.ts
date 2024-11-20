@@ -100,7 +100,7 @@ export interface PerProductWidgetParams extends WidgetParams {
 
 export interface TopStatsWidgetParams extends WidgetParams {
   color: (typeof WIDGET_COLORS)[number]
-  impactTypes?: (typeof IMPACT_TYPES)[number][]
+  statTypes?: (typeof IMPACT_TYPES)[number][]
   withPopup?: boolean
 }
 

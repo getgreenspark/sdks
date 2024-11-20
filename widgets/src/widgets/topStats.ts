@@ -7,13 +7,13 @@ import type { TopStatsWidgetParams } from '@/interfaces'
 export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   withPopup?: boolean
-  impactTypes?: (typeof IMPACT_TYPES)[number][]
+  statTypes?: (typeof IMPACT_TYPES)[number][]
   version?: 'v2'
 
   constructor(params: WidgetConfig & TopStatsWidgetParams) {
     super(params)
     this.color = params.color
-    this.impactTypes = params.impactTypes
+    this.statTypes = params.statTypes
     this.withPopup = params.withPopup
     this.version = params.version
   }
@@ -21,15 +21,15 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
   get topStatsWidgetRequestBody(): TopStatsWidgetParams {
     return {
       color: this.color,
-      impactTypes: this.impactTypes,
+      statTypes: this.statTypes,
       withPopup: this.withPopup,
       version: this.version,
     }
   }
 
-  updateDefaults({ color, impactTypes, withPopup, version }: Partial<TopStatsWidgetParams>) {
+  updateDefaults({ color, statTypes, withPopup, version }: Partial<TopStatsWidgetParams>) {
     this.color = color ?? this.color
-    this.impactTypes = impactTypes ?? this.impactTypes
+    this.statTypes = statTypes ?? this.statTypes
     this.withPopup = withPopup ?? this.withPopup
     this.version = version ?? this.version
   }
@@ -44,10 +44,10 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
         )}`,
       )
     }
-    if (this.impactTypes && this.impactTypes.some((i) => !IMPACT_TYPES.includes(i))) {
+    if (this.statTypes && this.statTypes.some((s) => !IMPACT_TYPES.includes(s))) {
       throw new Error(
         `Greenspark - "${
-          this.impactTypes
+          this.statTypes
         }" is not a valid list for the displayed values of the Top Stats Widget. Please use only the available types: ${IMPACT_TYPES.join(
           ', ',
         )}`,

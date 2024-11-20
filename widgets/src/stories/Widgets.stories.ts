@@ -353,7 +353,7 @@ export const TopStats: StoryObj<{
         options: WIDGET_COLORS,
       },
       withPopup: { control: 'boolean' },
-      impactTypes: {
+      statTypes: {
         control: { type: 'select' },
         options: IMPACT_TYPES,
         withPopup: { control: 'boolean' },
@@ -363,6 +363,7 @@ export const TopStats: StoryObj<{
   args: {
     widgetArgs: {
       color: 'beige',
+      statTypes: ['water', 'trees'],
     },
     widgetType: 'topStats',
   },
