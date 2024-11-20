@@ -363,7 +363,6 @@ export const TopStats: StoryObj<{
   args: {
     widgetArgs: {
       color: 'beige',
-      statTypes: ['water', 'trees'],
     },
     widgetType: 'topStats',
   },
