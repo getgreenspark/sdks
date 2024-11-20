@@ -10,6 +10,9 @@ export class FullWidthBannerWidget extends Widget implements FullWidthBannerWidg
   title?: string
   description?: string
   callToActionUrl?: string
+  textColor?: string
+  buttonBackgroundColor?: string
+  buttonTextColor?: string
   version?: 'v2'
 
   constructor(params: WidgetConfig & FullWidthBannerWidgetParams) {
@@ -19,6 +22,9 @@ export class FullWidthBannerWidget extends Widget implements FullWidthBannerWidg
     this.title = params.title
     this.description = params.description
     this.callToActionUrl = params.callToActionUrl
+    this.textColor = params.textColor
+    this.buttonBackgroundColor = params.buttonBackgroundColor
+    this.buttonTextColor = params.buttonTextColor
     this.version = params.version
   }
 
@@ -29,6 +35,9 @@ export class FullWidthBannerWidget extends Widget implements FullWidthBannerWidg
       title: this.title,
       description: this.description,
       callToActionUrl: this.callToActionUrl,
+      textColor: this.textColor,
+      buttonBackgroundColor: this.buttonBackgroundColor,
+      buttonTextColor: this.buttonTextColor,
       version: this.version,
     }
   }
@@ -39,6 +48,9 @@ export class FullWidthBannerWidget extends Widget implements FullWidthBannerWidg
     title,
     description,
     callToActionUrl,
+    textColor,
+    buttonBackgroundColor,
+    buttonTextColor,
     version,
   }: Partial<FullWidthBannerWidgetParams>) {
     this.options = options ?? this.options
@@ -46,6 +58,9 @@ export class FullWidthBannerWidget extends Widget implements FullWidthBannerWidg
     this.title = title ?? this.title
     this.description = description ?? this.description
     this.callToActionUrl = callToActionUrl ?? this.callToActionUrl
+    this.textColor = textColor ?? this.textColor
+    this.buttonBackgroundColor = buttonBackgroundColor ?? this.buttonBackgroundColor
+    this.buttonTextColor = buttonTextColor ?? this.buttonTextColor
     this.version = version ?? this.version
   }
 

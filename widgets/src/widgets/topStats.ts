@@ -1,5 +1,5 @@
 import { Widget } from '@/widgets/base'
-import { WIDGET_COLORS } from '@/constants'
+import { WIDGET_COLORS, IMPACT_TYPES } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
 import type { TopStatsWidgetParams } from '@/interfaces'
@@ -7,11 +7,13 @@ import type { TopStatsWidgetParams } from '@/interfaces'
 export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   withPopup?: boolean
+  impactTypes?: (typeof IMPACT_TYPES)[number][]
   version?: 'v2'
 
   constructor(params: WidgetConfig & TopStatsWidgetParams) {
     super(params)
     this.color = params.color
+    this.impactTypes = params.impactTypes
     this.withPopup = params.withPopup
     this.version = params.version
   }
@@ -19,13 +21,15 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
   get topStatsWidgetRequestBody(): TopStatsWidgetParams {
     return {
       color: this.color,
+      impactTypes: this.impactTypes,
       withPopup: this.withPopup,
       version: this.version,
     }
   }
 
-  updateDefaults({ color, withPopup, version }: Partial<TopStatsWidgetParams>) {
+  updateDefaults({ color, impactTypes, withPopup, version }: Partial<TopStatsWidgetParams>) {
     this.color = color ?? this.color
+    this.impactTypes = impactTypes ?? this.impactTypes
     this.withPopup = withPopup ?? this.withPopup
     this.version = version ?? this.version
   }
@@ -36,6 +40,15 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
         `Greenspark - "${
           this.color
         }" was selected as the color for the Top Stats Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.join(
+          ', ',
+        )}`,
+      )
+    }
+    if (this.impactTypes && this.impactTypes.some((i) => !IMPACT_TYPES.includes(i))) {
+      throw new Error(
+        `Greenspark - "${
+          this.impactTypes
+        }" is not a valid list for the displayed values of the Top Stats Widget. Please use only the available types: ${IMPACT_TYPES.join(
           ', ',
         )}`,
       )

@@ -1,6 +1,7 @@
 import type {
   AVAILABLE_LOCALES,
   AVAILABLE_STATISTIC_TYPES,
+  IMPACT_TYPES,
   WIDGET_COLORS,
   WIDGET_STYLES,
 } from '@/constants'
@@ -99,6 +100,7 @@ export interface PerProductWidgetParams extends WidgetParams {
 
 export interface TopStatsWidgetParams extends WidgetParams {
   color: (typeof WIDGET_COLORS)[number]
+  impactTypes?: (typeof IMPACT_TYPES)[number][]
   withPopup?: boolean
 }
 
@@ -108,6 +110,9 @@ export interface FullWidthBannerWidgetParams extends WidgetParams {
   title?: string
   description?: string
   callToActionUrl?: string
+  textColor?: string
+  buttonBackgroundColor?: string
+  buttonTextColor?: string
 }
 
 export type CartWidgetRequestBody = ExternalShopContext & CartWidgetParams
@@ -115,7 +120,8 @@ export type SpendLevelRequestBody = ExternalShopContext & SpendLevelWidgetParams
 export type PerOrderRequestBody = ExternalShopContext & PerOrderWidgetParams
 export type PerPurchaseRequestBody = ExternalShopContext & PerPurchaseWidgetParams
 export type ByPercentageRequestBody = ExternalShopContext & ByPercentageWidgetParams
-export type ByPercentageOfRevenueRequestBody = ExternalShopContext & ByPercentageOfRevenueWidgetParams
+export type ByPercentageOfRevenueRequestBody = ExternalShopContext &
+  ByPercentageOfRevenueWidgetParams
 export type TieredSpendLevelRequestBody = ExternalShopContext & TieredSpendLevelWidgetParams
 export type PerProductRequestBody = ExternalShopContext & PerProductWidgetParams
 export type TopStatsRequestBody = TopStatsWidgetParams

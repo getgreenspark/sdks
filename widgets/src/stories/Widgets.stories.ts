@@ -1,5 +1,10 @@
 import { createWidgetPage } from '@/stories/Widgets'
-import { AVAILABLE_LOCALES, AVAILABLE_STATISTIC_TYPES, WIDGET_COLORS } from '@/constants'
+import {
+  AVAILABLE_LOCALES,
+  AVAILABLE_STATISTIC_TYPES,
+  IMPACT_TYPES,
+  WIDGET_COLORS,
+} from '@/constants'
 
 import type { StoryObj, Meta } from '@storybook/html'
 import type {
@@ -233,6 +238,9 @@ export const FullWidthBanner: StoryObj<{
   args: {
     widgetArgs: {
       options: [...AVAILABLE_STATISTIC_TYPES],
+      textColor: 'red',
+      buttonBackgroundColor: 'pink',
+      buttonTextColor: '#4433f4',
     },
     widgetType: 'fullWidthBanner',
   },
@@ -343,6 +351,11 @@ export const TopStats: StoryObj<{
       color: {
         control: { type: 'select' },
         options: WIDGET_COLORS,
+      },
+      withPopup: { control: 'boolean' },
+      impactTypes: {
+        control: { type: 'select' },
+        options: IMPACT_TYPES,
         withPopup: { control: 'boolean' },
       },
     },
