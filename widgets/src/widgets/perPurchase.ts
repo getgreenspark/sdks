@@ -2,12 +2,13 @@ import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
-import type { PerPurchaseWidgetParams, WidgetParams, WidgetStyle } from '@/interfaces'
+import type { PerPurchaseWidgetParams, PopupTheme, WidgetParams, WidgetStyle } from '@/interfaces'
 
 export class PerPurchaseWidget extends Widget implements PerPurchaseWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   currency: string
   withPopup?: boolean
+  popupTheme?: PopupTheme
   style?: WidgetStyle
   version: 'v2'
 
@@ -16,6 +17,7 @@ export class PerPurchaseWidget extends Widget implements PerPurchaseWidgetParams
     this.color = params.color
     this.currency = params.currency
     this.withPopup = params.withPopup ?? true
+    this.popupTheme = params.popupTheme
     this.style = params.style ?? 'default'
     this.version = params.version
   }
@@ -25,6 +27,7 @@ export class PerPurchaseWidget extends Widget implements PerPurchaseWidgetParams
       color: this.color,
       currency: this.currency,
       withPopup: this.withPopup,
+      popupTheme: this.popupTheme,
       style: this.style,
       version: this.version,
     }
@@ -34,12 +37,14 @@ export class PerPurchaseWidget extends Widget implements PerPurchaseWidgetParams
     color,
     currency,
     withPopup,
+    popupTheme,
     style,
     version,
   }: Partial<PerPurchaseWidgetParams> & Required<WidgetParams>) {
     this.color = color ?? this.color
     this.currency = currency ?? this.currency
     this.withPopup = withPopup ?? this.withPopup
+    this.popupTheme = popupTheme ?? this.popupTheme
     this.style = style ?? this.style
     this.version = version ?? this.version
   }

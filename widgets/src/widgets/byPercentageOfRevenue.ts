@@ -2,14 +2,15 @@ import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
-import type {
-  ByPercentageOfRevenueWidgetParams,
-  WidgetStyle
-} from '@/interfaces'
+import type { ByPercentageOfRevenueWidgetParams, PopupTheme, WidgetStyle } from '@/interfaces'
 
-export class ByPercentageOfRevenueWidget extends Widget implements ByPercentageOfRevenueWidgetParams {
+export class ByPercentageOfRevenueWidget
+  extends Widget
+  implements ByPercentageOfRevenueWidgetParams
+{
   color: (typeof WIDGET_COLORS)[number]
   withPopup?: boolean
+  popupTheme?: PopupTheme
   style?: WidgetStyle
   version?: 'v2'
 
@@ -17,6 +18,7 @@ export class ByPercentageOfRevenueWidget extends Widget implements ByPercentageO
     super(params)
     this.color = params.color
     this.withPopup = params.withPopup ?? true
+    this.popupTheme = params.popupTheme
     this.style = params.style ?? 'default'
     this.version = params.version
   }
@@ -25,14 +27,22 @@ export class ByPercentageOfRevenueWidget extends Widget implements ByPercentageO
     return {
       color: this.color,
       withPopup: this.withPopup,
+      popupTheme: this.popupTheme,
       style: this.style,
       version: this.version,
     }
   }
 
-  updateDefaults({ color, withPopup, style, version }: Partial<ByPercentageOfRevenueWidgetParams>) {
+  updateDefaults({
+    color,
+    withPopup,
+    popupTheme,
+    style,
+    version,
+  }: Partial<ByPercentageOfRevenueWidgetParams>) {
     this.color = color ?? this.color
     this.withPopup = withPopup ?? this.withPopup
+    this.popupTheme = popupTheme ?? this.popupTheme
     this.style = style ?? this.style
     this.version = version ?? this.version
   }
@@ -60,11 +70,15 @@ export class ByPercentageOfRevenueWidget extends Widget implements ByPercentageO
   async renderToString(options?: Partial<ByPercentageOfRevenueWidgetParams>): Promise<string> {
     if (options) this.updateDefaults(options)
     this.validateOptions()
-    const response = await this.api.fetchByPercentageOfRevenueWidget(this.byPercentageOfRevenueWidgetRequestBody)
+    const response = await this.api.fetchByPercentageOfRevenueWidget(
+      this.byPercentageOfRevenueWidgetRequestBody,
+    )
     return response.data
   }
 
-  async renderToElement(options?: Partial<ByPercentageOfRevenueWidgetParams>): Promise<HTMLElement> {
+  async renderToElement(
+    options?: Partial<ByPercentageOfRevenueWidgetParams>,
+  ): Promise<HTMLElement> {
     const html = await this.renderToString(options)
     return this.parseHtml(html)
   }

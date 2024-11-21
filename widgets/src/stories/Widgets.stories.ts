@@ -48,9 +48,10 @@ const meta = {
     })
 
     const basicVariants = [
-      { version: '', style: 'default' },
-      { version: 'v2', style: 'default' },
-      { version: 'v2', style: 'simplified' },
+      { version: '', style: 'default', withPopup: false },
+      { version: 'v2', style: 'default', withPopup: false },
+      { version: 'v2', style: 'default', withPopup: true, popupTheme: 'dark' },
+      { version: 'v2', style: 'simplified', withPopup: true, popupTheme: 'light' },
     ]
 
     const fullWidthIcons = ['monthsEarthPositive', 'trees', 'plastic', 'carbon', 'kelp', 'straws']
@@ -76,7 +77,7 @@ const meta = {
 
     const topStatsVariants = [
       { withPopup: true },
-      { version: 'v2' },
+      { version: 'v2', withPopup: false },
       { version: 'v2', withPopup: true },
     ]
 

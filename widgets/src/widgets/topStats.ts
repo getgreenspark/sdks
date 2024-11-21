@@ -2,11 +2,12 @@ import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS, IMPACT_TYPES } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
-import type { TopStatsWidgetParams } from '@/interfaces'
+import type { PopupTheme, TopStatsWidgetParams } from '@/interfaces'
 
 export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   withPopup?: boolean
+  popupTheme?: PopupTheme
   statTypes?: (typeof IMPACT_TYPES)[number][]
   version?: 'v2'
 
@@ -15,6 +16,7 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
     this.color = params.color
     this.statTypes = params.statTypes
     this.withPopup = params.withPopup
+    this.popupTheme = params.popupTheme
     this.version = params.version
   }
 
@@ -23,14 +25,22 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
       color: this.color,
       statTypes: this.statTypes,
       withPopup: this.withPopup,
+      popupTheme: this.popupTheme,
       version: this.version,
     }
   }
 
-  updateDefaults({ color, statTypes, withPopup, version }: Partial<TopStatsWidgetParams>) {
+  updateDefaults({
+    color,
+    statTypes,
+    withPopup,
+    popupTheme,
+    version,
+  }: Partial<TopStatsWidgetParams>) {
     this.color = color ?? this.color
     this.statTypes = statTypes ?? this.statTypes
     this.withPopup = withPopup ?? this.withPopup
+    this.popupTheme = popupTheme ?? this.popupTheme
     this.version = version ?? this.version
   }
 
