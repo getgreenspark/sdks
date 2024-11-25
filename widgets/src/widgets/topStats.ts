@@ -8,13 +8,13 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   withPopup?: boolean
   popupTheme?: PopupTheme
-  statTypes?: (typeof IMPACT_TYPES)[number][]
+  impactTypes?: (typeof IMPACT_TYPES)[number][]
   version?: 'v2'
 
   constructor(params: WidgetConfig & TopStatsWidgetParams) {
     super(params)
     this.color = params.color
-    this.statTypes = params.statTypes
+    this.impactTypes = params.impactTypes
     this.withPopup = params.withPopup
     this.popupTheme = params.popupTheme
     this.version = params.version
@@ -23,7 +23,7 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
   get topStatsWidgetRequestBody(): TopStatsWidgetParams {
     return {
       color: this.color,
-      statTypes: this.statTypes,
+      impactTypes: this.impactTypes,
       withPopup: this.withPopup,
       popupTheme: this.popupTheme,
       version: this.version,
@@ -32,13 +32,13 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
 
   updateDefaults({
     color,
-    statTypes,
+    impactTypes,
     withPopup,
     popupTheme,
     version,
   }: Partial<TopStatsWidgetParams>) {
     this.color = color ?? this.color
-    this.statTypes = statTypes ?? this.statTypes
+    this.impactTypes = impactTypes ?? this.impactTypes
     this.withPopup = withPopup ?? this.withPopup
     this.popupTheme = popupTheme ?? this.popupTheme
     this.version = version ?? this.version
@@ -54,10 +54,10 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
         )}`,
       )
     }
-    if (this.statTypes && this.statTypes.some((s) => !IMPACT_TYPES.includes(s))) {
+    if (this.impactTypes && this.impactTypes.some((s) => !IMPACT_TYPES.includes(s))) {
       throw new Error(
         `Greenspark - "${
-          this.statTypes
+          this.impactTypes
         }" is not a valid list for the displayed values of the Top Stats Widget. Please use only the available types: ${IMPACT_TYPES.join(
           ', ',
         )}`,

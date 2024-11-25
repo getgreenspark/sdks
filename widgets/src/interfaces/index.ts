@@ -95,7 +95,7 @@ export interface PerProductWidgetParams extends WidgetParams, WidgetPopupParams,
 
 export interface TopStatsWidgetParams extends WidgetParams, WidgetPopupParams {
   color: (typeof WIDGET_COLORS)[number]
-  statTypes?: (typeof IMPACT_TYPES)[number][]
+  impactTypes?: (typeof IMPACT_TYPES)[number][]
 }
 
 export interface FullWidthBannerWidgetParams extends WidgetParams {

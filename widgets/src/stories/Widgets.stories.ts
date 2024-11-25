@@ -79,6 +79,7 @@ const meta = {
       { withPopup: true },
       { version: 'v2', withPopup: false },
       { version: 'v2', withPopup: true },
+      { version: 'v2', withPopup: true, popupTheme: 'dark' },
     ]
 
     const newVariants = [
@@ -351,12 +352,11 @@ export const TopStats: StoryObj<{
     widgetArgs: {
       color: {
         control: { type: 'select' },
-        options: WIDGET_COLORS,
       },
       withPopup: { control: 'boolean' },
-      statTypes: {
+      impactTypes: {
         control: { type: 'select' },
-        options: IMPACT_TYPES,
+        options: IMPACT_TYPES.filter,
         withPopup: { control: 'boolean' },
       },
     },
