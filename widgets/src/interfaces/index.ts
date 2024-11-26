@@ -1,16 +1,29 @@
 import type {
   AVAILABLE_LOCALES,
   AVAILABLE_STATISTIC_TYPES,
+  IMPACT_TYPES,
   WIDGET_COLORS,
   WIDGET_STYLES,
+  POPUP_THEMES,
 } from '@/constants'
 
 export type WidgetStyle = (typeof WIDGET_STYLES)[number]
+export type PopupTheme = (typeof POPUP_THEMES)[number]
 
 type ApiSettingsBase = {
   apiKey: string
   locale?: (typeof AVAILABLE_LOCALES)[number]
   isShopifyIntegration?: boolean
+}
+
+type WidgetPopupParams = {
+  withPopup?: boolean
+  popupTheme?: PopupTheme
+}
+
+type WidgetStyleParams = {
+  color: (typeof WIDGET_COLORS)[number]
+  style?: WidgetStyle
 }
 
 export type ApiSettings = ApiSettingsBase &
@@ -43,63 +56,46 @@ export interface WidgetParams {
   version?: 'v2'
 }
 
-export interface CartWidgetParams extends WidgetParams {
-  color: (typeof WIDGET_COLORS)[number]
+export interface CartWidgetParams extends WidgetParams, WidgetPopupParams, WidgetStyleParams {
   order: StoreOrder
-  withPopup?: boolean
-  style?: WidgetStyle
 }
 
-export interface SpendLevelWidgetParams extends WidgetParams {
-  color: (typeof WIDGET_COLORS)[number]
+export interface SpendLevelWidgetParams extends WidgetParams, WidgetPopupParams, WidgetStyleParams {
   currency: string
-  withPopup?: boolean
-  style?: WidgetStyle
 }
 
-export interface PerOrderWidgetParams extends WidgetParams {
-  color: (typeof WIDGET_COLORS)[number]
+export interface PerOrderWidgetParams extends WidgetParams, WidgetPopupParams, WidgetStyleParams {
   currency: string
-  withPopup?: boolean
-  style?: WidgetStyle
 }
 
-export interface PerPurchaseWidgetParams {
-  color: (typeof WIDGET_COLORS)[number]
+export interface PerPurchaseWidgetParams extends WidgetPopupParams, WidgetStyleParams {
   currency: string
-  withPopup?: boolean
-  style?: WidgetStyle
 }
 
-export interface ByPercentageWidgetParams extends WidgetParams {
-  color: (typeof WIDGET_COLORS)[number]
-  withPopup?: boolean
-  style?: WidgetStyle
-}
+export interface ByPercentageWidgetParams
+  extends WidgetParams,
+    WidgetPopupParams,
+    WidgetStyleParams {}
 
-export interface ByPercentageOfRevenueWidgetParams extends WidgetParams {
-  color: (typeof WIDGET_COLORS)[number]
-  withPopup?: boolean
-  style?: WidgetStyle
-}
+export interface ByPercentageOfRevenueWidgetParams
+  extends WidgetParams,
+    WidgetPopupParams,
+    WidgetStyleParams {}
 
-export interface TieredSpendLevelWidgetParams extends WidgetParams {
-  color: (typeof WIDGET_COLORS)[number]
+export interface TieredSpendLevelWidgetParams
+  extends WidgetParams,
+    WidgetPopupParams,
+    WidgetStyleParams {
   currency: string
-  withPopup?: boolean
-  style?: WidgetStyle
 }
 
-export interface PerProductWidgetParams extends WidgetParams {
-  color: (typeof WIDGET_COLORS)[number]
+export interface PerProductWidgetParams extends WidgetParams, WidgetPopupParams, WidgetStyleParams {
   productId: string
-  withPopup?: boolean
-  style?: WidgetStyle
 }
 
-export interface TopStatsWidgetParams extends WidgetParams {
+export interface TopStatsWidgetParams extends WidgetParams, WidgetPopupParams {
   color: (typeof WIDGET_COLORS)[number]
-  withPopup?: boolean
+  impactTypes?: (typeof IMPACT_TYPES)[number][]
 }
 
 export interface FullWidthBannerWidgetParams extends WidgetParams {
@@ -108,6 +104,9 @@ export interface FullWidthBannerWidgetParams extends WidgetParams {
   title?: string
   description?: string
   callToActionUrl?: string
+  textColor?: string
+  buttonBackgroundColor?: string
+  buttonTextColor?: string
 }
 
 export type CartWidgetRequestBody = ExternalShopContext & CartWidgetParams
@@ -115,7 +114,8 @@ export type SpendLevelRequestBody = ExternalShopContext & SpendLevelWidgetParams
 export type PerOrderRequestBody = ExternalShopContext & PerOrderWidgetParams
 export type PerPurchaseRequestBody = ExternalShopContext & PerPurchaseWidgetParams
 export type ByPercentageRequestBody = ExternalShopContext & ByPercentageWidgetParams
-export type ByPercentageOfRevenueRequestBody = ExternalShopContext & ByPercentageOfRevenueWidgetParams
+export type ByPercentageOfRevenueRequestBody = ExternalShopContext &
+  ByPercentageOfRevenueWidgetParams
 export type TieredSpendLevelRequestBody = ExternalShopContext & TieredSpendLevelWidgetParams
 export type PerProductRequestBody = ExternalShopContext & PerProductWidgetParams
 export type TopStatsRequestBody = TopStatsWidgetParams

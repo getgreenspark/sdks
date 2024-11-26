@@ -2,12 +2,19 @@ import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
-import type { OrderProduct, CartWidgetParams, StoreOrder, WidgetStyle } from '@/interfaces'
+import type {
+  OrderProduct,
+  CartWidgetParams,
+  StoreOrder,
+  WidgetStyle,
+  PopupTheme,
+} from '@/interfaces'
 
 export class CartWidget extends Widget implements CartWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   order: StoreOrder
   withPopup?: boolean
+  popupTheme?: PopupTheme
   style?: WidgetStyle
   version?: 'v2'
 
@@ -16,6 +23,7 @@ export class CartWidget extends Widget implements CartWidgetParams {
     this.color = params.color
     this.order = params.order
     this.withPopup = params.withPopup ?? true
+    this.popupTheme = params.popupTheme
     this.style = params.style ?? 'default'
     this.version = params.version
   }
@@ -25,15 +33,24 @@ export class CartWidget extends Widget implements CartWidgetParams {
       color: this.color,
       order: this.order,
       withPopup: this.withPopup,
+      popupTheme: this.popupTheme,
       style: this.style,
       version: this.version,
     }
   }
 
-  updateDefaults({ color, order, withPopup, style, version }: Partial<CartWidgetParams>) {
+  updateDefaults({
+    color,
+    order,
+    withPopup,
+    popupTheme,
+    style,
+    version,
+  }: Partial<CartWidgetParams>) {
     this.color = color ?? this.color
     this.order = order ?? this.order
     this.withPopup = withPopup ?? this.withPopup
+    this.popupTheme = popupTheme ?? this.popupTheme
     this.style = style ?? this.style
     this.version = version ?? this.version
   }

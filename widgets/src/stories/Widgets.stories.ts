@@ -1,5 +1,10 @@
 import { createWidgetPage } from '@/stories/Widgets'
-import { AVAILABLE_LOCALES, AVAILABLE_STATISTIC_TYPES, WIDGET_COLORS } from '@/constants'
+import {
+  AVAILABLE_LOCALES,
+  AVAILABLE_STATISTIC_TYPES,
+  IMPACT_TYPES,
+  WIDGET_COLORS,
+} from '@/constants'
 
 import type { StoryObj, Meta } from '@storybook/html'
 import type {
@@ -43,9 +48,10 @@ const meta = {
     })
 
     const basicVariants = [
-      { version: '', style: 'default' },
-      { version: 'v2', style: 'default' },
-      { version: 'v2', style: 'simplified' },
+      { version: '', style: 'default', withPopup: false },
+      { version: 'v2', style: 'default', withPopup: false },
+      { version: 'v2', style: 'default', withPopup: true, popupTheme: 'dark' },
+      { version: 'v2', style: 'simplified', withPopup: true, popupTheme: 'light' },
     ]
 
     const fullWidthIcons = ['monthsEarthPositive', 'trees', 'plastic', 'carbon', 'kelp', 'straws']
@@ -71,8 +77,9 @@ const meta = {
 
     const topStatsVariants = [
       { withPopup: true },
-      { version: 'v2' },
+      { version: 'v2', withPopup: false },
       { version: 'v2', withPopup: true },
+      { version: 'v2', withPopup: true, popupTheme: 'dark' },
     ]
 
     const newVariants = [
@@ -233,6 +240,9 @@ export const FullWidthBanner: StoryObj<{
   args: {
     widgetArgs: {
       options: [...AVAILABLE_STATISTIC_TYPES],
+      textColor: 'red',
+      buttonBackgroundColor: 'pink',
+      buttonTextColor: '#4433f4',
     },
     widgetType: 'fullWidthBanner',
   },
@@ -342,7 +352,11 @@ export const TopStats: StoryObj<{
     widgetArgs: {
       color: {
         control: { type: 'select' },
-        options: WIDGET_COLORS,
+      },
+      withPopup: { control: 'boolean' },
+      impactTypes: {
+        control: { type: 'select' },
+        options: IMPACT_TYPES.filter,
         withPopup: { control: 'boolean' },
       },
     },

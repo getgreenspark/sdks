@@ -2,11 +2,12 @@ import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
-import type { ByPercentageWidgetParams, WidgetStyle } from '@/interfaces'
+import type { ByPercentageWidgetParams, PopupTheme, WidgetStyle } from '@/interfaces'
 
 export class ByPercentageWidget extends Widget implements ByPercentageWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
   withPopup?: boolean
+  popupTheme?: PopupTheme
   style?: WidgetStyle
   version?: 'v2'
 
@@ -14,6 +15,7 @@ export class ByPercentageWidget extends Widget implements ByPercentageWidgetPara
     super(params)
     this.color = params.color
     this.withPopup = params.withPopup ?? true
+    this.popupTheme = params.popupTheme
     this.style = params.style ?? 'default'
     this.version = params.version
   }
@@ -22,14 +24,22 @@ export class ByPercentageWidget extends Widget implements ByPercentageWidgetPara
     return {
       color: this.color,
       withPopup: this.withPopup,
+      popupTheme: this.popupTheme,
       style: this.style,
       version: this.version,
     }
   }
 
-  updateDefaults({ color, withPopup, style, version }: Partial<ByPercentageWidgetParams>) {
+  updateDefaults({
+    color,
+    withPopup,
+    popupTheme,
+    style,
+    version,
+  }: Partial<ByPercentageWidgetParams>) {
     this.color = color ?? this.color
     this.withPopup = withPopup ?? this.withPopup
+    this.popupTheme = popupTheme ?? this.popupTheme
     this.style = style ?? this.style
     this.version = version ?? this.version
   }
