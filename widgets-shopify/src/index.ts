@@ -1,6 +1,8 @@
-import type { ShopifyCart } from './interfaces'
+import GreensparkWidgets from '@/index'
 import type { WidgetStyle } from '@/interfaces'
 import type { AVAILABLE_LOCALES, WIDGET_COLORS } from '@/constants'
+
+import type { ShopifyCart } from './interfaces'
 
 type Language = (typeof AVAILABLE_LOCALES)[number]
 type WidgetColor = (typeof WIDGET_COLORS)[number]
@@ -50,7 +52,7 @@ function runGreenspark() {
     cartEl.insertAdjacentHTML('afterbegin', '<div data-greenspark-widget-target></div>')
   }
 
-  const greenspark = new window.GreensparkWidgets({
+  const greenspark = new GreensparkWidgets({
     apiKey,
     locale,
     integrationSlug: shopUniqueName,
@@ -115,20 +117,7 @@ function loadScript(url: string): Promise<void> {
   })
 }
 
-async function setup() {
-  if (window.GreensparkWidgets) return
-  await loadScript('https://cdn.getgreenspark.com/scripts/widgets%40latest.js')
-  window.dispatchEvent(new Event('greenspark-setup'))
-}
-
-setup().catch((e) => console.error('Greenspark Widget -', e))
-
-if (!window.GreensparkWidgets) {
-  window.addEventListener('greenspark-setup', runGreenspark, { once: true })
-} else {
-  runGreenspark()
-}
-
+runGreenspark()
 ;(function (context, fetch) {
   if (typeof fetch !== 'function') return
 
