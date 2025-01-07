@@ -100,23 +100,6 @@ function runGreenspark() {
     })
 }
 
-function loadScript(url: string): Promise<void> {
-  return new Promise<void>((resolve) => {
-    const script = document.createElement('script')
-    script.type = 'text/javascript'
-    script.onload = function () {
-      resolve()
-    }
-
-    script.src = url
-    const head = document.querySelector('head')
-
-    if (head) {
-      head.appendChild(script)
-    }
-  })
-}
-
 runGreenspark()
 ;(function (context, fetch) {
   if (typeof fetch !== 'function') return
