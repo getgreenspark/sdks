@@ -1,0 +1,56 @@
+{
+  "name": "@getgreenspark/widgets-shopify",
+  "version": "0.0.0",
+  "bugs": {
+    "url": "https://github.com/getgreenspark/sdks/issues"
+  },
+  "main": "./dist/widgets-shopify@latest.js",
+  "description": "An embedable script tag solution built on top of Greenspark Widget SDK.",
+  "author": "Greenspark <support@getgreenspark.com>",
+  "scripts": {
+    "lint": "eslint src",
+    "dev": "webpack --mode=development",
+    "build": "rm -r dist; mkdir dist; webpack --mode=production",
+    "release": "release-it"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/getgreenspark/sdks",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/getgreenspark/sdks.git"
+  },
+  "typings": "./dist/index.d.ts",
+  "devDependencies": {
+    "@eslint/js": "^9.9.1",
+    "@types/eslint__js": "^8.42.3",
+    "@types/node": "^12.11.5",
+    "@types/webpack-env": "^1.18.5",
+    "dotenv-webpack": "^8.1.0",
+    "eslint": "^9.9.1",
+    "release-it": "^17.6.0",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.3.0",
+    "webpack": "^5.93.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "release-it": {
+    "$schema": "https://unpkg.com/release-it/schema/release-it.json",
+    "git": {
+      "tag": true,
+      "commitMessage": "@getgreenspark/widgets-shopify v${version}",
+      "tagName": "widgets-shopify-v${version}",
+      "tagAnnotation": "@getgreenspark/widgets-shopify v${version}"
+    },
+    "hooks": {
+      "before:init": [
+        "npm run lint",
+        "npm run build"
+      ]
+    }
+  },
+  "directories": {
+    "src": "src"
+  }
+}

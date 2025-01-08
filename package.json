@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "cd widgets && npm install",
-    "release:widgets": "npm --prefix ./widgets run release"
+    "release:widgets": "npm --prefix ./widgets run release",
+    "release:widgets-shopify": "npm --prefix ./widgets-shopify run release"
   },
   "author": "",
   "license": "ISC"
