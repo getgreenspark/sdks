@@ -1,4 +1,3 @@
-import GreensparkWidgets from '@/index'
 import type { WidgetStyle } from '@/interfaces'
 import type { AVAILABLE_LOCALES, WIDGET_COLORS } from '@/constants'
 
@@ -52,7 +51,7 @@ function runGreenspark() {
     cartEl.insertAdjacentHTML('afterbegin', '<div data-greenspark-widget-target></div>')
   }
 
-  const greenspark = new GreensparkWidgets({
+  const greenspark = new window.GreensparkWidgets({
     apiKey,
     locale,
     integrationSlug: shopUniqueName,
@@ -100,7 +99,37 @@ function runGreenspark() {
     })
 }
 
-runGreenspark()
+function loadScript(url: string): Promise<void> {
+  return new Promise<void>((resolve) => {
+    const script = document.createElement('script')
+    script.type = 'text/javascript'
+    script.onload = function () {
+      resolve()
+    }
+
+    script.src = url
+    const head = document.querySelector('head')
+
+    if (head) {
+      head.appendChild(script)
+    }
+  })
+}
+
+async function setup() {
+  if (window.GreensparkWidgets) return
+  await loadScript('https://cdn.getgreenspark.com/scripts/widgets%40latest.js')
+  window.dispatchEvent(new Event('greenspark-setup'))
+}
+
+setup().catch((e) => console.error('Greenspark Widget -', e))
+
+if (!window.GreensparkWidgets) {
+  window.addEventListener('greenspark-setup', runGreenspark, { once: true })
+} else {
+  runGreenspark()
+}
+
 ;(function (context, fetch) {
   if (typeof fetch !== 'function') return
 
