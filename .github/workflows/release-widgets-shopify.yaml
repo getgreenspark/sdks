@@ -11,7 +11,7 @@ env:
   WIDGET_DIST_FOLDER: ./widgets-shopify/dist
 
 jobs:
-  release-widgets:
+  release-widgets-shopify:
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
@@ -21,7 +21,7 @@ jobs:
       - id: 'checkout'
         uses: 'actions/checkout@v4'
 
-      - run: npm install
+      - run: npm --prefix ./widgets-shopify install
       - run: npm --prefix ./widgets-shopify run lint
       - run: npm --prefix ./widgets-shopify run build
 
