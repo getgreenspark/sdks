@@ -43,6 +43,9 @@
       "tagName": "widgets-shopify-v${version}",
       "tagAnnotation": "@getgreenspark/widgets-shopify v${version}"
     },
+    "npm": {
+      "publish": false
+    },
     "hooks": {
       "before:init": [
         "npm run lint",
