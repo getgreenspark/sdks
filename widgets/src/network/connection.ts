@@ -27,7 +27,7 @@ import type {
 import type { AxiosInstance, AxiosResponse } from 'axios'
 
 export class ConnectionHandler {
-  apiKey: string
+  apiKey?: string
   integrationSlug?: string
   api: AxiosInstance
   locale: (typeof AVAILABLE_LOCALES)[number]
@@ -38,7 +38,7 @@ export class ConnectionHandler {
     locale = 'en',
     isShopifyIntegration = false,
   }: {
-    apiKey: string
+    apiKey?: string
     integrationSlug?: string
     locale: (typeof AVAILABLE_LOCALES)[number]
     isShopifyIntegration?: boolean

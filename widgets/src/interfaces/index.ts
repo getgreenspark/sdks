@@ -11,7 +11,7 @@ export type WidgetStyle = (typeof WIDGET_STYLES)[number]
 export type PopupTheme = (typeof POPUP_THEMES)[number]
 
 type ApiSettingsBase = {
-  apiKey: string
+  apiKey?: string
   locale?: (typeof AVAILABLE_LOCALES)[number]
   isShopifyIntegration?: boolean
 }

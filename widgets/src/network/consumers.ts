@@ -5,7 +5,7 @@ import type { ApiSettings } from '@/interfaces'
 
 type ValidLanguage = (typeof AVAILABLE_LOCALES)[number]
 export class ApiConsumer {
-  apiKey: string
+  apiKey?: string
   integrationSlug?: string
   currentLocale: ValidLanguage
   api: ConnectionHandler

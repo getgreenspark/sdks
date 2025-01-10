@@ -6,6 +6,11 @@ import type { ShopifyCart } from './interfaces'
 type Language = (typeof AVAILABLE_LOCALES)[number]
 type WidgetColor = (typeof WIDGET_COLORS)[number]
 
+const scriptSrc = document.currentScript?.getAttribute('src')
+const isDevStore = window.location.hostname.includes('greenspark-development-store')
+const widgetUrl = isDevStore
+  ? 'https://cdn.getgreenspark.com/scripts/widgets%401.6.1-0-umd.js'
+  : 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
 const popupHistory: HTMLElement[] = []
 
 function parseCart(cart: ShopifyCart) {
@@ -23,15 +28,12 @@ function parseCart(cart: ShopifyCart) {
 }
 
 function runGreenspark() {
-  const scriptSrc = document.currentScript?.getAttribute('src')
-
   if (!scriptSrc) {
     return
   }
 
   const scriptUrl = new URL(scriptSrc)
   const urlParams = Object.fromEntries(scriptUrl.searchParams)
-  const apiKey = urlParams.api_key
   const color: WidgetColor = (urlParams?.color ?? 'green') as WidgetColor
   const widgetStyle: WidgetStyle = (urlParams?.widgetStyle ?? 'default') as WidgetStyle
   const withPopup = urlParams?.withPopup === '1'
@@ -52,7 +54,6 @@ function runGreenspark() {
   }
 
   const greenspark = new window.GreensparkWidgets({
-    apiKey,
     locale,
     integrationSlug: shopUniqueName,
     isShopifyIntegration: true,
@@ -118,7 +119,7 @@ function loadScript(url: string): Promise<void> {
 
 async function setup() {
   if (window.GreensparkWidgets) return
-  await loadScript('https://cdn.getgreenspark.com/scripts/widgets%40latest.js')
+  await loadScript(widgetUrl)
   window.dispatchEvent(new Event('greenspark-setup'))
 }
 
