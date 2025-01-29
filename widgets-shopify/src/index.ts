@@ -39,7 +39,7 @@ function runGreenspark() {
   const withPopup = urlParams?.withPopup === '1'
   const popupTheme = 'light'
   const isoCode = window.Shopify.locale
-  const locale: Language = (['en', 'de'].includes(isoCode) ? isoCode : 'en') as Language
+  const locale: Language = (AVAILABLE_LOCALES.includes(isoCode) ? isoCode : 'en') as Language
   const initialCart = {
     items: [],
     currency: 'GBP',
