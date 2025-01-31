@@ -54,7 +54,7 @@ const meta = {
       { version: 'v2', style: 'simplified', withPopup: true, popupTheme: 'light' },
     ]
 
-    const fullWidthIcons = ['monthsEarthPositive', 'trees', 'plastic', 'carbon', 'kelp', 'straws']
+    const fullWidthIcons = ['monthsEarthPositive', ...IMPACT_TYPES, 'straws', 'miles', 'footballPitches']
     const fullWidthBannerVariants = [
       { options: fullWidthIcons },
       { version: 'v2', options: fullWidthIcons },
@@ -240,9 +240,7 @@ export const FullWidthBanner: StoryObj<{
   args: {
     widgetArgs: {
       options: [...AVAILABLE_STATISTIC_TYPES],
-      textColor: 'red',
-      buttonBackgroundColor: 'pink',
-      buttonTextColor: '#4433f4',
+      textColor: '#FFF',
     },
     widgetType: 'fullWidthBanner',
   },
