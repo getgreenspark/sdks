@@ -155,8 +155,12 @@ export class ConnectionHandler {
   async fetchByPercentageWidget(
     { version, ...body }: ByPercentageWidgetParams,
     headers?: typeof AxiosHeaders,
+    isPreview?: boolean,
   ): Promise<AxiosResponse<string>> {
-    const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
+    isPreview =
+      isPreview === undefined
+        ? Boolean(this.integrationSlug === 'GS_PREVIEW' && version)
+        : isPreview
     return this.api.post<string, AxiosResponse<string>, ByPercentageRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/by-percentage-widget`,
       version
