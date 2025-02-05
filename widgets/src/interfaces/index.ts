@@ -90,7 +90,7 @@ export interface TieredSpendLevelWidgetParams
 }
 
 export interface PerProductWidgetParams extends WidgetParams, WidgetPopupParams, WidgetStyleParams {
-  productId: string
+  productId?: string
 }
 
 export interface TopStatsWidgetParams extends WidgetParams, WidgetPopupParams {
