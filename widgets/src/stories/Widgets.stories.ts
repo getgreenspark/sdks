@@ -49,12 +49,19 @@ const meta = {
 
     const basicVariants = [
       { version: '', style: 'default', withPopup: false },
+      { version: '', style: 'default', withPopup: true },
       { version: 'v2', style: 'default', withPopup: false },
       { version: 'v2', style: 'default', withPopup: true, popupTheme: 'dark' },
       { version: 'v2', style: 'simplified', withPopup: true, popupTheme: 'light' },
     ]
 
-    const fullWidthIcons = ['monthsEarthPositive', ...IMPACT_TYPES, 'straws', 'miles', 'footballPitches']
+    const fullWidthIcons = [
+      'monthsEarthPositive',
+      ...IMPACT_TYPES,
+      'straws',
+      'miles',
+      'footballPitches',
+    ]
     const fullWidthBannerVariants = [
       { options: fullWidthIcons },
       { version: 'v2', options: fullWidthIcons },
@@ -286,7 +293,7 @@ export const PerProduct: StoryObj<{
   },
   args: {
     widgetArgs: {
-      productId: '9530077774147',
+      productId: undefined,
       withPopup: true,
       color: 'beige',
     },

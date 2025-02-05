@@ -6,7 +6,7 @@ import type { PerProductWidgetParams, PopupTheme, WidgetStyle } from '@/interfac
 
 export class PerProductWidget extends Widget implements PerProductWidgetParams {
   color: (typeof WIDGET_COLORS)[number]
-  productId: string
+  productId?: string
   withPopup?: boolean
   popupTheme?: PopupTheme
   style?: WidgetStyle
@@ -60,7 +60,7 @@ export class PerProductWidget extends Widget implements PerProductWidgetParams {
       )
     }
 
-    if (!(typeof this.productId === 'string') || this.productId === '') {
+    if (!((typeof this.productId === 'string' && this.productId !== '') || !this.productId)) {
       throw new Error(
         `Greenspark - "${this.productId}" was selected as the product for the Per Product Widget, but this product ID is not valid. Please use a valid string.`,
       )
