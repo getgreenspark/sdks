@@ -1,6 +1,5 @@
 import { createWidgetPage } from '@/stories/Widgets'
 import { AVAILABLE_LOCALES, POPUP_THEMES, WIDGET_COLORS } from '@/constants'
-
 import type { StoryObj, Meta } from '@storybook/html'
 import type {
   ByPercentageWidgetParams,
@@ -12,10 +11,8 @@ import type {
 } from '@/interfaces'
 import GreensparkWidgets from '@/index'
 import type { Widget } from '@/widgets/base'
+import { BILLING_USERS as USERS } from '@/stories/users'
 
-const WIDGET_API_KEY =
-  '6kQypJppcK9F5FMGHxUM53rc3Kx%2FPFz%2Bi3wni6geNSf%2FIbUq06e5KES8IyR7bKViR11ZM5AabP'
-const INTEGRATION_SLUG = 'storybook-demo-stripe-54511'
 type WIDGET_VARIANTS =
   | 'byPercentage'
   | 'byPercentageOfRevenue'
@@ -27,11 +24,11 @@ const meta = {
   title: 'Widget SDK/Billing Widgets',
   tags: ['autodocs'],
   render: (args) => {
-    const { apiKey, integrationSlug, widgetType, widgetArgs, locale } = args
+    const { apiKey, integrationSlug, widgetType, widgetArgs, locale, user } = args
 
     const widgets = new GreensparkWidgets({
-      apiKey,
-      integrationSlug,
+      apiKey: apiKey || USERS[user].apiKey,
+      integrationSlug: integrationSlug || USERS[user].integrationSlug,
       locale,
     })
 
@@ -68,23 +65,37 @@ const meta = {
     }
   },
   argTypes: {
-    apiKey: { control: 'text' },
-    integrationSlug: { control: 'text' },
+    user: {
+      control: { type: 'select' },
+      options: Object.keys(USERS),
+    },
     locale: {
       control: { type: 'select' },
       options: AVAILABLE_LOCALES,
     },
+    apiKey: {
+      control: 'text',
+      name: 'API Key (overwrite the test user apiKey)',
+      description: 'overwrite the test user apiKey',
+    },
+    integrationSlug: {
+      control: 'text',
+      name: 'Integration Slug (overwrite the test user integrationSlug)',
+      description: 'overwrite the test user integrationSlug',
+    },
   },
   args: {
-    apiKey: WIDGET_API_KEY,
-    integrationSlug: INTEGRATION_SLUG,
+    user: 'SINGULAR',
     locale: 'en',
+    apiKey: '',
+    integrationSlug: '',
   },
 } satisfies Meta<
   GreensparkWidgets & {
     widgetType: WIDGET_VARIANTS
     widgetArgs: unknown
     locale: (typeof AVAILABLE_LOCALES)[number]
+    user: keyof typeof USERS
   }
 >
 

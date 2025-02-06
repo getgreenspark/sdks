@@ -1,13 +1,10 @@
 import { AVAILABLE_LOCALES, IMPACT_TYPES } from '@/constants'
-
 import type { StoryObj, Meta } from '@storybook/html'
 import type GreensparkWidgets from '@/index'
 import { ConnectionHandler } from '@/network'
 import type { WidgetStyle } from '@/interfaces'
+import { PREVIEWS_USER } from '@/stories/users'
 
-const WIDGET_API_KEY =
-  '6kQypJppcK9F5FMGHxUM53rc3Kx%2FPFz%2Bi3wni6geNSf%2FIbUq06e5KES8IyR7bKViR11ZM5AabP'
-const INTEGRATION_SLUG = 'GS_PREVIEW'
 type WIDGET_VARIANTS = 'byPercentage' | 'byPercentageOfRevenue'
 
 const meta = {
@@ -29,8 +26,8 @@ const meta = {
     ]
 
     const handler = new ConnectionHandler({
-      apiKey: WIDGET_API_KEY,
-      integrationSlug: INTEGRATION_SLUG,
+      apiKey: PREVIEWS_USER.apiKey,
+      integrationSlug: PREVIEWS_USER.integrationSlug,
       locale: locale,
       isShopifyIntegration: false,
     })
