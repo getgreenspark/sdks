@@ -83,6 +83,7 @@ export enum TransactionPurchaseTypeEnum {
     Carbon = 'carbon',
     Plastic = 'plastic',
     Kelp = 'kelp',
-    Water = 'water'
+    Water = 'water',
+    Bees = 'bees'
 }
 

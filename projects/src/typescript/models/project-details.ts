@@ -49,6 +49,12 @@ export interface ProjectDetails {
      */
     type: ProjectDetailsTypeEnum;
     /**
+     * The purchase unit of the given project. Example: purchasing 20 bees by purchasing one amount of the project.
+     * @type {number}
+     * @memberof ProjectDetails
+     */
+    unit: number;
+    /**
      * This is a link to a webpage where users can find more detailed information about the project.
      * @type {string}
      * @memberof ProjectDetails
@@ -103,6 +109,18 @@ export interface ProjectDetails {
      */
     status: ProjectDetailsStatusEnum;
     /**
+     * The date when the project get into the current status.
+     * @type {string}
+     * @memberof ProjectDetails
+     */
+    statusInitiatedAt: string;
+    /**
+     * Defines the logo of the project partner.
+     * @type {string}
+     * @memberof ProjectDetails
+     */
+    projectPartnerLogo?: string;
+    /**
      * Defines project specific additional information.
      * @type {Array<ProjectMetadata>}
      * @memberof ProjectDetails
@@ -119,7 +137,8 @@ export enum ProjectDetailsTypeEnum {
     Carbon = 'carbon',
     Plastic = 'plastic',
     Kelp = 'kelp',
-    Water = 'water'
+    Water = 'water',
+    Bees = 'bees'
 }
 /**
     * @export
