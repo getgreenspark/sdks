@@ -18,7 +18,7 @@
  */
 export interface ImpactPurchaseByValue {
     /**
-     * Type can be trees, plastic or carbon.
+     * Type of the impact.
      * @type {string}
      * @memberof ImpactPurchaseByValue
      */
@@ -46,6 +46,7 @@ export enum ImpactPurchaseByValueTypeEnum {
     Carbon = 'carbon',
     Plastic = 'plastic',
     Kelp = 'kelp',
-    Water = 'water'
+    Water = 'water',
+    Bees = 'bees'
 }
 
