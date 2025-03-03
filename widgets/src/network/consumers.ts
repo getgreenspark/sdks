@@ -34,16 +34,15 @@ export class ApiConsumer {
     })
   }
 
-  validateLocale(newLocale: ValidLanguage): ValidLanguage {
-    if (!AVAILABLE_LOCALES.includes(newLocale)) {
-      throw new Error(
-        `Greenspark - Failed to update locale, because ${newLocale} is not currently supported. The available options are ${AVAILABLE_LOCALES.join(
-          ', ',
-        )}`,
-      )
+  validateLocale(language: ValidLanguage): ValidLanguage {
+    if (!AVAILABLE_LOCALES.includes(language)) {
+      console.warn(`Greenspark - Failed to update locale, because ${language} is not currently supported. The available options are ${AVAILABLE_LOCALES.join(
+        ', ',
+      )}`)
+      return 'en'
     }
 
-    return newLocale
+    return language
   }
 
   get locale(): ValidLanguage {
