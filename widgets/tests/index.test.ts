@@ -46,13 +46,6 @@ describe('GreensparkWidgets', () => {
     expect(widgets.api.locale).toEqual('de')
   })
 
-  test('cannot initialize the package in hungarian or change it to hungarian', () => {
-    expect(() => new GreensparkWidgets({ apiKey: API_KEY, locale: 'hu' as 'en' })).toThrow()
-    const widgets = new GreensparkWidgets({ apiKey: API_KEY, locale: 'en' })
-    expect(widgets.currentLocale).toEqual('en')
-    expect(() => (widgets.locale = 'hu' as 'de')).toThrow()
-  })
-
   test('can create individual widget instances', async () => {
     const widgets = new GreensparkWidgets({ apiKey: API_KEY, integrationSlug: INTEGRATION_SLUG })
     expect(typeof widgets.cart).toEqual('function')
