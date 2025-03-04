@@ -13,7 +13,7 @@ export class StaticWidget extends Widget implements StaticWidgetParams {
     super(params)
     this.color = params.color
     this.version = params.version
-    this.style = params.style
+    this.style = params.style ?? 'default'
   }
 
   get staticWidgetRequestBody(): StaticWidgetParams {
