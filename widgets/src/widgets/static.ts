@@ -2,28 +2,32 @@ import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
-import type { StaticWidgetParams, WidgetColor } from '@/interfaces'
+import type { StaticWidgetParams, StaticWidgetStyle, WidgetColor } from '@/interfaces'
 
 export class StaticWidget extends Widget implements StaticWidgetParams {
   color: WidgetColor
   version?: 'v2'
+  style?: StaticWidgetStyle
 
   constructor(params: WidgetConfig & StaticWidgetParams) {
     super(params)
     this.color = params.color
     this.version = params.version
+    this.style = params.style
   }
 
   get staticWidgetRequestBody(): StaticWidgetParams {
     return {
       color: this.color,
       version: this.version,
+      style: this.style,
     }
   }
 
-  updateDefaults({ color, version }: Partial<StaticWidgetParams>) {
+  updateDefaults({ color, version, style }: Partial<StaticWidgetParams>) {
     this.color = color ?? this.color
     this.version = version ?? this.version
+    this.style = style ?? this.style
   }
 
   validateOptions() {
