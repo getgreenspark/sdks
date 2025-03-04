@@ -1,11 +1,12 @@
 import { Widget } from '@/widgets/base'
+import type { WidgetColor } from '@/constants'
 import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
 import type { PerOrderWidgetParams, PopupTheme, WidgetStyle } from '@/interfaces'
 
 export class PerOrderWidget extends Widget implements PerOrderWidgetParams {
-  color: (typeof WIDGET_COLORS)[number]
+  color: WidgetColor
   currency: string
   withPopup?: boolean
   popupTheme?: PopupTheme

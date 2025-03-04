@@ -2,10 +2,10 @@ import type {
   AVAILABLE_LOCALES,
   AVAILABLE_STATISTIC_TYPES,
   IMPACT_TYPES,
-  WIDGET_COLORS,
   WIDGET_STYLES,
   POPUP_THEMES,
   STATIC_WIDGET_STYLES,
+  WidgetColor,
 } from '@/constants'
 
 export type WidgetStyle = (typeof WIDGET_STYLES)[number]
@@ -24,7 +24,7 @@ type WidgetPopupParams = {
 }
 
 type WidgetStyleParams = {
-  color: (typeof WIDGET_COLORS)[number]
+  color: WidgetColor
   style?: WidgetStyle
 }
 
@@ -96,12 +96,12 @@ export interface PerProductWidgetParams extends WidgetParams, WidgetPopupParams,
 }
 
 export interface TopStatsWidgetParams extends WidgetParams, WidgetPopupParams {
-  color: (typeof WIDGET_COLORS)[number]
+  color: WidgetColor
   impactTypes?: (typeof IMPACT_TYPES)[number][]
 }
 
 export interface StaticWidgetParams extends WidgetParams {
-  color: (typeof WIDGET_COLORS)[number]
+  color: WidgetColor
   style?: StaticWidgetStyle
 }
 

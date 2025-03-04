@@ -1,11 +1,11 @@
 import { Widget } from '@/widgets/base'
-import { WIDGET_COLORS, IMPACT_TYPES } from '@/constants'
+import { WIDGET_COLORS, IMPACT_TYPES, type WidgetColor } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
 import type { PopupTheme, TopStatsWidgetParams } from '@/interfaces'
 
 export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
-  color: (typeof WIDGET_COLORS)[number]
+  color: WidgetColor
   withPopup?: boolean
   popupTheme?: PopupTheme
   impactTypes?: (typeof IMPACT_TYPES)[number][]

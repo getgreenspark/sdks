@@ -18,6 +18,7 @@ export const WIDGET_COLORS = [
   'grey',
   'transparent',
 ] as const
+export type WidgetColor = (typeof WIDGET_COLORS)[number]
 export const AVAILABLE_STATISTIC_TYPES = [
   ...IMPACT_TYPES,
   'monthsEarthPositive',

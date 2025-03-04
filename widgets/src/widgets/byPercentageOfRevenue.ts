@@ -1,5 +1,5 @@
 import { Widget } from '@/widgets/base'
-import { WIDGET_COLORS } from '@/constants'
+import { WIDGET_COLORS, type WidgetColor } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
 import type { ByPercentageOfRevenueWidgetParams, PopupTheme, WidgetStyle } from '@/interfaces'
@@ -8,7 +8,7 @@ export class ByPercentageOfRevenueWidget
   extends Widget
   implements ByPercentageOfRevenueWidgetParams
 {
-  color: (typeof WIDGET_COLORS)[number]
+  color: WidgetColor
   withPopup?: boolean
   popupTheme?: PopupTheme
   style?: WidgetStyle
