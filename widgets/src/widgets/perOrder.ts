@@ -1,9 +1,8 @@
 import { Widget } from '@/widgets/base'
-import type { WidgetColor } from '@/constants'
 import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
-import type { PerOrderWidgetParams, PopupTheme, WidgetStyle } from '@/interfaces'
+import type { PerOrderWidgetParams, PopupTheme, WidgetStyle, WidgetColor } from '@/interfaces'
 
 export class PerOrderWidget extends Widget implements PerOrderWidgetParams {
   color: WidgetColor

@@ -1,8 +1,8 @@
 import { Widget } from '@/widgets/base'
-import { WIDGET_COLORS, type WidgetColor } from '@/constants'
+import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
-import type { PopupTheme, SpendLevelWidgetParams, WidgetStyle } from '@/interfaces'
+import type { PopupTheme, SpendLevelWidgetParams, WidgetStyle, WidgetColor } from '@/interfaces'
 
 export class SpendLevelWidget extends Widget implements SpendLevelWidgetParams {
   color: WidgetColor

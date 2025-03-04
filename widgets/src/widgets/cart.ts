@@ -1,5 +1,5 @@
 import { Widget } from '@/widgets/base'
-import { WIDGET_COLORS, type WidgetColor } from '@/constants'
+import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
 import type {
@@ -8,6 +8,7 @@ import type {
   StoreOrder,
   WidgetStyle,
   PopupTheme,
+  WidgetColor,
 } from '@/interfaces'
 
 export class CartWidget extends Widget implements CartWidgetParams {

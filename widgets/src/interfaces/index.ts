@@ -5,12 +5,13 @@ import type {
   WIDGET_STYLES,
   POPUP_THEMES,
   STATIC_WIDGET_STYLES,
-  WidgetColor,
+  WIDGET_COLORS,
 } from '@/constants'
 
 export type WidgetStyle = (typeof WIDGET_STYLES)[number]
 export type StaticWidgetStyle = (typeof STATIC_WIDGET_STYLES)[number]
 export type PopupTheme = (typeof POPUP_THEMES)[number]
+export type WidgetColor = (typeof WIDGET_COLORS)[number]
 
 type ApiSettingsBase = {
   apiKey?: string

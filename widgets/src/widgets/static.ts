@@ -2,10 +2,10 @@ import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
-import type { StaticWidgetParams } from '@/interfaces'
+import type { StaticWidgetParams, WidgetColor } from '@/interfaces'
 
 export class StaticWidget extends Widget implements StaticWidgetParams {
-  color: (typeof WIDGET_COLORS)[number]
+  color: WidgetColor
   version?: 'v2'
 
   constructor(params: WidgetConfig & StaticWidgetParams) {
