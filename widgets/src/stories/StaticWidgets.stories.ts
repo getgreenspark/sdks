@@ -3,7 +3,7 @@ import type { StoryObj, Meta } from '@storybook/html'
 import GreensparkWidgets from '@/index'
 import { PREVIEWS_USER } from '@/stories/users'
 import { createWidgetPage } from './Widgets'
-import type { ByPercentageWidgetParams, StaticWidgetStyle } from '../interfaces'
+import type { StaticWidgetParams, StaticWidgetStyle } from '../interfaces'
 import type { Widget } from '../widgets/base'
 
 const meta = {
@@ -52,7 +52,7 @@ export default meta
 
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Default: StoryObj<{
-  widgetArgs: ByPercentageWidgetParams
+  widgetArgs: StaticWidgetParams
   style: StaticWidgetStyle
 }> = {
   argTypes: {},
@@ -62,7 +62,7 @@ export const Default: StoryObj<{
 }
 
 export const Simplified: StoryObj<{
-  widgetArgs: ByPercentageWidgetParams
+  widgetArgs: StaticWidgetParams
   style: StaticWidgetStyle
 }> = {
   argTypes: {},
@@ -72,7 +72,7 @@ export const Simplified: StoryObj<{
 }
 
 export const Rounded: StoryObj<{
-  widgetArgs: ByPercentageWidgetParams
+  widgetArgs: StaticWidgetParams
   style: StaticWidgetStyle
 }> = {
   argTypes: {},
