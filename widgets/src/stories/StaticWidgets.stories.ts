@@ -1,21 +1,19 @@
 import { AVAILABLE_LOCALES, WIDGET_COLORS } from '@/constants'
 import type { StoryObj, Meta } from '@storybook/html'
 import GreensparkWidgets from '@/index'
-import { PREVIEWS_USER, STORE_USERS } from '@/stories/users'
+import { PREVIEWS_USER } from '@/stories/users'
 import { createWidgetPage } from './Widgets'
 import type { ByPercentageWidgetParams, StaticWidgetStyle } from '../interfaces'
 import type { Widget } from '../widgets/base'
-const USERS = { PREVIEW: PREVIEWS_USER, SINGULAR: STORE_USERS.SINGULAR }
 
 const meta = {
   title: 'Widget SDK/Static Widgets',
   tags: ['autodocs'],
   render: (args) => {
-    const { locale, style, user } = args
+    const { locale, style } = args
 
     const widgets = new GreensparkWidgets({
-      apiKey: USERS[user].apiKey,
-      integrationSlug: USERS[user].integrationSlug,
+      apiKey: PREVIEWS_USER.apiKey,
       locale,
     })
 
@@ -35,24 +33,18 @@ const meta = {
     }
   },
   argTypes: {
-    user: {
-      control: { type: 'select' },
-      options: Object.keys(USERS),
-    },
     locale: {
       control: { type: 'select' },
       options: AVAILABLE_LOCALES,
     },
   },
   args: {
-    user: 'SINGULAR',
     locale: 'en',
   },
 } satisfies Meta<
   GreensparkWidgets & {
     style: StaticWidgetStyle
     locale: (typeof AVAILABLE_LOCALES)[number]
-    user: keyof typeof USERS
   }
 >
 
