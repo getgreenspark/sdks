@@ -23,6 +23,7 @@ import type {
   PerPurchaseWidgetParams,
   PerPurchaseRequestBody,
   WidgetParams,
+  StaticWidgetParams,
 } from '@/interfaces'
 import type { AxiosInstance, AxiosResponse } from 'axios'
 
@@ -263,6 +264,21 @@ export class ConnectionHandler {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
     return this.api.post<string, AxiosResponse<string>, TopStatsRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/stats-widget`,
+      body,
+      {
+        params: { lng: this.locale },
+        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
+      },
+    )
+  }
+
+  async fetchStaticWidget(
+    { version, ...body }: StaticWidgetParams,
+    headers?: typeof AxiosHeaders,
+  ): Promise<AxiosResponse<string>> {
+    const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
+    return this.api.post<string, AxiosResponse<string>, StaticWidgetParams>(
+      `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/static-widget`,
       body,
       {
         params: { lng: this.locale },

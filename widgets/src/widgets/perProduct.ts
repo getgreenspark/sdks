@@ -2,10 +2,10 @@ import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
-import type { PerProductWidgetParams, PopupTheme, WidgetStyle } from '@/interfaces'
+import type { PerProductWidgetParams, PopupTheme, WidgetStyle, WidgetColor } from '@/interfaces'
 
 export class PerProductWidget extends Widget implements PerProductWidgetParams {
-  color: (typeof WIDGET_COLORS)[number]
+  color: WidgetColor
   productId?: string
   withPopup?: boolean
   popupTheme?: PopupTheme
