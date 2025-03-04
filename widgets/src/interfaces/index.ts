@@ -5,9 +5,11 @@ import type {
   WIDGET_COLORS,
   WIDGET_STYLES,
   POPUP_THEMES,
+  STATIC_WIDGET_STYLES,
 } from '@/constants'
 
 export type WidgetStyle = (typeof WIDGET_STYLES)[number]
+export type StaticWidgetStyle = (typeof STATIC_WIDGET_STYLES)[number]
 export type PopupTheme = (typeof POPUP_THEMES)[number]
 
 type ApiSettingsBase = {
@@ -96,6 +98,11 @@ export interface PerProductWidgetParams extends WidgetParams, WidgetPopupParams,
 export interface TopStatsWidgetParams extends WidgetParams, WidgetPopupParams {
   color: (typeof WIDGET_COLORS)[number]
   impactTypes?: (typeof IMPACT_TYPES)[number][]
+}
+
+export interface StaticWidgetParams extends WidgetParams {
+  color: (typeof WIDGET_COLORS)[number]
+  style?: StaticWidgetStyle
 }
 
 export interface FullWidthBannerWidgetParams extends WidgetParams {

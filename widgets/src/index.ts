@@ -25,7 +25,9 @@ import type {
   TieredSpendLevelWidgetParams,
   TopStatsWidgetParams,
   WidgetParams,
+  StaticWidgetParams,
 } from '@/interfaces'
+import { StaticWidget } from '@/widgets/static'
 
 export default class GreensparkWidgets extends ApiConsumer {
   cart(params: CartWidgetParams & { containerSelector?: string; useShadowDom?: boolean }) {
@@ -92,6 +94,11 @@ export default class GreensparkWidgets extends ApiConsumer {
   topStats(params: TopStatsWidgetParams & { containerSelector?: string; useShadowDom?: boolean }) {
     const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
     return new TopStatsWidget({ ...params, api: this.api, containerSelector, useShadowDom })
+  }
+
+  static(params: StaticWidgetParams & { containerSelector?: string; useShadowDom?: boolean }) {
+    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
+    return new StaticWidget({ ...params, api: this.api, containerSelector, useShadowDom })
   }
 
   fullWidthBanner(
