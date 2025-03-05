@@ -8,10 +8,11 @@ import type {
   StoreOrder,
   WidgetStyle,
   PopupTheme,
+  WidgetColor,
 } from '@/interfaces'
 
 export class CartWidget extends Widget implements CartWidgetParams {
-  color: (typeof WIDGET_COLORS)[number]
+  color: WidgetColor
   order: StoreOrder
   withPopup?: boolean
   popupTheme?: PopupTheme

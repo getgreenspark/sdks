@@ -2,10 +2,15 @@ import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
 
 import type { WidgetConfig } from '@/widgets/base'
-import type { PopupTheme, TieredSpendLevelWidgetParams, WidgetStyle } from '@/interfaces'
+import type {
+  PopupTheme,
+  TieredSpendLevelWidgetParams,
+  WidgetStyle,
+  WidgetColor,
+} from '@/interfaces'
 
 export class TieredSpendLevelWidget extends Widget implements TieredSpendLevelWidgetParams {
-  color: (typeof WIDGET_COLORS)[number]
+  color: WidgetColor
   currency: string
   withPopup?: boolean
   popupTheme?: PopupTheme
