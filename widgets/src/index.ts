@@ -26,8 +26,10 @@ import type {
   TopStatsWidgetParams,
   WidgetParams,
   StaticWidgetParams,
+  PerOrderByIdWidgetParams,
 } from '@/interfaces'
 import { StaticWidget } from '@/widgets/static'
+import { PerOrderByIdWidget } from '@/widgets/perOrderById'
 
 export default class GreensparkWidgets extends ApiConsumer {
   cart(params: CartWidgetParams & { containerSelector?: string; useShadowDom?: boolean }) {
@@ -45,6 +47,13 @@ export default class GreensparkWidgets extends ApiConsumer {
   perOrder(params: PerOrderWidgetParams & { containerSelector?: string; useShadowDom?: boolean }) {
     const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
     return new PerOrderWidget({ ...params, api: this.api, containerSelector, useShadowDom })
+  }
+
+  perOrderById(
+    params: PerOrderByIdWidgetParams & { containerSelector?: string; useShadowDom?: boolean },
+  ) {
+    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
+    return new PerOrderByIdWidget({ ...params, api: this.api, containerSelector, useShadowDom })
   }
 
   perPurchase(

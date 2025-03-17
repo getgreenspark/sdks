@@ -71,6 +71,10 @@ export interface PerOrderWidgetParams extends WidgetParams, WidgetPopupParams, W
   currency: string
 }
 
+export interface PerOrderByIdWidgetParams extends WidgetParams {
+  currency: string
+}
+
 export interface PerPurchaseWidgetParams extends WidgetPopupParams, WidgetStyleParams {
   currency: string
 }
@@ -120,6 +124,7 @@ export interface FullWidthBannerWidgetParams extends WidgetParams {
 export type CartWidgetRequestBody = ExternalShopContext & CartWidgetParams
 export type SpendLevelRequestBody = ExternalShopContext & SpendLevelWidgetParams
 export type PerOrderRequestBody = ExternalShopContext & PerOrderWidgetParams
+export type PerOrderByIdRequestBody = ExternalShopContext & PerOrderByIdWidgetParams
 export type PerPurchaseRequestBody = ExternalShopContext & PerPurchaseWidgetParams
 export type ByPercentageRequestBody = ExternalShopContext & ByPercentageWidgetParams
 export type ByPercentageOfRevenueRequestBody = ExternalShopContext &
