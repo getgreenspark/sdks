@@ -24,8 +24,8 @@ import type {
   PerPurchaseRequestBody,
   WidgetParams,
   StaticWidgetParams,
-  PerOrderByIdWidgetParams,
-  PerOrderByIdRequestBody,
+  WidgetByIdParams,
+  WidgetByIdRequestBody,
 } from '@/interfaces'
 import type { AxiosInstance, AxiosResponse } from 'axios'
 
@@ -137,11 +137,11 @@ export class ConnectionHandler {
   }
 
   async fetchWidgetById(
-    { version = 'v2', ...body }: PerOrderByIdWidgetParams,
+    { version = 'v2', ...body }: WidgetByIdParams,
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, PerOrderByIdRequestBody>(
-      `${version}/widgets/per-order-widget`,
+    return this.api.post<string, AxiosResponse<string>, WidgetByIdRequestBody>(
+      `${version}/widgets/${body.widgetId}`,
       {
         ...body,
         integrationSlug: this.integrationSlug || '',
