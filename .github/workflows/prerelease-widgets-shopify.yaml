@@ -22,7 +22,7 @@ jobs:
       - id: "checkout"
         uses: "actions/checkout@v4"
 
-      - run: npm install
+      - run: npm --prefix ./widgets install
       - run: npm --prefix ./widgets-shopify run lint
       - run: npm --prefix ./widgets-shopify run dev
 
