@@ -23,8 +23,8 @@ jobs:
         uses: "actions/checkout@v4"
 
       - run: npm --prefix ./widgets install
-      - run: npm --prefix ./widgets-shopify run lint
-      - run: npm --prefix ./widgets-shopify run dev
+      - run: npm --prefix ./widgets-shopify install
+      - run: npm --prefix ./widgets-shopify run build
 
       - id: "auth"
         uses: "google-github-actions/auth@v2"
