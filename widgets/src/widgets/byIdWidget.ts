@@ -1,8 +1,8 @@
 import { Widget } from '@/widgets/base'
 
 import type { WidgetConfig } from '@/widgets/base'
-import {StoreOrder, WidgetByIdParams} from '@/interfaces'
-import type {IMPACT_TYPES} from "@/constants";
+import type { StoreOrder, WidgetByIdParams } from '@/interfaces'
+import type { IMPACT_TYPES } from "@/constants";
 
 export class ByIdWidget extends Widget implements WidgetByIdParams {
   widgetId!: string
