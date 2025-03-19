@@ -1,6 +1,9 @@
 export interface Shopify {
   shop: string
   locale: string
+  currency: {
+    active: string
+  }
 }
 
 export interface ShopifyCartItem {
