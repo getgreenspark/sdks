@@ -3,7 +3,7 @@ import type { ShopifyCart } from './interfaces'
 const scriptSrc = document.currentScript?.getAttribute('src')
 const isDevStore = window.location.hostname.includes('greenspark-development-store')
 const widgetUrl = isDevStore
-  ? 'https://cdn.getgreenspark.com/scripts/widgets%401.9.0-3.js'
+  ? 'https://cdn.getgreenspark.com/scripts/widgets%401.9.0-3-umd.js'
   : 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
 const popupHistory: HTMLElement[] = []
 
@@ -26,6 +26,7 @@ function runGreenspark() {
     return
   }
 
+  const currency = window.Shopify.currency.active
   const locale = window.Shopify.locale as 'en'
   const initialCart = {
     items: [],
@@ -33,28 +34,40 @@ function runGreenspark() {
     total_price: 0,
   }
   const shopUniqueName = window.Shopify.shop
-  const cartEl = document.querySelector('.cart__footer, .drawer__footer')
-  const gsWidgetTargetEl = document.querySelector('[data-greenspark-widget-target]')
-  const currency = window.Shopify.currency.active
-
-  if (cartEl && !gsWidgetTargetEl) {
-    cartEl.insertAdjacentHTML('afterbegin', '<div data-greenspark-widget-target></div>')
-  }
-
   const greenspark = new window.GreensparkWidgets({
     locale,
     integrationSlug: shopUniqueName,
     isShopifyIntegration: true,
   })
 
-  const widget = greenspark.widgetById({
-    widgetId: '342ad3ce-d6e7-4887-a9b9-2edd515d46b7',
-    containerSelector: '[data-greenspark-widget-target]',
-    useShadowDom: false,
-    currency,
-    order: parseCart(initialCart),
-    version: 'v2',
+  const targets = document.querySelectorAll('.greenspark-widget-target')
+  targets.forEach(target => {
+    target.insertAdjacentHTML('afterbegin', '<div data-greenspark-widget-target></div>')
+
+    const widget = greenspark.widgetById({
+      widgetId: target.id,
+      containerSelector: '[data-greenspark-widget-target]',
+      useShadowDom: false,
+      currency,
+      order: parseCart(initialCart),
+      version: 'v2',
+    })
+
+    fetch('/cart.js')
+      .then((response) => response.json())
+      .then((updatedCart) => {
+        const order = parseCart(updatedCart)
+        if (order.lineItems.length <= 0) return
+
+        widget
+          .render({ order })
+          .then(movePopupToBody)
+          .catch((e: Error) => {
+            console.error('Greenspark Widget - ', e)
+          })
+      })
   })
+
 
   const movePopupToBody = () => {
     // if (!withPopup) return
@@ -71,19 +84,6 @@ function runGreenspark() {
     }
   }
 
-  fetch('/cart.js')
-    .then((response) => response.json())
-    .then((updatedCart) => {
-      const order = parseCart(updatedCart)
-      if (order.lineItems.length <= 0) return
-
-      widget
-        .render({ order })
-        .then(movePopupToBody)
-        .catch((e: Error) => {
-          console.error('Greenspark Widget - ', e)
-        })
-    })
 }
 
 function loadScript(url: string): Promise<void> {
