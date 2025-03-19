@@ -49,7 +49,7 @@ export default class GreensparkWidgets extends ApiConsumer {
     return new PerOrderWidget({ ...params, api: this.api, containerSelector, useShadowDom })
   }
 
-  perOrderById(
+  widgetById(
     params: WidgetByIdParams & { containerSelector?: string; useShadowDom?: boolean },
   ) {
     const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
