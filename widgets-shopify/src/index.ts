@@ -5,7 +5,7 @@ type Language = (typeof AVAILABLE_LOCALES)[number]
 const scriptSrc = document.currentScript?.getAttribute('src')
 const isDevStore = window.location.hostname.includes('greenspark-development-store')
 const widgetUrl = isDevStore
-  ? 'https://cdn.getgreenspark.com/scripts/widgets%401.9.0.1.js'
+  ? 'https://cdn.getgreenspark.com/scripts/widgets%401.9.0.3.js'
   : 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
 const popupHistory: HTMLElement[] = []
 
