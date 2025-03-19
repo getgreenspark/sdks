@@ -26,8 +26,7 @@ function runGreenspark() {
     return
   }
 
-  // @ts-ignore
-  const locale = window.Shopify.locale as unknown as any
+  const locale = window.Shopify.locale as 'en'
   const initialCart = {
     items: [],
     currency: 'GBP',
