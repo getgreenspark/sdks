@@ -1,15 +1,11 @@
-import type { WidgetStyle } from '@/interfaces'
-import type { AVAILABLE_LOCALES, WIDGET_COLORS } from '@/constants'
-
+import { AVAILABLE_LOCALES } from '@/constants'
 import type { ShopifyCart } from './interfaces'
 
 type Language = (typeof AVAILABLE_LOCALES)[number]
-type WidgetColor = (typeof WIDGET_COLORS)[number]
-
 const scriptSrc = document.currentScript?.getAttribute('src')
 const isDevStore = window.location.hostname.includes('greenspark-development-store')
 const widgetUrl = isDevStore
-  ? 'https://cdn.getgreenspark.com/scripts/widgets%401.6.1-0-umd.js'
+  ? 'https://cdn.getgreenspark.com/scripts/widgets%401.9.0.1.js'
   : 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
 const popupHistory: HTMLElement[] = []
 
@@ -32,14 +28,8 @@ function runGreenspark() {
     return
   }
 
-  const scriptUrl = new URL(scriptSrc)
-  const urlParams = Object.fromEntries(scriptUrl.searchParams)
-  const color: WidgetColor = (urlParams?.color ?? 'green') as WidgetColor
-  const widgetStyle: WidgetStyle = (urlParams?.widgetStyle ?? 'default') as WidgetStyle
-  const withPopup = urlParams?.withPopup === '1'
-  const popupTheme = 'light'
   const isoCode = window.Shopify.locale
-  const locale: Language = (AVAILABLE_LOCALES.includes(isoCode) ? isoCode : 'en') as Language
+  const locale: Language = (AVAILABLE_LOCALES.includes(isoCode as Language) ? isoCode : 'en') as Language
   const initialCart = {
     items: [],
     currency: 'GBP',
@@ -48,6 +38,7 @@ function runGreenspark() {
   const shopUniqueName = window.Shopify.shop
   const cartEl = document.querySelector('.cart__footer, .drawer__footer')
   const gsWidgetTargetEl = document.querySelector('[data-greenspark-widget-target]')
+  const currency = window.Shopify.currency.active
 
   if (cartEl && !gsWidgetTargetEl) {
     cartEl.insertAdjacentHTML('afterbegin', '<div data-greenspark-widget-target></div>')
@@ -59,19 +50,17 @@ function runGreenspark() {
     isShopifyIntegration: true,
   })
 
-  const widget = greenspark.cart({
-    color,
+  const widget = greenspark.widgetById({
+    widgetId: '342ad3ce-d6e7-4887-a9b9-2edd515d46b7',
     containerSelector: '[data-greenspark-widget-target]',
     useShadowDom: false,
-    style: widgetStyle,
-    withPopup,
-    popupTheme,
+    currency,
     order: parseCart(initialCart),
     version: 'v2',
   })
 
   const movePopupToBody = () => {
-    if (!withPopup) return
+    // if (!withPopup) return
 
     popupHistory.forEach((outdatedPopup) => {
       outdatedPopup.innerHTML = ''
