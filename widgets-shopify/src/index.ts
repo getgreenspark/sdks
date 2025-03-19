@@ -1,7 +1,5 @@
-import { AVAILABLE_LOCALES } from '@/constants'
 import type { ShopifyCart } from './interfaces'
 
-type Language = (typeof AVAILABLE_LOCALES)[number]
 const scriptSrc = document.currentScript?.getAttribute('src')
 const isDevStore = window.location.hostname.includes('greenspark-development-store')
 const widgetUrl = isDevStore
@@ -28,8 +26,7 @@ function runGreenspark() {
     return
   }
 
-  const isoCode = window.Shopify.locale
-  const locale: Language = (AVAILABLE_LOCALES.includes(isoCode as Language) ? isoCode : 'en') as Language
+  const locale = window.Shopify.locale as unknown as any
   const initialCart = {
     items: [],
     currency: 'GBP',
