@@ -1,4 +1,4 @@
-import { AVAILABLE_LOCALES, WIDGET_COLORS } from '@/constants'
+import { AVAILABLE_LOCALES, DEFAULT_LOCALE, WIDGET_COLORS } from '@/constants'
 import type { StoryObj, Meta } from '@storybook/html'
 import GreensparkWidgets from '@/index'
 import { PREVIEWS_USER } from '@/stories/users'
@@ -39,7 +39,7 @@ const meta = {
     },
   },
   args: {
-    locale: 'en',
+    locale: DEFAULT_LOCALE,
   },
 } satisfies Meta<
   GreensparkWidgets & {
