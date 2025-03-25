@@ -3,11 +3,10 @@ import { ConnectionHandler } from '@/network'
 
 import type { ApiSettings } from '@/interfaces'
 
-type ValidLanguage = (typeof AVAILABLE_LOCALES)[number]
 export class ApiConsumer {
   apiKey?: string
   integrationSlug?: string
-  currentLocale: ValidLanguage
+  currentLocale: string
   api: ConnectionHandler
   isShopifyIntegration?: boolean
 
@@ -19,7 +18,7 @@ export class ApiConsumer {
     isShopifyIntegration = false,
   }: ApiSettings) {
     this.apiKey = apiKey
-    this.currentLocale = this.validateLocale(locale)
+    this.currentLocale = locale
     this.integrationSlug = integrationSlug || shopUniqueName
     this.isShopifyIntegration = isShopifyIntegration
     this.api = this.instanciateApi()
@@ -34,22 +33,23 @@ export class ApiConsumer {
     })
   }
 
-  validateLocale(language: ValidLanguage): ValidLanguage {
-    if (!AVAILABLE_LOCALES.includes(language)) {
-      console.warn(`Greenspark - Failed to update locale, because ${language} is not currently supported. The available options are ${AVAILABLE_LOCALES.join(
-        ', ',
-      )}`)
-      return 'en'
+  validateLocale(language: string): string {
+    if (!AVAILABLE_LOCALES.some((locale) => locale === language)) {
+      console.warn(
+        `Greenspark - Failed to update locale, because ${language} is not currently supported. The available options are ${AVAILABLE_LOCALES.join(
+          ', ',
+        )}`,
+      )
     }
 
     return language
   }
 
-  get locale(): ValidLanguage {
+  get locale(): string {
     return this.currentLocale
   }
 
-  set locale(newLocale: ValidLanguage) {
+  set locale(newLocale: string) {
     this.currentLocale = this.validateLocale(newLocale)
     this.api = this.instanciateApi()
   }

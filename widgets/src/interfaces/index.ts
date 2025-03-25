@@ -1,5 +1,4 @@
 import type {
-  AVAILABLE_LOCALES,
   AVAILABLE_STATISTIC_TYPES,
   IMPACT_TYPES,
   WIDGET_STYLES,
@@ -15,7 +14,7 @@ export type WidgetColor = (typeof WIDGET_COLORS)[number]
 
 type ApiSettingsBase = {
   apiKey?: string
-  locale?: (typeof AVAILABLE_LOCALES)[number]
+  locale?: string
   isShopifyIntegration?: boolean
 }
 
