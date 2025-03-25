@@ -1,7 +1,6 @@
 import axios from 'axios'
 
 import type { AxiosHeaders } from 'axios'
-import type { AVAILABLE_LOCALES } from '@/constants'
 import type {
   CartWidgetRequestBody,
   CartWidgetParams,
@@ -31,7 +30,7 @@ export class ConnectionHandler {
   apiKey?: string
   integrationSlug?: string
   api: AxiosInstance
-  locale: (typeof AVAILABLE_LOCALES)[number]
+  locale: string
 
   constructor({
     apiKey,
@@ -41,7 +40,7 @@ export class ConnectionHandler {
   }: {
     apiKey?: string
     integrationSlug?: string
-    locale: (typeof AVAILABLE_LOCALES)[number]
+    locale: string
     isShopifyIntegration?: boolean
   }) {
     this.apiKey = apiKey
