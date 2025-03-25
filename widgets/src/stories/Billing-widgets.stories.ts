@@ -1,5 +1,5 @@
 import { createWidgetPage } from '@/stories/Widgets'
-import { AVAILABLE_LOCALES, POPUP_THEMES, WIDGET_COLORS } from '@/constants'
+import { AVAILABLE_LOCALES, DEFAULT_LOCALE, POPUP_THEMES, WIDGET_COLORS } from '@/constants'
 import type { StoryObj, Meta } from '@storybook/html'
 import type {
   ByPercentageWidgetParams,
@@ -86,7 +86,7 @@ const meta = {
   },
   args: {
     user: 'SINGULAR',
-    locale: 'en',
+    locale: DEFAULT_LOCALE,
     apiKey: '',
     integrationSlug: '',
   },
