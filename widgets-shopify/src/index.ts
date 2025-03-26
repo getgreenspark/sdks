@@ -4,8 +4,8 @@ import { WidgetType} from './interfaces'
 const scriptSrc = document.currentScript?.getAttribute('src')
 const isDevStore = window.location.hostname.includes('greenspark-development-store')
 const widgetUrl = isDevStore
-  ? 'https://cdn.getgreenspark.com/scripts/widgets%401.9.0-3-umd.js'
-  : 'https://cdn.getgreenspark.com/scripts/widgets%401.9.0-3-umd.js'
+  ? 'https://cdn.getgreenspark.com/scripts/widgets%401.9.1-1-umd.js'
+  : 'https://cdn.getgreenspark.com/scripts/widgets%401.9.1-1-umd.js'
 const popupHistory: HTMLElement[] = []
 
 function parseCart(cart: ShopifyCart) {
