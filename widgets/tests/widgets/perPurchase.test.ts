@@ -24,7 +24,6 @@ describe('Per purchase Widget', () => {
     const containerSelector = createContainer()
     const perPurchase = widgets.perPurchase({
       color: 'beige',
-      currency: 'USD',
       containerSelector: containerSelector,
       version: 'v2',
     })
@@ -42,7 +41,6 @@ describe('Per purchase Widget', () => {
     const containerSelector = createContainer()
     const perPurchase = widgets.perPurchase({
       color: 'beige',
-      currency: 'USD',
       containerSelector: containerSelector,
       version: 'v2',
     })
@@ -57,7 +55,6 @@ describe('Per purchase Widget', () => {
     const containerSelector = createContainer()
     const perPurchase = widgets.perPurchase({
       color: 'beige',
-      currency: 'USD',
       containerSelector: containerSelector,
       version: 'v2',
     })
@@ -68,12 +65,11 @@ describe('Per purchase Widget', () => {
     expect(renderNode.textContent).toBe('Hi there!')
   })
 
-  test('cannot render a color that is not allowed or an invalid currency code', async () => {
+  test('cannot render a color that is not allowed', async () => {
     expect(typeof widgets.perPurchase).toEqual('function')
     const containerSelector = createContainer()
     const perPurchase = widgets.perPurchase({
       color: 'yellow' as 'beige',
-      currency: 'USD',
       containerSelector: containerSelector,
       version: 'v2',
     })
@@ -88,13 +84,6 @@ describe('Per purchase Widget', () => {
     expect(() => perPurchase.render({ color: '3' as 'black', version: 'v2' })).rejects.toThrow()
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await perPurchase.render({ color: 'beige', version: 'v2' })
-    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
-
-    expect(() =>
-      perPurchase.render({ color: 'black', currency: 3 as unknown as string, version: 'v2' }),
-    ).rejects.toThrow()
-    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
-    await perPurchase.render({ color: 'beige', currency: 'USD', version: 'v2' })
     expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
   })
 })
