@@ -43,17 +43,20 @@ function runGreenspark() {
 
   const targets = document.querySelectorAll('.greenspark-widget-target')
   targets.forEach(target => {
-    target.insertAdjacentHTML('afterbegin', '<div data-greenspark-widget-target></div>')
     const [type, widgetId]: string[] = atob(target.id).split('|')
     const variant = WidgetType[type]
+    const containerSelector = `[data-greenspark-widget-target-${widgetId}]`
+    const useShadowDom = false
+    const version = 'v2'
+    target.insertAdjacentHTML('afterbegin', `<div data-greenspark-widget-target-${widgetId}></div>`)
 
     if (variant ==='cart') {
       const widget = greenspark.cartById({
         widgetId,
-        containerSelector: '[data-greenspark-widget-target]',
-        useShadowDom: false,
         order: parseCart(initialCart),
-        version: 'v2',
+        containerSelector,
+        useShadowDom,
+        version,
       })
 
       fetch('/cart.js')
@@ -74,9 +77,9 @@ function runGreenspark() {
     if (variant ==='perOrder') {
       const widget = greenspark.perOrderById({
         widgetId,
-        containerSelector: '[data-greenspark-widget-target]',
-        useShadowDom: false,
-        version: 'v2',
+        containerSelector,
+        useShadowDom,
+        version,
       })
 
       widget.render().catch((e) => {
