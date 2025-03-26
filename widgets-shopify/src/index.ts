@@ -43,12 +43,13 @@ function runGreenspark() {
 
   const targets = document.querySelectorAll('.greenspark-widget-target')
   targets.forEach(target => {
+    const randomId = Math.random().toString(36)
     const [type, widgetId]: string[] = atob(target.id).split('|')
     const variant = WidgetType[type]
-    const containerSelector = `[data-greenspark-widget-target-${widgetId}]`
+    const containerSelector = `[data-greenspark-widget-target-${randomId}]`
     const useShadowDom = false
     const version = 'v2'
-    target.insertAdjacentHTML('afterbegin', `<div data-greenspark-widget-target-${widgetId}></div>`)
+    target.insertAdjacentHTML('afterbegin', `<div data-greenspark-widget-target-${randomId}></div>`)
 
     if (variant ==='cart') {
       const widget = greenspark.cartById({
