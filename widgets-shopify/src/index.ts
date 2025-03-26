@@ -1,4 +1,5 @@
-import {ShopifyCart, WidgetType} from './interfaces'
+import type {ShopifyCart} from './interfaces';
+import { WidgetType} from './interfaces'
 
 const scriptSrc = document.currentScript?.getAttribute('src')
 const isDevStore = window.location.hostname.includes('greenspark-development-store')
@@ -26,7 +27,7 @@ function runGreenspark() {
     return
   }
 
-  const currency = window.Shopify.currency.active
+  // const currency = window.Shopify.currency.active
   const locale = window.Shopify.locale as 'en'
   const initialCart = {
     items: [],
@@ -43,10 +44,10 @@ function runGreenspark() {
   const targets = document.querySelectorAll('.greenspark-widget-target')
   targets.forEach(target => {
     target.insertAdjacentHTML('afterbegin', '<div data-greenspark-widget-target></div>')
-    const [cc, widgetId] = atob(target.id).split('|')
-    const cucc = WidgetType["0"]
+    const [type, widgetId]: string[] = atob(target.id).split('|')
+    const variant = WidgetType[type]
 
-    if (greenspark?.cartById) {
+    if (variant ==='cart') {
       const widget = greenspark.cartById({
         widgetId,
         containerSelector: '[data-greenspark-widget-target]',
@@ -68,6 +69,19 @@ function runGreenspark() {
               console.error('Greenspark Widget - ', e)
             })
         })
+    }
+
+    if (variant ==='perOrder') {
+      const widget = greenspark.perOrderById({
+        widgetId,
+        containerSelector: '[data-greenspark-widget-target]',
+        useShadowDom: false,
+        version: 'v2',
+      })
+
+      widget.render().catch((e) => {
+        if (!e.response) return console.error('Greenspark Widget - ', e);
+      });
     }
   })
 

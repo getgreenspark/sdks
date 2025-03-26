@@ -17,7 +17,18 @@ export interface ShopifyCart {
   total_price: number
 }
 
-export const WidgetType = {
-  '0' : 'BY_ID',
-  '1' : 'CART',
-}
+type WIDGET_VARIANTS =
+  | 'byPercentage'
+  | 'byPercentageOfRevenue'
+  | 'cart'
+  | 'fullWidthBanner'
+  | 'perOrder'
+  | 'perProduct'
+  | 'spendLevel'
+  | 'tieredSpendLevel'
+  | 'topStats'
+
+export const WidgetType: Record<string, WIDGET_VARIANTS> = {
+  '0' : 'cart',
+  '1' : 'perOrder',
+} as const
