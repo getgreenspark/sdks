@@ -43,7 +43,7 @@ function runGreenspark() {
 
   const targets = document.querySelectorAll('.greenspark-widget-target')
   targets.forEach(target => {
-    const randomId = Math.random().toString(36)
+    const randomId = crypto.randomUUID()
     const [type, widgetId]: string[] = atob(target.id).split('|')
     const variant = WidgetType[type]
     const containerSelector = `[data-greenspark-widget-target-${randomId}]`
