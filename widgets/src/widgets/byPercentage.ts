@@ -1,6 +1,5 @@
 import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
-
 import type { WidgetConfig } from '@/widgets/base'
 import type { ByPercentageWidgetParams, PopupTheme, WidgetColor, WidgetStyle } from '@/interfaces'
 
@@ -20,7 +19,7 @@ export class ByPercentageWidget extends Widget implements ByPercentageWidgetPara
     this.version = params.version
   }
 
-  get byPercentageWidgetRequestBody(): ByPercentageWidgetParams {
+  private get requestBody(): ByPercentageWidgetParams {
     return {
       color: this.color,
       withPopup: this.withPopup,
@@ -30,7 +29,7 @@ export class ByPercentageWidget extends Widget implements ByPercentageWidgetPara
     }
   }
 
-  updateDefaults({
+  private updateDefaults({
     color,
     withPopup,
     popupTheme,
@@ -44,7 +43,7 @@ export class ByPercentageWidget extends Widget implements ByPercentageWidgetPara
     this.version = version ?? this.version
   }
 
-  validateOptions() {
+  private validateOptions() {
     if (!WIDGET_COLORS.includes(this.color)) {
       throw new Error(
         `Greenspark - "${
@@ -67,7 +66,7 @@ export class ByPercentageWidget extends Widget implements ByPercentageWidgetPara
   async renderToString(options?: Partial<ByPercentageWidgetParams>): Promise<string> {
     if (options) this.updateDefaults(options)
     this.validateOptions()
-    const response = await this.api.fetchByPercentageWidget(this.byPercentageWidgetRequestBody)
+    const response = await this.api.fetchByPercentageWidget(this.requestBody)
     return response.data
   }
 

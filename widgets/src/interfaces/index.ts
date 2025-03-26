@@ -59,39 +59,61 @@ export interface WidgetParams {
   version?: 'v2'
 }
 
-export interface CartWidgetParams extends WidgetParams, WidgetPopupParams, WidgetStyleParams {
+export interface WidgetByIdParams {
+  widgetId: string
+}
+
+export interface WidgetCurrencyParams {
+  currency: string
+}
+
+export interface CartWidgetBaseParams {
   order: StoreOrder
 }
 
-export interface SpendLevelWidgetParams extends WidgetParams, WidgetPopupParams, WidgetStyleParams {
-  currency: string
-}
+export interface CartWidgetParams
+  extends CartWidgetBaseParams,
+    WidgetParams,
+    WidgetPopupParams,
+    WidgetStyleParams {}
 
-export interface PerOrderWidgetParams extends WidgetParams, WidgetPopupParams, WidgetStyleParams {
-  currency: string
-}
+export interface CartWidgetByIdParams
+  extends WidgetParams,
+    WidgetByIdParams,
+    CartWidgetBaseParams {}
 
-export interface WidgetByIdParams extends WidgetParams {
-  widgetId: string
-  currency?: string
-  productId?: string;
-  order?: StoreOrder;
-  impactTypes?: (typeof IMPACT_TYPES)[number][]
-}
+export interface SpendLevelWidgetParams
+  extends WidgetCurrencyParams,
+    WidgetParams,
+    WidgetPopupParams,
+    WidgetStyleParams {}
 
-export interface PerPurchaseWidgetParams extends WidgetPopupParams, WidgetStyleParams {
-  currency: string
-}
+export interface SpendLevelWidgetByIdParams
+  extends WidgetParams,
+    WidgetByIdParams,
+    WidgetCurrencyParams {}
+
+export interface PerOrderWidgetParams extends WidgetParams, WidgetPopupParams, WidgetStyleParams {}
+
+export interface PerOrderWidgetByIdParams extends WidgetByIdParams, WidgetParams {}
+
+export interface PerPurchaseWidgetParams extends WidgetPopupParams, WidgetStyleParams {}
+
+export interface PerPurchaseWidgetByIdParams extends WidgetByIdParams, WidgetParams {}
 
 export interface ByPercentageWidgetParams
   extends WidgetParams,
     WidgetPopupParams,
     WidgetStyleParams {}
 
+export interface ByPercentageWidgetByIdParams extends WidgetByIdParams, WidgetParams {}
+
 export interface ByPercentageOfRevenueWidgetParams
   extends WidgetParams,
     WidgetPopupParams,
     WidgetStyleParams {}
+
+export interface ByPercentageOfRevenueWidgetByIdParams extends WidgetByIdParams, WidgetParams {}
 
 export interface TieredSpendLevelWidgetParams
   extends WidgetParams,
@@ -100,7 +122,15 @@ export interface TieredSpendLevelWidgetParams
   currency: string
 }
 
+export interface TieredSpendLevelWidgetByIdParams extends WidgetParams, WidgetByIdParams {
+  currency: string
+}
+
 export interface PerProductWidgetParams extends WidgetParams, WidgetPopupParams, WidgetStyleParams {
+  productId?: string
+}
+
+export interface PerProductWidgetByIdParams extends WidgetByIdParams, WidgetParams {
   productId?: string
 }
 
@@ -114,6 +144,8 @@ export interface StaticWidgetParams extends WidgetParams {
   style?: StaticWidgetStyle
 }
 
+export interface StaticWidgetByIdParams extends WidgetByIdParams, WidgetParams {}
+
 export interface FullWidthBannerWidgetParams extends WidgetParams {
   options: Array<(typeof AVAILABLE_STATISTIC_TYPES)[number]>
   imageUrl?: string
@@ -126,14 +158,22 @@ export interface FullWidthBannerWidgetParams extends WidgetParams {
 }
 
 export type CartWidgetRequestBody = ExternalShopContext & CartWidgetParams
+export type CartWidgetByIdRequestBody = ExternalShopContext & CartWidgetByIdParams
 export type SpendLevelRequestBody = ExternalShopContext & SpendLevelWidgetParams
+export type SpendLevelWidgetByIdRequestBody = ExternalShopContext & SpendLevelWidgetByIdParams
 export type PerOrderRequestBody = ExternalShopContext & PerOrderWidgetParams
-export type WidgetByIdRequestBody = ExternalShopContext & WidgetByIdParams
+export type PerOrderByIdRequestBody = ExternalShopContext & PerOrderWidgetByIdParams
 export type PerPurchaseRequestBody = ExternalShopContext & PerPurchaseWidgetParams
+export type PerPurchaseByIdRequestBody = ExternalShopContext & PerPurchaseWidgetByIdParams
 export type ByPercentageRequestBody = ExternalShopContext & ByPercentageWidgetParams
+export type ByPercentageWidgetByIdRequestBody = ExternalShopContext & ByPercentageWidgetByIdParams
 export type ByPercentageOfRevenueRequestBody = ExternalShopContext &
   ByPercentageOfRevenueWidgetParams
+export type ByPercentageOfRevenueWidgetByIdRequestBody = ExternalShopContext &
+  ByPercentageOfRevenueWidgetByIdParams
 export type TieredSpendLevelRequestBody = ExternalShopContext & TieredSpendLevelWidgetParams
+export type TieredSpendLevelByIdRequestBody = ExternalShopContext & TieredSpendLevelWidgetByIdParams
 export type PerProductRequestBody = ExternalShopContext & PerProductWidgetParams
+export type PerProductByIdRequestBody = ExternalShopContext & PerProductWidgetByIdParams
 export type TopStatsRequestBody = TopStatsWidgetParams
 export type FullWidthBannerRequestBody = FullWidthBannerWidgetParams

@@ -280,7 +280,6 @@ export const PerOrder: StoryObj<{
   },
   args: {
     widgetArgs: {
-      currency: 'EUR',
       withPopup: true,
       color: 'beige',
     },

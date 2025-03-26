@@ -1,12 +1,10 @@
 import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
-
 import type { WidgetConfig } from '@/widgets/base'
 import type { PerOrderWidgetParams, PopupTheme, WidgetStyle, WidgetColor } from '@/interfaces'
 
 export class PerOrderWidget extends Widget implements PerOrderWidgetParams {
   color: WidgetColor
-  currency: string
   withPopup?: boolean
   popupTheme?: PopupTheme
   style?: WidgetStyle
@@ -15,17 +13,15 @@ export class PerOrderWidget extends Widget implements PerOrderWidgetParams {
   constructor(params: WidgetConfig & PerOrderWidgetParams) {
     super(params)
     this.color = params.color
-    this.currency = params.currency
     this.withPopup = params.withPopup ?? true
     this.popupTheme = params.popupTheme
     this.style = params.style ?? 'default'
     this.version = params.version
   }
 
-  get perOrderRequestBody(): PerOrderWidgetParams {
+  private get requestBody(): PerOrderWidgetParams {
     return {
       color: this.color,
-      currency: this.currency,
       withPopup: this.withPopup,
       popupTheme: this.popupTheme,
       style: this.style,
@@ -33,23 +29,21 @@ export class PerOrderWidget extends Widget implements PerOrderWidgetParams {
     }
   }
 
-  updateDefaults({
+  private updateDefaults({
     color,
-    currency,
     withPopup,
     popupTheme,
     style,
     version,
   }: Partial<PerOrderWidgetParams>) {
     this.color = color ?? this.color
-    this.currency = currency ?? this.currency
     this.withPopup = withPopup ?? this.withPopup
     this.popupTheme = popupTheme ?? this.popupTheme
     this.style = style ?? this.style
     this.version = version ?? this.version
   }
 
-  validateOptions() {
+  private validateOptions() {
     if (!WIDGET_COLORS.includes(this.color)) {
       throw new Error(
         `Greenspark - "${
@@ -57,12 +51,6 @@ export class PerOrderWidget extends Widget implements PerOrderWidgetParams {
         }" was selected as the color for the Per Order Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.join(
           ', ',
         )}`,
-      )
-    }
-
-    if (!(typeof this.currency === 'string')) {
-      throw new Error(
-        `Greenspark - "${this.currency}" was selected as the widget's currency for the Per Order Widget, but this currency is not available. Please use a valid currency code like "USD", "GBP" and "EUR".`,
       )
     }
   }
@@ -75,7 +63,7 @@ export class PerOrderWidget extends Widget implements PerOrderWidgetParams {
   async renderToString(options?: Partial<PerOrderWidgetParams>): Promise<string> {
     if (options) this.updateDefaults(options)
     this.validateOptions()
-    const response = await this.api.fetchPerOrderWidget(this.perOrderRequestBody)
+    const response = await this.api.fetchPerOrderWidget(this.requestBody)
     return response.data
   }
 

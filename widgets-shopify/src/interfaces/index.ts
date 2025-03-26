@@ -16,3 +16,8 @@ export interface ShopifyCart {
   currency: string
   total_price: number
 }
+
+export const WidgetType = {
+  '0' : 'BY_ID',
+  '1' : 'CART',
+}

@@ -1,4 +1,4 @@
-import type { ShopifyCart } from './interfaces'
+import {ShopifyCart, WidgetType} from './interfaces'
 
 const scriptSrc = document.currentScript?.getAttribute('src')
 const isDevStore = window.location.hostname.includes('greenspark-development-store')
@@ -43,13 +43,14 @@ function runGreenspark() {
   const targets = document.querySelectorAll('.greenspark-widget-target')
   targets.forEach(target => {
     target.insertAdjacentHTML('afterbegin', '<div data-greenspark-widget-target></div>')
+    const [cc, widgetId] = atob(target.id).split('|')
+    const cucc = WidgetType["0"]
 
-    if (greenspark?.widgetById) {
-      const widget = greenspark.widgetById({
-        widgetId: target.id,
+    if (greenspark?.cartById) {
+      const widget = greenspark.cartById({
+        widgetId,
         containerSelector: '[data-greenspark-widget-target]',
         useShadowDom: false,
-        currency,
         order: parseCart(initialCart),
         version: 'v2',
       })
