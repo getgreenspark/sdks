@@ -106,7 +106,7 @@ export class ConnectionHandler {
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, CartWidgetByIdRequestBody>(
-      `/${version}/'widgets/cart-widget/${body.widgetId}`,
+      `/${version}/widgets/cart-widget/${body.widgetId}`,
       { integrationSlug: this.integrationSlug || '', ...body },
       {
         params: { lng: this.locale },
@@ -145,7 +145,7 @@ export class ConnectionHandler {
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, SpendLevelWidgetByIdRequestBody>(
-      `/${version}/'widgets/spend-level-widget/${body.widgetId}`,
+      `/${version}/widgets/spend-level-widget/${body.widgetId}`,
       { integrationSlug: this.integrationSlug || '', ...body },
       {
         params: { lng: this.locale },
@@ -184,7 +184,7 @@ export class ConnectionHandler {
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, PerOrderByIdRequestBody>(
-      `/${version}/'widgets/per-order-widget/${body.widgetId}`,
+      `/${version}/widgets/per-order-widget/${body.widgetId}`,
       { integrationSlug: this.integrationSlug || '', ...body },
       {
         params: { lng: this.locale },
@@ -217,7 +217,7 @@ export class ConnectionHandler {
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, PerPurchaseByIdRequestBody>(
-      `/${version}/'widgets/per-purchase-widget/${body.widgetId}`,
+      `/${version}/widgets/per-purchase-widget/${body.widgetId}`,
       { integrationSlug: this.integrationSlug || '', ...body },
       {
         params: { lng: this.locale },
@@ -260,7 +260,7 @@ export class ConnectionHandler {
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, ByPercentageWidgetByIdRequestBody>(
-      `/${version}/'widgets/by-percentage-widget/${body.widgetId}`,
+      `/${version}/widgets/by-percentage-widget/${body.widgetId}`,
       { integrationSlug: this.integrationSlug || '', ...body },
       {
         params: { lng: this.locale },
@@ -299,7 +299,7 @@ export class ConnectionHandler {
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, ByPercentageOfRevenueWidgetByIdRequestBody>(
-      `/${version}/'widgets/by-percentage-of-revenue-widget/${body.widgetId}`,
+      `/${version}/widgets/by-percentage-of-revenue-widget/${body.widgetId}`,
       { integrationSlug: this.integrationSlug || '', ...body },
       {
         params: { lng: this.locale },
@@ -338,7 +338,7 @@ export class ConnectionHandler {
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, TieredSpendLevelByIdRequestBody>(
-      `/${version}/'widgets/tiered-spend-level-widget/${body.widgetId}`,
+      `/${version}/widgets/tiered-spend-level-widget/${body.widgetId}`,
       { integrationSlug: this.integrationSlug || '', ...body },
       {
         params: { lng: this.locale },
@@ -377,7 +377,7 @@ export class ConnectionHandler {
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, PerProductByIdRequestBody>(
-      `/${version}/'widgets/per-product-widget/${body.widgetId}`,
+      `/${version}/widgets/per-product-widget/${body.widgetId}`,
       { integrationSlug: this.integrationSlug || '', ...body },
       {
         params: { lng: this.locale },
@@ -421,7 +421,7 @@ export class ConnectionHandler {
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     return this.api.post<string, AxiosResponse<string>, StaticWidgetByIdParams>(
-      `/${version}/'widgets/static-widget/${body.widgetId}`,
+      `/${version}/widgets/static-widget/${body.widgetId}`,
       { ...body },
       {
         params: { lng: this.locale },
