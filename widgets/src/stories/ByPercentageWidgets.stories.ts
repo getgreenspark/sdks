@@ -1,4 +1,4 @@
-import { AVAILABLE_LOCALES, IMPACT_TYPES } from '@/constants'
+import { AVAILABLE_LOCALES, DEFAULT_LOCALE, IMPACT_TYPES } from '@/constants'
 import type { StoryObj, Meta } from '@storybook/html'
 import type GreensparkWidgets from '@/index'
 import { ConnectionHandler } from '@/network'
@@ -93,7 +93,7 @@ const meta = {
     },
   },
   args: {
-    locale: 'en',
+    locale: DEFAULT_LOCALE,
   },
 } satisfies Meta<
   GreensparkWidgets & {

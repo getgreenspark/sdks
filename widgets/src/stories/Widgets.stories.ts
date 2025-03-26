@@ -2,6 +2,7 @@ import { createWidgetPage } from '@/stories/Widgets'
 import {
   AVAILABLE_LOCALES,
   AVAILABLE_STATISTIC_TYPES,
+  DEFAULT_LOCALE,
   IMPACT_TYPES,
   WIDGET_COLORS,
 } from '@/constants'
@@ -156,7 +157,7 @@ const meta = {
   },
   args: {
     user: 'SINGULAR',
-    locale: 'en',
+    locale: DEFAULT_LOCALE,
     apiKey: '',
     integrationSlug: '',
   },
