@@ -12,7 +12,6 @@ import {
   FullWidthBannerWidget,
   PerOrderWidgetById,
   StaticWidgetById,
-  PerPurchaseWidgetById,
   TieredSpendLevelWidgetById,
 } from '@/widgets'
 import { DEFAULT_CONTAINER_CSS_SELECTOR } from '@/constants'
@@ -37,7 +36,6 @@ import type {
   ByPercentageOfRevenueWidgetByIdParams,
   PerOrderWidgetByIdParams,
   StaticWidgetByIdParams,
-  PerPurchaseWidgetByIdParams,
   TieredSpendLevelWidgetByIdParams,
 } from '@/interfaces'
 import { StaticWidget } from '@/widgets/static'
@@ -90,14 +88,6 @@ export default class GreensparkWidgets extends ApiConsumer {
   ) {
     const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
     return new PerPurchaseWidget({ ...params, api: this.api, containerSelector, useShadowDom })
-  }
-
-  perPurchaseById(
-    params: PerPurchaseWidgetByIdParams &
-      Required<WidgetParams> & { containerSelector?: string; useShadowDom?: boolean },
-  ) {
-    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
-    return new PerPurchaseWidgetById({ ...params, api: this.api, containerSelector, useShadowDom })
   }
 
   byPercentage(

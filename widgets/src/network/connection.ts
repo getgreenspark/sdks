@@ -35,8 +35,6 @@ import type {
   ByPercentageOfRevenueWidgetByIdRequestBody,
   PerOrderWidgetByIdParams,
   PerOrderByIdRequestBody,
-  PerPurchaseWidgetByIdParams,
-  PerPurchaseByIdRequestBody,
   TieredSpendLevelByIdRequestBody,
   TieredSpendLevelWidgetByIdParams,
   StaticWidgetByIdParams,
@@ -205,20 +203,6 @@ export class ConnectionHandler {
         body,
         this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
       ),
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
-    )
-  }
-
-  async fetchPerPurchaseWidgetById(
-    { version, ...body }: PerPurchaseWidgetByIdParams,
-    headers?: typeof AxiosHeaders,
-  ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, PerPurchaseByIdRequestBody>(
-      `/${version}/widgets/per-purchase-widget/${body.widgetId}`,
-      { integrationSlug: this.integrationSlug || '', ...body },
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },

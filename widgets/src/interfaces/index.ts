@@ -98,8 +98,6 @@ export interface PerOrderWidgetByIdParams extends WidgetByIdParams, WidgetParams
 
 export interface PerPurchaseWidgetParams extends WidgetPopupParams, WidgetStyleParams {}
 
-export interface PerPurchaseWidgetByIdParams extends WidgetByIdParams, WidgetParams {}
-
 export interface ByPercentageWidgetParams
   extends WidgetParams,
     WidgetPopupParams,
@@ -163,7 +161,6 @@ export type SpendLevelWidgetByIdRequestBody = ExternalShopContext & SpendLevelWi
 export type PerOrderRequestBody = ExternalShopContext & PerOrderWidgetParams
 export type PerOrderByIdRequestBody = ExternalShopContext & PerOrderWidgetByIdParams
 export type PerPurchaseRequestBody = ExternalShopContext & PerPurchaseWidgetParams
-export type PerPurchaseByIdRequestBody = ExternalShopContext & PerPurchaseWidgetByIdParams
 export type ByPercentageRequestBody = ExternalShopContext & ByPercentageWidgetParams
 export type ByPercentageWidgetByIdRequestBody = ExternalShopContext & ByPercentageWidgetByIdParams
 export type ByPercentageOfRevenueRequestBody = ExternalShopContext &
