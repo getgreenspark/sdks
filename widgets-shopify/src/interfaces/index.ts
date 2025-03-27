@@ -6,6 +6,14 @@ export interface Shopify {
   }
 }
 
+export interface ShopifyAnalytics {
+  meta: {
+    product: {
+      id: number
+    }
+  }
+}
+
 export interface ShopifyCartItem {
   product_id: string
   quantity: number
@@ -18,17 +26,24 @@ export interface ShopifyCart {
 }
 
 type WIDGET_VARIANTS =
+  | 'orderImpacts'
+  | 'offsetPerOrder'
+  | 'offsetByProduct'
+  | 'offsetBySpend'
+  | 'offsetByStoreRevenue'
   | 'byPercentage'
   | 'byPercentageOfRevenue'
-  | 'cart'
-  | 'fullWidthBanner'
-  | 'perOrder'
-  | 'perProduct'
-  | 'spendLevel'
-  | 'tieredSpendLevel'
-  | 'topStats'
+  | 'stats'
+  | 'static'
 
-export const WidgetType: Record<string, WIDGET_VARIANTS> = {
-  '0' : 'cart',
-  '1' : 'perOrder',
+export const EnumToWidgetTypeMap: Record<string, WIDGET_VARIANTS> = {
+  '0' : 'orderImpacts',
+  '1' : 'offsetPerOrder',
+  '2' : 'offsetByProduct',
+  '3' : 'offsetBySpend',
+  '4' : 'offsetByStoreRevenue',
+  '5' : 'byPercentage',
+  '6' : 'byPercentageOfRevenue',
+  '7' : 'stats',
+  '8' : 'static',
 } as const
