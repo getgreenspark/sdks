@@ -36,7 +36,8 @@ import type {
   ByPercentageOfRevenueWidgetByIdParams,
   PerOrderWidgetByIdParams,
   StaticWidgetByIdParams,
-  TieredSpendLevelWidgetByIdParams, TopStatsWidgetByIdParams,
+  TieredSpendLevelWidgetByIdParams,
+  TopStatsWidgetByIdParams,
 } from '@/interfaces'
 import { StaticWidget } from '@/widgets/static'
 import { CartWidgetById } from '@/widgets/cartById'
