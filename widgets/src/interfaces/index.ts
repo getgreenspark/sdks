@@ -136,6 +136,9 @@ export interface TopStatsWidgetParams extends WidgetParams, WidgetPopupParams {
   impactTypes?: (typeof IMPACT_TYPES)[number][]
 }
 
+export interface TopStatsWidgetByIdParams extends WidgetByIdParams, WidgetParams {
+}
+
 export interface StaticWidgetParams extends WidgetParams {
   color: WidgetColor
   style?: StaticWidgetStyle

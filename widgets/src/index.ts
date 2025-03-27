@@ -36,7 +36,7 @@ import type {
   ByPercentageOfRevenueWidgetByIdParams,
   PerOrderWidgetByIdParams,
   StaticWidgetByIdParams,
-  TieredSpendLevelWidgetByIdParams,
+  TieredSpendLevelWidgetByIdParams, TopStatsWidgetByIdParams,
 } from '@/interfaces'
 import { StaticWidget } from '@/widgets/static'
 import { CartWidgetById } from '@/widgets/cartById'
@@ -44,6 +44,7 @@ import { SpendLevelWidgetById } from '@/widgets/spendLevelById'
 import { PerProductWidgetById } from '@/widgets/perProductById'
 import { ByPercentageWidgetById } from '@/widgets/byPercentageById'
 import { ByPercentageOfRevenueWidgetById } from '@/widgets/byPercentageOfRevenueById'
+import { TopStatsWidgetById } from '@/widgets/topStatsById'
 
 export default class GreensparkWidgets extends ApiConsumer {
   cart(params: CartWidgetParams & { containerSelector?: string; useShadowDom?: boolean }) {
@@ -185,6 +186,11 @@ export default class GreensparkWidgets extends ApiConsumer {
   topStats(params: TopStatsWidgetParams & { containerSelector?: string; useShadowDom?: boolean }) {
     const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
     return new TopStatsWidget({ ...params, api: this.api, containerSelector, useShadowDom })
+  }
+
+  topStatsById(params: TopStatsWidgetByIdParams & { containerSelector?: string; useShadowDom?: boolean }) {
+    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
+    return new TopStatsWidgetById({ ...params, api: this.api, containerSelector, useShadowDom })
   }
 
   fullWidthBanner(

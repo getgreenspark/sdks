@@ -37,7 +37,7 @@ import type {
   PerOrderByIdRequestBody,
   TieredSpendLevelByIdRequestBody,
   TieredSpendLevelWidgetByIdParams,
-  StaticWidgetByIdParams,
+  StaticWidgetByIdParams, TopStatsWidgetByIdParams,
 } from '@/interfaces'
 import type { TieredSpendLevelRequestBody } from '@/interfaces'
 import type { AxiosInstance, AxiosResponse } from 'axios'
@@ -378,6 +378,20 @@ export class ConnectionHandler {
     return this.api.post<string, AxiosResponse<string>, TopStatsRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/stats-widget`,
       body,
+      {
+        params: { lng: this.locale },
+        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
+      },
+    )
+  }
+
+  async fetchTopStatsWidgetById(
+    { version, ...body }: TopStatsWidgetByIdParams,
+    headers?: typeof AxiosHeaders,
+  ): Promise<AxiosResponse<string>> {
+    return this.api.post<string, AxiosResponse<string>, TopStatsWidgetByIdParams>(
+      `/${version}/widgets/stats-widget/${body.widgetId}`,
+      {  ...body },
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
