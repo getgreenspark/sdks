@@ -193,20 +193,20 @@ function runGreenspark() {
   const targets = document.querySelectorAll('.greenspark-widget-target')
   targets.forEach(target => {
     const randomId = crypto.randomUUID()
-    const [type, widgetId]: string[] = atob(target.id).split('|')
+    const [type]: string[] = atob(target.id).split('|')
     const variant = EnumToWidgetTypeMap[type]
     const containerSelector = `[data-greenspark-widget-target-${randomId}]`
     target.insertAdjacentHTML('afterbegin', `<div data-greenspark-widget-target-${randomId}></div>`)
 
-    if (variant === 'orderImpacts') renderOrderImpacts(widgetId, containerSelector)
-    if (variant === 'offsetPerOrder') renderOffsetPerOrder(widgetId, containerSelector)
-    if (variant === 'offsetByProduct') renderOffsetByProduct(widgetId, containerSelector)
-    if (variant === 'offsetBySpend') renderOffsetBySpend(widgetId, containerSelector)
-    if (variant === 'offsetByStoreRevenue') renderOffsetByStoreRevenue(widgetId, containerSelector)
-    if (variant === 'byPercentage') renderByPercentage(widgetId, containerSelector)
-    if (variant === 'byPercentageOfRevenue') renderByPercentageOfRevenue(widgetId, containerSelector)
-    if (variant === 'stats') renderStats(widgetId, containerSelector)
-    if (variant === 'static') renderStatic(widgetId, containerSelector)
+    if (variant === 'orderImpacts') renderOrderImpacts(target.id, containerSelector)
+    if (variant === 'offsetPerOrder') renderOffsetPerOrder(target.id, containerSelector)
+    if (variant === 'offsetByProduct') renderOffsetByProduct(target.id, containerSelector)
+    if (variant === 'offsetBySpend') renderOffsetBySpend(target.id, containerSelector)
+    if (variant === 'offsetByStoreRevenue') renderOffsetByStoreRevenue(target.id, containerSelector)
+    if (variant === 'byPercentage') renderByPercentage(target.id, containerSelector)
+    if (variant === 'byPercentageOfRevenue') renderByPercentageOfRevenue(target.id, containerSelector)
+    if (variant === 'stats') renderStats(target.id, containerSelector)
+    if (variant === 'static') renderStatic(target.id, containerSelector)
   })
 }
 
