@@ -1,6 +1,5 @@
 import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
-
 import type { WidgetConfig } from '@/widgets/base'
 import type { PopupTheme, SpendLevelWidgetParams, WidgetStyle, WidgetColor } from '@/interfaces'
 
@@ -22,7 +21,7 @@ export class SpendLevelWidget extends Widget implements SpendLevelWidgetParams {
     this.version = params.version
   }
 
-  get spendLevelRequestBody(): SpendLevelWidgetParams {
+  private get requestBody(): SpendLevelWidgetParams {
     return {
       color: this.color,
       currency: this.currency,
@@ -33,7 +32,7 @@ export class SpendLevelWidget extends Widget implements SpendLevelWidgetParams {
     }
   }
 
-  updateDefaults({
+  private updateDefaults({
     color,
     currency,
     withPopup,
@@ -49,7 +48,7 @@ export class SpendLevelWidget extends Widget implements SpendLevelWidgetParams {
     this.version = version ?? this.version
   }
 
-  validateOptions() {
+  private validateOptions() {
     if (!WIDGET_COLORS.includes(this.color)) {
       throw new Error(
         `Greenspark - "${
@@ -78,7 +77,7 @@ export class SpendLevelWidget extends Widget implements SpendLevelWidgetParams {
   async renderToString(options?: Partial<SpendLevelWidgetParams>): Promise<string> {
     if (options) this.updateDefaults(options)
     this.validateOptions()
-    const response = await this.api.fetchSpendLevelWidget(this.spendLevelRequestBody)
+    const response = await this.api.fetchSpendLevelWidget(this.requestBody)
     return response.data
   }
 

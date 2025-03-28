@@ -174,7 +174,6 @@ export const PerPurchase: StoryObj<{
   },
   args: {
     widgetArgs: {
-      currency: 'EUR',
       withPopup: true,
       color: 'beige',
     },

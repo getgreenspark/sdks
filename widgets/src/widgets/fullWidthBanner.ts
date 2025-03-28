@@ -1,5 +1,4 @@
 import { Widget } from '@/widgets/base'
-
 import { AVAILABLE_STATISTIC_TYPES } from '@/constants'
 import type { WidgetConfig } from '@/widgets/base'
 import type { FullWidthBannerWidgetParams } from '@/interfaces'
@@ -28,7 +27,7 @@ export class FullWidthBannerWidget extends Widget implements FullWidthBannerWidg
     this.version = params.version
   }
 
-  get fullWidthBannerWidgetRequestBody(): FullWidthBannerWidgetParams {
+  private get requestBody(): FullWidthBannerWidgetParams {
     return {
       options: this.options,
       imageUrl: this.imageUrl,
@@ -42,7 +41,7 @@ export class FullWidthBannerWidget extends Widget implements FullWidthBannerWidg
     }
   }
 
-  updateDefaults({
+  private updateDefaults({
     options,
     imageUrl,
     title,
@@ -64,7 +63,7 @@ export class FullWidthBannerWidget extends Widget implements FullWidthBannerWidg
     this.version = version ?? this.version
   }
 
-  validateOptions() {
+  private validateOptions() {
     if (this.options.length <= 0) {
       throw new Error(
         `Greenspark - the "options" value that was provided to the Full Width Banner Widget has no elements within the array.`,
@@ -99,9 +98,7 @@ export class FullWidthBannerWidget extends Widget implements FullWidthBannerWidg
   async renderToString(options?: Partial<FullWidthBannerWidgetParams>): Promise<string> {
     if (options) this.updateDefaults(options)
     this.validateOptions()
-    const response = await this.api.fetchFullWidthBannerWidget(
-      this.fullWidthBannerWidgetRequestBody,
-    )
+    const response = await this.api.fetchFullWidthBannerWidget(this.requestBody)
     return response.data
   }
 

@@ -1,6 +1,5 @@
 import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
-
 import type { WidgetConfig } from '@/widgets/base'
 import type {
   ByPercentageOfRevenueWidgetParams,
@@ -28,7 +27,7 @@ export class ByPercentageOfRevenueWidget
     this.version = params.version
   }
 
-  get byPercentageOfRevenueWidgetRequestBody(): ByPercentageOfRevenueWidgetParams {
+  private get requestBody(): ByPercentageOfRevenueWidgetParams {
     return {
       color: this.color,
       withPopup: this.withPopup,
@@ -38,7 +37,7 @@ export class ByPercentageOfRevenueWidget
     }
   }
 
-  updateDefaults({
+  private updateDefaults({
     color,
     withPopup,
     popupTheme,
@@ -52,7 +51,7 @@ export class ByPercentageOfRevenueWidget
     this.version = version ?? this.version
   }
 
-  validateOptions() {
+  private validateOptions() {
     if (!WIDGET_COLORS.includes(this.color)) {
       throw new Error(
         `Greenspark - "${
@@ -75,9 +74,7 @@ export class ByPercentageOfRevenueWidget
   async renderToString(options?: Partial<ByPercentageOfRevenueWidgetParams>): Promise<string> {
     if (options) this.updateDefaults(options)
     this.validateOptions()
-    const response = await this.api.fetchByPercentageOfRevenueWidget(
-      this.byPercentageOfRevenueWidgetRequestBody,
-    )
+    const response = await this.api.fetchByPercentageOfRevenueWidget(this.requestBody)
     return response.data
   }
 

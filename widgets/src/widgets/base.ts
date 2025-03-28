@@ -7,14 +7,14 @@ export interface WidgetConfig {
   useShadowDom?: boolean
 }
 
-export interface WidgetTemplate {
-  render(options?: unknown, containerSelector?: string): Promise<void>
-  renderToString(options?: unknown): Promise<string>
-  renderToElement(options?: unknown): Promise<HTMLElement>
+export abstract class WidgetTemplate {
+  abstract render(options?: unknown, containerSelector?: string): Promise<void>
+  abstract renderToString(options?: unknown): Promise<string>
+  abstract renderToElement(options?: unknown): Promise<HTMLElement>
 }
 
 export class Widget extends DOMInjector implements WidgetTemplate {
-  api: ConnectionHandler
+  protected api: ConnectionHandler
 
   constructor({ api, containerSelector, useShadowDom }: WidgetConfig) {
     super({ containerSelector, useShadowDom })

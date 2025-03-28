@@ -1,6 +1,5 @@
 import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
-
 import type { WidgetConfig } from '@/widgets/base'
 import type {
   PerPurchaseWidgetParams,
@@ -12,7 +11,6 @@ import type {
 
 export class PerPurchaseWidget extends Widget implements PerPurchaseWidgetParams {
   color: WidgetColor
-  currency: string
   withPopup?: boolean
   popupTheme?: PopupTheme
   style?: WidgetStyle
@@ -21,17 +19,15 @@ export class PerPurchaseWidget extends Widget implements PerPurchaseWidgetParams
   constructor(params: WidgetConfig & PerPurchaseWidgetParams & Required<WidgetParams>) {
     super(params)
     this.color = params.color
-    this.currency = params.currency
     this.withPopup = params.withPopup ?? true
     this.popupTheme = params.popupTheme
     this.style = params.style ?? 'default'
     this.version = params.version
   }
 
-  get perPurchaseRequestBody(): PerPurchaseWidgetParams & Required<WidgetParams> {
+  private get requestBody(): PerPurchaseWidgetParams & Required<WidgetParams> {
     return {
       color: this.color,
-      currency: this.currency,
       withPopup: this.withPopup,
       popupTheme: this.popupTheme,
       style: this.style,
@@ -39,23 +35,21 @@ export class PerPurchaseWidget extends Widget implements PerPurchaseWidgetParams
     }
   }
 
-  updateDefaults({
+  private updateDefaults({
     color,
-    currency,
     withPopup,
     popupTheme,
     style,
     version,
   }: Partial<PerPurchaseWidgetParams> & Required<WidgetParams>) {
     this.color = color ?? this.color
-    this.currency = currency ?? this.currency
     this.withPopup = withPopup ?? this.withPopup
     this.popupTheme = popupTheme ?? this.popupTheme
     this.style = style ?? this.style
     this.version = version ?? this.version
   }
 
-  validateOptions() {
+  private validateOptions() {
     if (!WIDGET_COLORS.includes(this.color)) {
       throw new Error(
         `Greenspark - "${
@@ -63,12 +57,6 @@ export class PerPurchaseWidget extends Widget implements PerPurchaseWidgetParams
         }" was selected as the color for the Per Purchase Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.join(
           ', ',
         )}`,
-      )
-    }
-
-    if (!(typeof this.currency === 'string')) {
-      throw new Error(
-        `Greenspark - "${this.currency}" was selected as the widget's currency for the Per Purchase Widget, but this currency is not available. Please use a valid currency code like "USD", "GBP" and "EUR".`,
       )
     }
   }
@@ -86,7 +74,7 @@ export class PerPurchaseWidget extends Widget implements PerPurchaseWidgetParams
   ): Promise<string> {
     if (options) this.updateDefaults(options)
     this.validateOptions()
-    const response = await this.api.fetchPerPurchaseWidget(this.perPurchaseRequestBody)
+    const response = await this.api.fetchPerPurchaseWidget(this.requestBody)
     return response.data
   }
 

@@ -1,6 +1,5 @@
 import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS, IMPACT_TYPES } from '@/constants'
-
 import type { WidgetConfig } from '@/widgets/base'
 import type { PopupTheme, TopStatsWidgetParams, WidgetColor } from '@/interfaces'
 
@@ -20,7 +19,7 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
     this.version = params.version
   }
 
-  get topStatsWidgetRequestBody(): TopStatsWidgetParams {
+  private get requestBody(): TopStatsWidgetParams {
     return {
       color: this.color,
       impactTypes: this.impactTypes,
@@ -30,7 +29,7 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
     }
   }
 
-  updateDefaults({
+  private updateDefaults({
     color,
     impactTypes,
     withPopup,
@@ -44,7 +43,7 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
     this.version = version ?? this.version
   }
 
-  validateOptions() {
+  private validateOptions() {
     if (!WIDGET_COLORS.includes(this.color)) {
       throw new Error(
         `Greenspark - "${
@@ -73,7 +72,7 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
   async renderToString(options?: Partial<TopStatsWidgetParams>): Promise<string> {
     if (options) this.updateDefaults(options)
     this.validateOptions()
-    const response = await this.api.fetchTopStatsWidget(this.topStatsWidgetRequestBody)
+    const response = await this.api.fetchTopStatsWidget(this.requestBody)
     return response.data
   }
 

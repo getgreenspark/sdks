@@ -1,6 +1,5 @@
 import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
-
 import type { WidgetConfig } from '@/widgets/base'
 import type { PerProductWidgetParams, PopupTheme, WidgetStyle, WidgetColor } from '@/interfaces'
 
@@ -22,7 +21,7 @@ export class PerProductWidget extends Widget implements PerProductWidgetParams {
     this.version = params.version
   }
 
-  get perProductWidgetRequestBody(): PerProductWidgetParams {
+  private get requestBody(): PerProductWidgetParams {
     return {
       color: this.color,
       productId: this.productId,
@@ -33,7 +32,7 @@ export class PerProductWidget extends Widget implements PerProductWidgetParams {
     }
   }
 
-  updateDefaults({
+  private updateDefaults({
     color,
     productId,
     withPopup,
@@ -49,7 +48,7 @@ export class PerProductWidget extends Widget implements PerProductWidgetParams {
     this.version = version ?? this.version
   }
 
-  validateOptions() {
+  private validateOptions() {
     if (!WIDGET_COLORS.includes(this.color)) {
       throw new Error(
         `Greenspark - "${
@@ -78,7 +77,7 @@ export class PerProductWidget extends Widget implements PerProductWidgetParams {
   async renderToString(options?: Partial<PerProductWidgetParams>): Promise<string> {
     if (options) this.updateDefaults(options)
     this.validateOptions()
-    const response = await this.api.fetchPerProductWidget(this.perProductWidgetRequestBody)
+    const response = await this.api.fetchPerProductWidget(this.requestBody)
     return response.data
   }
 
