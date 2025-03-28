@@ -31,7 +31,7 @@ function runGreenspark() {
   const version = 'v2'
 
   const currency = window.Shopify.currency.active
-  const productId = window.ShopifyAnalytics.meta.product.id.toString()
+  const productId = (window?.ShopifyAnalytics?.meta?.product?.id || '').toString()
   const locale = window.Shopify.locale as 'en'
   const initialCart = {
     items: [],
