@@ -45,24 +45,6 @@ function runGreenspark() {
     isShopifyIntegration: true,
   })
 
-  const targets = document.querySelectorAll('.greenspark-widget-target')
-  targets.forEach(target => {
-    const randomId = crypto.randomUUID()
-    const [type, widgetId]: string[] = atob(target.id).split('|')
-    const variant = EnumToWidgetTypeMap[type]
-    const containerSelector = `[data-greenspark-widget-target-${randomId}]`
-    target.insertAdjacentHTML('afterbegin', `<div data-greenspark-widget-target-${randomId}></div>`)
-
-    if (variant === 'orderImpacts') renderOrderImpacts(widgetId, containerSelector)
-    if (variant === 'offsetPerOrder') renderOffsetPerOrder(widgetId, containerSelector)
-    if (variant === 'offsetByProduct') renderOffsetByProduct(widgetId, containerSelector)
-    if (variant === 'offsetBySpend') renderOffsetBySpend(widgetId, containerSelector)
-    if (variant === 'offsetByStoreRevenue') renderOffsetByStoreRevenue(widgetId, containerSelector)
-    if (variant === 'byPercentage') renderByPercentage(widgetId, containerSelector)
-    if (variant === 'byPercentageOfRevenue') renderByPercentageOfRevenue(widgetId, containerSelector)
-    if (variant === 'stats') renderStats(widgetId, containerSelector)
-    if (variant === 'static') renderStatic(widgetId, containerSelector)
-  })
 
   const renderOrderImpacts = (widgetId: string, containerSelector: string) => {
     const widget = greenspark.cartById({
@@ -208,6 +190,24 @@ function runGreenspark() {
     }
   }
 
+  const targets = document.querySelectorAll('.greenspark-widget-target')
+  targets.forEach(target => {
+    const randomId = crypto.randomUUID()
+    const [type, widgetId]: string[] = atob(target.id).split('|')
+    const variant = EnumToWidgetTypeMap[type]
+    const containerSelector = `[data-greenspark-widget-target-${randomId}]`
+    target.insertAdjacentHTML('afterbegin', `<div data-greenspark-widget-target-${randomId}></div>`)
+
+    if (variant === 'orderImpacts') renderOrderImpacts(widgetId, containerSelector)
+    if (variant === 'offsetPerOrder') renderOffsetPerOrder(widgetId, containerSelector)
+    if (variant === 'offsetByProduct') renderOffsetByProduct(widgetId, containerSelector)
+    if (variant === 'offsetBySpend') renderOffsetBySpend(widgetId, containerSelector)
+    if (variant === 'offsetByStoreRevenue') renderOffsetByStoreRevenue(widgetId, containerSelector)
+    if (variant === 'byPercentage') renderByPercentage(widgetId, containerSelector)
+    if (variant === 'byPercentageOfRevenue') renderByPercentageOfRevenue(widgetId, containerSelector)
+    if (variant === 'stats') renderStats(widgetId, containerSelector)
+    if (variant === 'static') renderStatic(widgetId, containerSelector)
+  })
 }
 
 function loadScript(url: string): Promise<void> {
