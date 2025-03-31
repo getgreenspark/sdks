@@ -196,6 +196,7 @@ function runGreenspark() {
     const [type]: string[] = atob(target.id).split('|')
     const variant = EnumToWidgetTypeMap[type]
     const containerSelector = `[data-greenspark-widget-target-${randomId}]`
+    target.insertAdjacentHTML('afterbegin', `<div data-greenspark-widget-target-${randomId}></div>`)
 
     if (variant === 'orderImpacts') renderOrderImpacts(target.id, containerSelector)
     if (variant === 'offsetPerOrder') renderOffsetPerOrder(target.id, containerSelector)
