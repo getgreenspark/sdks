@@ -8,18 +8,6 @@ const widgetUrl = isDevStore
   : 'https://cdn.getgreenspark.com/scripts/widgets%401.9.1-5-umd.js'
 const popupHistory: HTMLElement[] = []
 
-// Add styles for widget targets
-const style = document.createElement('style')
-style.textContent = `
-  [data-greenspark-widget-target] {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 8px 0;
-  }
-`
-document.head.appendChild(style)
-
 function parseCart(cart: ShopifyCart) {
   const lineItems = cart.items.map((item) => ({
     productId: item.product_id.toString(),
@@ -208,7 +196,13 @@ function runGreenspark() {
     const [type]: string[] = atob(target.id).split('|')
     const variant = EnumToWidgetTypeMap[type]
     const containerSelector = `[data-greenspark-widget-target-${randomId}]`
-    target.insertAdjacentHTML('afterbegin', `<div data-greenspark-widget-target-${randomId}></div>`)
+
+    // Apply styles directly to the target element
+    const targetElement = target as HTMLElement
+    targetElement.style.display = 'flex'
+    targetElement.style.justifyContent = 'center'
+    targetElement.style.alignItems = 'center'
+    targetElement.style.margin = '8px 0'
 
     if (variant === 'orderImpacts') renderOrderImpacts(target.id, containerSelector)
     if (variant === 'offsetPerOrder') renderOffsetPerOrder(target.id, containerSelector)
