@@ -191,6 +191,19 @@ function runGreenspark() {
   }
 
   const targets = document.querySelectorAll('.greenspark-widget-target')
+
+  // Add styles for widget targets
+  const style = document.createElement('style')
+  style.textContent = `
+    .greenspark-widget-target {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 8px 0;
+    }
+  `
+  document.head.appendChild(style)
+
   targets.forEach(target => {
     const randomId = crypto.randomUUID()
     const [type]: string[] = atob(target.id).split('|')
@@ -207,13 +220,6 @@ function runGreenspark() {
     if (variant === 'byPercentageOfRevenue') renderByPercentageOfRevenue(target.id, containerSelector)
     if (variant === 'stats') renderStats(target.id, containerSelector)
     if (variant === 'static') renderStatic(target.id, containerSelector)
-
-    // Apply styles directly to the target element
-    const targetElement = target as HTMLElement
-    targetElement.style.display = 'flex'
-    targetElement.style.justifyContent = 'center'
-    targetElement.style.alignItems = 'center'
-    targetElement.style.margin = '8px 0'
   })
 }
 
