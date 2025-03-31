@@ -8,6 +8,18 @@ const widgetUrl = isDevStore
   : 'https://cdn.getgreenspark.com/scripts/widgets%401.9.1-5-umd.js'
 const popupHistory: HTMLElement[] = []
 
+// Add styles for widget targets
+const style = document.createElement('style')
+style.textContent = `
+  [data-greenspark-widget-target] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 8px 0;
+  }
+`
+document.head.appendChild(style)
+
 function parseCart(cart: ShopifyCart) {
   const lineItems = cart.items.map((item) => ({
     productId: item.product_id.toString(),
