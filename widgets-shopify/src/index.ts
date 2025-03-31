@@ -197,13 +197,6 @@ function runGreenspark() {
     const variant = EnumToWidgetTypeMap[type]
     const containerSelector = `[data-greenspark-widget-target-${randomId}]`
 
-    // Apply styles directly to the target element
-    const targetElement = target as HTMLElement
-    targetElement.style.display = 'flex'
-    targetElement.style.justifyContent = 'center'
-    targetElement.style.alignItems = 'center'
-    targetElement.style.margin = '8px 0'
-
     if (variant === 'orderImpacts') renderOrderImpacts(target.id, containerSelector)
     if (variant === 'offsetPerOrder') renderOffsetPerOrder(target.id, containerSelector)
     if (variant === 'offsetByProduct') renderOffsetByProduct(target.id, containerSelector)
@@ -213,6 +206,13 @@ function runGreenspark() {
     if (variant === 'byPercentageOfRevenue') renderByPercentageOfRevenue(target.id, containerSelector)
     if (variant === 'stats') renderStats(target.id, containerSelector)
     if (variant === 'static') renderStatic(target.id, containerSelector)
+
+    // Apply styles directly to the target element
+    const targetElement = target as HTMLElement
+    targetElement.style.display = 'flex'
+    targetElement.style.justifyContent = 'center'
+    targetElement.style.alignItems = 'center'
+    targetElement.style.margin = '8px 0'
   })
 }
 
