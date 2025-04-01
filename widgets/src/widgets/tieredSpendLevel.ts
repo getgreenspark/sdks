@@ -1,6 +1,5 @@
 import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
-
 import type { WidgetConfig } from '@/widgets/base'
 import type {
   PopupTheme,
@@ -27,7 +26,7 @@ export class TieredSpendLevelWidget extends Widget implements TieredSpendLevelWi
     this.version = params.version
   }
 
-  get tieredSpendLevelWidgetRequestBody(): TieredSpendLevelWidgetParams {
+  private get requestBody(): TieredSpendLevelWidgetParams {
     return {
       color: this.color,
       currency: this.currency,
@@ -38,7 +37,7 @@ export class TieredSpendLevelWidget extends Widget implements TieredSpendLevelWi
     }
   }
 
-  updateDefaults({
+  private updateDefaults({
     color,
     currency,
     withPopup,
@@ -54,7 +53,7 @@ export class TieredSpendLevelWidget extends Widget implements TieredSpendLevelWi
     this.style = style ?? this.style
   }
 
-  validateOptions() {
+  private validateOptions() {
     if (!WIDGET_COLORS.includes(this.color)) {
       throw new Error(
         `Greenspark - "${
@@ -83,9 +82,7 @@ export class TieredSpendLevelWidget extends Widget implements TieredSpendLevelWi
   async renderToString(options?: Partial<TieredSpendLevelWidgetParams>): Promise<string> {
     if (options) this.updateDefaults(options)
     this.validateOptions()
-    const response = await this.api.fetchTieredSpendLevelWidget(
-      this.tieredSpendLevelWidgetRequestBody,
-    )
+    const response = await this.api.fetchTieredSpendLevelWidget(this.requestBody)
     return response.data
   }
 

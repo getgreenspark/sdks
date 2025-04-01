@@ -1,6 +1,5 @@
 import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
-
 import type { WidgetConfig } from '@/widgets/base'
 import type { StaticWidgetParams, StaticWidgetStyle, WidgetColor } from '@/interfaces'
 
@@ -16,7 +15,7 @@ export class StaticWidget extends Widget implements StaticWidgetParams {
     this.style = params.style ?? 'default'
   }
 
-  get staticWidgetRequestBody(): StaticWidgetParams {
+  private get requestBody(): StaticWidgetParams {
     return {
       color: this.color,
       version: this.version,
@@ -24,13 +23,13 @@ export class StaticWidget extends Widget implements StaticWidgetParams {
     }
   }
 
-  updateDefaults({ color, version, style }: Partial<StaticWidgetParams>) {
+  private updateDefaults({ color, version, style }: Partial<StaticWidgetParams>) {
     this.color = color ?? this.color
     this.version = version ?? this.version
     this.style = style ?? this.style
   }
 
-  validateOptions() {
+  private validateOptions() {
     if (!WIDGET_COLORS.includes(this.color)) {
       throw new Error(
         `Greenspark - "${
@@ -50,7 +49,7 @@ export class StaticWidget extends Widget implements StaticWidgetParams {
   async renderToString(options?: Partial<StaticWidgetParams>): Promise<string> {
     if (options) this.updateDefaults(options)
     this.validateOptions()
-    const response = await this.api.fetchStaticWidget(this.staticWidgetRequestBody)
+    const response = await this.api.fetchStaticWidget(this.requestBody)
     return response.data
   }
 

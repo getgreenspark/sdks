@@ -24,7 +24,6 @@ describe('Per order Widget', () => {
     const containerSelector = createContainer()
     const perOrder = widgets.perOrder({
       color: 'beige',
-      currency: 'USD',
       containerSelector: containerSelector,
     })
 
@@ -41,7 +40,6 @@ describe('Per order Widget', () => {
     const containerSelector = createContainer()
     const perOrder = widgets.perOrder({
       color: 'beige',
-      currency: 'USD',
       containerSelector: containerSelector,
     })
 
@@ -55,7 +53,6 @@ describe('Per order Widget', () => {
     const containerSelector = createContainer()
     const perOrder = widgets.perOrder({
       color: 'beige',
-      currency: 'USD',
       containerSelector: containerSelector,
     })
 
@@ -65,12 +62,11 @@ describe('Per order Widget', () => {
     expect(renderNode.textContent).toBe('Hi there!')
   })
 
-  test('cannot render a color that is not allowed or an invalid currency code', async () => {
+  test('cannot render a color that is not allowed', async () => {
     expect(typeof widgets.perOrder).toEqual('function')
     const containerSelector = createContainer()
     const perOrder = widgets.perOrder({
       color: 'yellow' as 'beige',
-      currency: 'USD',
       containerSelector: containerSelector,
     })
 
@@ -84,13 +80,6 @@ describe('Per order Widget', () => {
     expect(() => perOrder.render({ color: '3' as 'black' })).rejects.toThrow()
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     await perOrder.render({ color: 'beige' })
-    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
-
-    expect(() =>
-      perOrder.render({ color: 'black', currency: 3 as unknown as string }),
-    ).rejects.toThrow()
-    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
-    await perOrder.render({ color: 'beige', currency: 'USD' })
     expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(mockHtml)
   })
 })

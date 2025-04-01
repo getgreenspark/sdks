@@ -1,0 +1,41 @@
+name: prerelease-widgets-shopify
+
+on:
+  push:
+    tags:
+      # only check for prerelease versions
+      - "widgets-shopify-v[0-9]+.[0-9]+.[0-9]+-[0-9]+"
+
+env:
+  PROJECT_ID: openapi-352913
+  BUCKET_NAME: greenspark-scripts
+  WIDGET_DIST_FOLDER: ./widgets-shopify/dist
+
+jobs:
+  prerelease-widgets-shopify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    steps:
+      - id: "checkout"
+        uses: "actions/checkout@v4"
+
+      - run: npm --prefix ./widgets install
+      - run: npm --prefix ./widgets-shopify install
+      - run: npm --prefix ./widgets-shopify run build
+
+      - id: "auth"
+        uses: "google-github-actions/auth@v2"
+        with:
+          credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
+
+      - id: "upload-folder"
+        uses: "google-github-actions/upload-cloud-storage@v2"
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          path: ${{ env.WIDGET_DIST_FOLDER }}
+          destination: ${{ env.BUCKET_NAME }}
+          parent: false
+          predefinedAcl: "publicRead"

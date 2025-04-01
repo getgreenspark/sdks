@@ -1,15 +1,10 @@
-import type { WidgetStyle } from '@/interfaces'
-import type { AVAILABLE_LOCALES, WIDGET_COLORS } from '@/constants'
-
 import type { ShopifyCart } from './interfaces'
-
-type Language = (typeof AVAILABLE_LOCALES)[number]
-type WidgetColor = (typeof WIDGET_COLORS)[number]
+import { EnumToWidgetTypeMap } from './interfaces'
 
 const scriptSrc = document.currentScript?.getAttribute('src')
 const isDevStore = window.location.hostname.includes('greenspark-development-store')
 const widgetUrl = isDevStore
-  ? 'https://cdn.getgreenspark.com/scripts/widgets%401.6.1-0-umd.js'
+  ? 'https://cdn.getgreenspark.com/scripts/widgets%401.9.1-5-umd.js'
   : 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
 const popupHistory: HTMLElement[] = []
 
@@ -32,47 +27,157 @@ function runGreenspark() {
     return
   }
 
-  const scriptUrl = new URL(scriptSrc)
-  const urlParams = Object.fromEntries(scriptUrl.searchParams)
-  const color: WidgetColor = (urlParams?.color ?? 'green') as WidgetColor
-  const widgetStyle: WidgetStyle = (urlParams?.widgetStyle ?? 'default') as WidgetStyle
-  const withPopup = urlParams?.withPopup === '1'
-  const popupTheme = 'light'
-  const isoCode = window.Shopify.locale
-  const locale: Language = (AVAILABLE_LOCALES.includes(isoCode) ? isoCode : 'en') as Language
+  const useShadowDom = false
+  const version = 'v2'
+
+  const currency = window.Shopify.currency.active
+  const productId = (window?.ShopifyAnalytics?.meta?.product?.id || '').toString()
+  const locale = window.Shopify.locale as 'en'
   const initialCart = {
     items: [],
     currency: 'GBP',
     total_price: 0,
   }
   const shopUniqueName = window.Shopify.shop
-  const cartEl = document.querySelector('.cart__footer, .drawer__footer')
-  const gsWidgetTargetEl = document.querySelector('[data-greenspark-widget-target]')
-
-  if (cartEl && !gsWidgetTargetEl) {
-    cartEl.insertAdjacentHTML('afterbegin', '<div data-greenspark-widget-target></div>')
-  }
-
   const greenspark = new window.GreensparkWidgets({
     locale,
     integrationSlug: shopUniqueName,
     isShopifyIntegration: true,
   })
 
-  const widget = greenspark.cart({
-    color,
-    containerSelector: '[data-greenspark-widget-target]',
-    useShadowDom: false,
-    style: widgetStyle,
-    withPopup,
-    popupTheme,
-    order: parseCart(initialCart),
-    version: 'v2',
-  })
+
+  const renderOrderImpacts = (widgetId: string, containerSelector: string) => {
+    const widget = greenspark.cartById({
+      widgetId,
+      order: parseCart(initialCart),
+      containerSelector,
+      useShadowDom,
+      version,
+    })
+
+    fetch('/cart.js')
+      .then((response) => response.json())
+      .then((updatedCart) => {
+        const order = parseCart(updatedCart)
+        if (order.lineItems.length <= 0) return
+
+        widget
+          .render({ order })
+          .then(movePopupToBody)
+          .catch((e: Error) => {
+            console.error('Greenspark Widget - ', e)
+          })
+      })
+  }
+
+  const renderOffsetPerOrder = (widgetId: string, containerSelector: string) => {
+    const widget = greenspark.perOrderById({
+      widgetId,
+      containerSelector,
+      useShadowDom,
+      version,
+    })
+
+    widget.render().then(movePopupToBody).catch((e) => {
+      if (!e.response) return console.error('Greenspark Widget - ', e)
+    })
+  }
+
+  const renderOffsetByProduct = (widgetId: string, containerSelector: string) => {
+    const widget = greenspark.perProductById({
+      widgetId,
+      productId,
+      containerSelector,
+      useShadowDom,
+      version,
+    })
+
+    widget.render().then(movePopupToBody).catch((e) => {
+      if (!e.response) return console.error('Greenspark Widget - ', e)
+    })
+  }
+
+  const renderOffsetBySpend = (widgetId: string, containerSelector: string) => {
+    const widget = greenspark.spendLevelById({
+      widgetId,
+      currency,
+      containerSelector,
+      useShadowDom,
+      version,
+    })
+
+    widget.render().then(movePopupToBody).catch((e) => {
+      if (!e.response) return console.error('Greenspark Widget - ', e)
+    })
+  }
+
+  const renderOffsetByStoreRevenue = (widgetId: string, containerSelector: string) => {
+    const widget = greenspark.tieredSpendLevelById({
+      widgetId,
+      currency,
+      containerSelector,
+      useShadowDom,
+      version,
+    })
+
+    widget.render().then(movePopupToBody).catch((e) => {
+      if (!e.response) return console.error('Greenspark Widget - ', e)
+    })
+  }
+
+  const renderByPercentage = (widgetId: string, containerSelector: string) => {
+    const widget = greenspark.byPercentageById({
+      widgetId,
+      containerSelector,
+      useShadowDom,
+      version,
+    })
+
+    widget.render().then(movePopupToBody).catch((e) => {
+      if (!e.response) return console.error('Greenspark Widget - ', e)
+    })
+  }
+
+  const renderByPercentageOfRevenue = (widgetId: string, containerSelector: string) => {
+    const widget = greenspark.byPercentageOfRevenueById({
+      widgetId,
+      containerSelector,
+      useShadowDom,
+      version,
+    })
+
+    widget.render().then(movePopupToBody).catch((e) => {
+      if (!e.response) return console.error('Greenspark Widget - ', e)
+    })
+  }
+
+  const renderStats = (widgetId: string, containerSelector: string) => {
+    const widget = greenspark.topStatsById({
+      widgetId,
+      containerSelector,
+      useShadowDom,
+      version,
+    })
+
+    widget.render().then(movePopupToBody).catch((e) => {
+      if (!e.response) return console.error('Greenspark Widget - ', e)
+    })
+  }
+
+  const renderStatic = (widgetId: string, containerSelector: string) => {
+    const widget = greenspark.staticById({
+      widgetId,
+      containerSelector,
+      useShadowDom,
+      version,
+    })
+
+    widget.render().then(movePopupToBody).catch((e) => {
+      if (!e.response) return console.error('Greenspark Widget - ', e)
+    })
+  }
 
   const movePopupToBody = () => {
-    if (!withPopup) return
-
     popupHistory.forEach((outdatedPopup) => {
       outdatedPopup.innerHTML = ''
       outdatedPopup.style.display = 'none'
@@ -85,26 +190,44 @@ function runGreenspark() {
     }
   }
 
-  fetch('/cart.js')
-    .then((response) => response.json())
-    .then((updatedCart) => {
-      const order = parseCart(updatedCart)
-      if (order.lineItems.length <= 0) return
+  const targets = document.querySelectorAll('.greenspark-widget-target')
 
-      widget
-        .render({ order })
-        .then(movePopupToBody)
-        .catch((e: Error) => {
-          console.error('Greenspark Widget - ', e)
-        })
-    })
+  // Add styles for widget targets
+  const style = document.createElement('style')
+  style.textContent = `
+    .greenspark-widget-target {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 8px 0;
+    }
+  `
+  document.head.appendChild(style)
+
+  targets.forEach(target => {
+    const randomId = crypto.randomUUID()
+    const [type]: string[] = atob(target.id).split('|')
+    const variant = EnumToWidgetTypeMap[type]
+    const containerSelector = `[data-greenspark-widget-target-${randomId}]`
+    target.insertAdjacentHTML('afterbegin', `<div data-greenspark-widget-target-${randomId}></div>`)
+
+    if (variant === 'orderImpacts') renderOrderImpacts(target.id, containerSelector)
+    if (variant === 'offsetPerOrder') renderOffsetPerOrder(target.id, containerSelector)
+    if (variant === 'offsetByProduct') renderOffsetByProduct(target.id, containerSelector)
+    if (variant === 'offsetBySpend') renderOffsetBySpend(target.id, containerSelector)
+    if (variant === 'offsetByStoreRevenue') renderOffsetByStoreRevenue(target.id, containerSelector)
+    if (variant === 'byPercentage') renderByPercentage(target.id, containerSelector)
+    if (variant === 'byPercentageOfRevenue') renderByPercentageOfRevenue(target.id, containerSelector)
+    if (variant === 'stats') renderStats(target.id, containerSelector)
+    if (variant === 'static') renderStatic(target.id, containerSelector)
+  })
 }
 
 function loadScript(url: string): Promise<void> {
   return new Promise<void>((resolve) => {
     const script = document.createElement('script')
     script.type = 'text/javascript'
-    script.onload = function () {
+    script.onload = function() {
       resolve()
     }
 
@@ -131,10 +254,10 @@ if (!window.GreensparkWidgets) {
   runGreenspark()
 }
 
-;(function (context, fetch) {
+;(function(context, fetch) {
   if (typeof fetch !== 'function') return
 
-  context.fetch = function (...args: [input: URL | RequestInfo, init?: RequestInit | undefined]) {
+  context.fetch = function(...args: [input: URL | RequestInfo, init?: RequestInit | undefined]) {
     const response = fetch.apply(this, args)
 
     response.then((res) => {
