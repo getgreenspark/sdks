@@ -80,7 +80,7 @@ export class CartWidget extends Widget implements CartWidgetParams {
 
     if (!Array.isArray(this.order.lineItems)) {
       throw new Error(
-        `Greenspark - ${this.order.lineItems} was provided as the order's items, but this value is valid. Please provide a valid array of items to the Cart Widget.`,
+        `Greenspark - ${this.order.lineItems} was provided as the order's items, but this value is not valid. Please provide a valid array of items to the Cart Widget.`,
       )
     }
 
