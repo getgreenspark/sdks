@@ -30,18 +30,14 @@ function runGreenspark() {
   const useShadowDom = false
   const version = 'v2'
 
-  const currency = window.Shopify.currency.active
-  const productId = (window?.ShopifyAnalytics?.meta?.product?.id || '').toString()
-  const locale = window.Shopify.locale as 'en'
   const initialCart = {
     items: [],
     currency: 'GBP',
     total_price: 0,
   }
-  const shopUniqueName = window.Shopify.shop
   const greenspark = new window.GreensparkWidgets({
-    locale,
-    integrationSlug: shopUniqueName,
+    locale: window.Shopify?.locale as 'en' || 'en',
+    integrationSlug: window.Shopify?.shop || '',
     isShopifyIntegration: true,
   })
 
@@ -68,6 +64,9 @@ function runGreenspark() {
             console.error('Greenspark Widget - ', e)
           })
       })
+      .catch((e) => {
+        console.error('Greenspark Widget - ', e)
+      })
   }
 
   const renderOffsetPerOrder = (widgetId: string, containerSelector: string) => {
@@ -84,6 +83,7 @@ function runGreenspark() {
   }
 
   const renderOffsetByProduct = (widgetId: string, containerSelector: string) => {
+    const productId = (window?.ShopifyAnalytics?.meta?.product?.id || '').toString()
     const widget = greenspark.perProductById({
       widgetId,
       productId,
@@ -98,6 +98,8 @@ function runGreenspark() {
   }
 
   const renderOffsetBySpend = (widgetId: string, containerSelector: string) => {
+    const currency = window.Shopify?.currency?.active
+    if (!currency) return
     const widget = greenspark.spendLevelById({
       widgetId,
       currency,
@@ -112,6 +114,8 @@ function runGreenspark() {
   }
 
   const renderOffsetByStoreRevenue = (widgetId: string, containerSelector: string) => {
+    const currency = window.Shopify?.currency?.active
+    if (!currency) return
     const widget = greenspark.tieredSpendLevelById({
       widgetId,
       currency,
