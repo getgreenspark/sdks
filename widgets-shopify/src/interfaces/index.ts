@@ -35,6 +35,7 @@ type WIDGET_VARIANTS =
   | 'byPercentageOfRevenue'
   | 'stats'
   | 'static'
+  | 'banner'
 
 export const EnumToWidgetTypeMap: Record<string, WIDGET_VARIANTS> = {
   '0' : 'orderImpacts',
@@ -46,4 +47,5 @@ export const EnumToWidgetTypeMap: Record<string, WIDGET_VARIANTS> = {
   '6' : 'byPercentageOfRevenue',
   '7' : 'stats',
   '8' : 'static',
+  '9' : 'banner',
 } as const

@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 import type { AxiosHeaders } from 'axios'
-import type {
+import {
   CartWidgetRequestBody,
   CartWidgetParams,
   SpendLevelWidgetParams,
@@ -37,7 +37,7 @@ import type {
   PerOrderByIdRequestBody,
   TieredSpendLevelByIdRequestBody,
   TieredSpendLevelWidgetByIdParams,
-  StaticWidgetByIdParams, TopStatsWidgetByIdParams,
+  StaticWidgetByIdParams, TopStatsWidgetByIdParams, FullWidthBannerWidgetByIdParams,
 } from '@/interfaces'
 import type { TieredSpendLevelRequestBody } from '@/interfaces'
 import type { AxiosInstance, AxiosResponse } from 'axios'
@@ -436,6 +436,20 @@ export class ConnectionHandler {
     return this.api.post<string, AxiosResponse<string>, FullWidthBannerRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/full-width-banner`,
       body,
+      {
+        params: { lng: this.locale },
+        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
+      },
+    )
+  }
+
+  async fetchFullWidthBannerWidgetById(
+    { version, ...body }: FullWidthBannerWidgetByIdParams,
+    headers?: typeof AxiosHeaders,
+  ): Promise<AxiosResponse<string>> {
+    return this.api.post<string, AxiosResponse<string>, FullWidthBannerWidgetByIdParams>(
+      `/${version}/widgets/full-width-banner/${body.widgetId}`,
+      { ...body },
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },

@@ -12,11 +12,11 @@ import {
   FullWidthBannerWidget,
   PerOrderWidgetById,
   StaticWidgetById,
-  TieredSpendLevelWidgetById,
+  TieredSpendLevelWidgetById, FullWidthBannerWidgetById,
 } from '@/widgets'
 import { DEFAULT_CONTAINER_CSS_SELECTOR } from '@/constants'
 
-import type {
+import {
   ByPercentageWidgetParams,
   ByPercentageOfRevenueWidgetParams,
   CartWidgetParams,
@@ -37,7 +37,7 @@ import type {
   PerOrderWidgetByIdParams,
   StaticWidgetByIdParams,
   TieredSpendLevelWidgetByIdParams,
-  TopStatsWidgetByIdParams,
+  TopStatsWidgetByIdParams, FullWidthBannerWidgetByIdParams,
 } from '@/interfaces'
 import { StaticWidget } from '@/widgets/static'
 import { CartWidgetById } from '@/widgets/cartById'
@@ -199,6 +199,13 @@ export default class GreensparkWidgets extends ApiConsumer {
   ) {
     const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
     return new FullWidthBannerWidget({ ...params, api: this.api, containerSelector, useShadowDom })
+  }
+
+  fullWidthBannerById(
+    params: FullWidthBannerWidgetByIdParams & { containerSelector?: string; useShadowDom?: boolean },
+  ) {
+    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
+    return new FullWidthBannerWidgetById({ ...params, api: this.api, containerSelector, useShadowDom })
   }
 }
 

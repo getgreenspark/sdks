@@ -157,6 +157,8 @@ export interface FullWidthBannerWidgetParams extends WidgetParams {
   buttonTextColor?: string
 }
 
+export interface FullWidthBannerWidgetByIdParams extends WidgetByIdParams, WidgetParams {}
+
 export type CartWidgetRequestBody = ExternalShopContext & CartWidgetParams
 export type CartWidgetByIdRequestBody = ExternalShopContext & CartWidgetByIdParams
 export type SpendLevelRequestBody = ExternalShopContext & SpendLevelWidgetParams

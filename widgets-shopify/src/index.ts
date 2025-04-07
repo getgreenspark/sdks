@@ -177,6 +177,19 @@ function runGreenspark() {
     })
   }
 
+  const renderBanner = (widgetId: string, containerSelector: string) => {
+    const widget = greenspark.fullWidthBannerById({
+      widgetId,
+      containerSelector,
+      useShadowDom,
+      version,
+    })
+
+    widget.render().then(movePopupToBody).catch((e) => {
+      if (!e.response) return console.error('Greenspark Widget - ', e)
+    })
+  }
+
   const movePopupToBody = () => {
     popupHistory.forEach((outdatedPopup) => {
       outdatedPopup.innerHTML = ''
@@ -220,6 +233,7 @@ function runGreenspark() {
     if (variant === 'byPercentageOfRevenue') renderByPercentageOfRevenue(target.id, containerSelector)
     if (variant === 'stats') renderStats(target.id, containerSelector)
     if (variant === 'static') renderStatic(target.id, containerSelector)
+    if (variant === 'banner') renderBanner(target.id, containerSelector)
   })
 }
 
