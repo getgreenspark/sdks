@@ -205,11 +205,21 @@ function runGreenspark() {
   document.head.appendChild(style)
 
   targets.forEach(target => {
+    // Remove any previously injected containers
+    target.querySelectorAll('.greenspark-widget-instance').forEach(el => el.remove())
+
     const randomId = crypto.randomUUID()
-    const [type]: string[] = atob(target.id).split('|')
+    let type: string
+    try {
+      [type] = atob(target.id).split('|')
+    } catch (_e) {
+      console.error('Invalid widget ID encoding:', target.id)
+      return
+    }
+
     const variant = EnumToWidgetTypeMap[type]
     const containerSelector = `[data-greenspark-widget-target-${randomId}]`
-    target.insertAdjacentHTML('afterbegin', `<div data-greenspark-widget-target-${randomId}></div>`)
+    target.insertAdjacentHTML('afterbegin', `<div class="greenspark-widget-instance" data-greenspark-widget-target-${randomId}></div>`)
 
     if (variant === 'orderImpacts') renderOrderImpacts(target.id, containerSelector)
     if (variant === 'offsetPerOrder') renderOffsetPerOrder(target.id, containerSelector)
