@@ -212,7 +212,7 @@ function runGreenspark() {
     let type: string
     try {
       [type] = atob(target.id).split('|')
-    } catch (_e) {
+    } catch {
       console.error('Invalid widget ID encoding:', target.id)
       return
     }
