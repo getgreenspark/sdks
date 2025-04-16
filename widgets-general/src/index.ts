@@ -1,4 +1,4 @@
-import {EnumToWidgetTypeMap} from './interfaces'
+import { EnumToWidgetTypeMap } from './interfaces'
 
 const scriptSrc = document.currentScript?.getAttribute('src')
 const widgetUrl = 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
@@ -15,6 +15,7 @@ function runGreenspark() {
   const locale = window.navigator.language
   const greenspark = new window.GreensparkWidgets({
     locale,
+    origin: window.origin,
   })
 
 
@@ -111,7 +112,7 @@ function loadScript(url: string): Promise<void> {
   return new Promise<void>((resolve) => {
     const script = document.createElement('script')
     script.type = 'text/javascript'
-    script.onload = function () {
+    script.onload = function() {
       resolve()
     }
 
@@ -133,7 +134,7 @@ async function setup() {
 setup().catch((e) => console.error('Greenspark Widget -', e))
 
 if (!window.GreensparkWidgets) {
-  window.addEventListener('greenspark-setup', runGreenspark, {once: true})
+  window.addEventListener('greenspark-setup', runGreenspark, { once: true })
 } else {
   runGreenspark()
 }
