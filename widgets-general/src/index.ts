@@ -12,6 +12,8 @@ function runGreenspark() {
   const useShadowDom = false
   const version = 'v2'
 
+  // eslint-disable-next-line no-console
+  console.log('origin', window.origin)
   const locale = window.navigator.language
   const greenspark = new window.GreensparkWidgets({
     locale,

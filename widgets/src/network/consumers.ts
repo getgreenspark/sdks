@@ -19,6 +19,8 @@ export class ApiConsumer {
                 isShopifyIntegration = false,
                 origin,
               }: ApiSettings) {
+    // eslint-disable-next-line no-console
+    console.log('ApiConsumer', origin)
     this.apiKey = apiKey
     this.currentLocale = locale
     this.integrationSlug = integrationSlug || shopUniqueName
@@ -37,6 +39,8 @@ export class ApiConsumer {
   }
 
   instanciateApi(): ConnectionHandler {
+    // eslint-disable-next-line no-console
+    console.log('instanciateApi', this.origin)
     return new ConnectionHandler({
       apiKey: this.apiKey,
       integrationSlug: this.integrationSlug,
