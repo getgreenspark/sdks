@@ -62,8 +62,6 @@ export class ConnectionHandler {
     isShopifyIntegration?: boolean
     origin?: string
   }) {
-    // eslint-disable-next-line no-console
-    console.log('ConnectionHandler', this.origin)
     this.apiKey = apiKey
     this.integrationSlug = integrationSlug
     this.locale = locale
@@ -76,8 +74,6 @@ export class ConnectionHandler {
     if (isShopifyIntegration) {
       this.api.defaults.headers.common['x-integration-slug'] = this.integrationSlug
     } else if (origin) {
-      // eslint-disable-next-line no-console
-      console.log('setting', this.origin)
       this.api.defaults.headers.common['x-gs-widget-origin'] = this.origin
     } else {
       this.api.defaults.headers.common['x-api-key'] = this.apiKey
