@@ -25,8 +25,8 @@ export class ApiConsumer {
     this.currentLocale = locale
     this.integrationSlug = integrationSlug || shopUniqueName
     this.isShopifyIntegration = isShopifyIntegration
-    this.api = this.instanciateApi()
     this.origin = origin
+    this.api = this.instanciateApi()
   }
 
   get locale(): string {
