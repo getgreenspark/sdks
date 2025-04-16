@@ -83,7 +83,9 @@ function runGreenspark() {
           .then(movePopupToBody)
           .catch((e: Error) => console.error('Greenspark Widget - ', e))
       })
-      .catch(() => { })
+      .catch((error) => {
+        console.error('Greenspark Widget - Failed to fetch cart.js:', error)
+      })
   }
 
   const renderOffsetPerOrder = (widgetId: string, containerSelector: string) => {
