@@ -193,16 +193,19 @@ function runGreenspark() {
   const targets = document.querySelectorAll('.greenspark-widget-target')
 
   // Add styles for widget targets
-  const style = document.createElement('style')
-  style.textContent = `
-    .greenspark-widget-target {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 8px 0;
-    }
-  `
-  document.head.appendChild(style)
+  if (!document.getElementById('greenspark-widget-style')) {
+    const style = document.createElement('style')
+    style.id = 'greenspark-widget-style'
+    style.textContent = `
+      .greenspark-widget-target {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 8px 0;
+      }
+    `
+    document.head.appendChild(style)
+  }
 
   targets.forEach(target => {
     // Remove any previously injected containers
