@@ -8,6 +8,9 @@ const widgetUrl = isDevStore
   : 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
 const popupHistory: HTMLElement[] = []
 
+const MAX_RETRIES = 5
+let retryCount = 0
+
 function parseCart(cart: ShopifyCart) {
   const lineItems = cart.items.map((item) => ({
     productId: item.product_id.toString(),
@@ -23,15 +26,30 @@ function parseCart(cart: ShopifyCart) {
 }
 
 function runGreenspark() {
-  if (!scriptSrc) {
+  if (!scriptSrc) return
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runGreenspark)
     return
   }
+
+  if (!window.GreensparkWidgets) {
+    if (retryCount++ >= MAX_RETRIES) {
+      console.error('Greenspark Widget - Failed to load after max retries')
+      return
+    }
+    console.warn('Greenspark Widget - GreensparkWidgets not available yet, waiting 50ms')
+    setTimeout(runGreenspark, 50)
+    return
+  }
+
+  retryCount = 0 // reset on success
 
   const useShadowDom = false
   const version = 'v2'
 
   const currency = window.Shopify.currency.active
-  const productId = (window?.ShopifyAnalytics?.meta?.product?.id || '').toString()
+  const productId = String(window?.ShopifyAnalytics?.meta?.product?.id ?? '')
   const locale = window.Shopify.locale as 'en'
   const initialCart = {
     items: [],
@@ -44,7 +62,6 @@ function runGreenspark() {
     integrationSlug: shopUniqueName,
     isShopifyIntegration: true,
   })
-
 
   const renderOrderImpacts = (widgetId: string, containerSelector: string) => {
     const widget = greenspark.cartById({
@@ -64,10 +81,9 @@ function runGreenspark() {
         widget
           .render({ order })
           .then(movePopupToBody)
-          .catch((e: Error) => {
-            console.error('Greenspark Widget - ', e)
-          })
+          .catch((e: Error) => console.error('Greenspark Widget - ', e))
       })
+      .catch(() => { })
   }
 
   const renderOffsetPerOrder = (widgetId: string, containerSelector: string) => {
@@ -183,7 +199,7 @@ function runGreenspark() {
       outdatedPopup.style.display = 'none'
     })
 
-    const popup = document.querySelector('.gs-popup') as HTMLElement | null
+    const popup = document.querySelector<HTMLElement>('.gs-popup')
     if (popup) {
       document.body.append(popup)
       popupHistory.push(popup)
@@ -255,8 +271,22 @@ function loadScript(url: string): Promise<void> {
 
 async function setup() {
   if (window.GreensparkWidgets) return
-  await loadScript(widgetUrl)
-  window.dispatchEvent(new Event('greenspark-setup'))
+
+  if (document.readyState === 'loading') {
+    return new Promise((resolve) => {
+      document.addEventListener('DOMContentLoaded', () => {
+        setup().then(resolve)
+      }, { once: true })
+    })
+  }
+
+  try {
+    await loadScript(widgetUrl)
+    window.dispatchEvent(new Event('greenspark-setup'))
+  } catch (error) {
+    console.error('Greenspark Widget - Failed to load script:', error)
+    setTimeout(() => setup(), 1000)
+  }
 }
 
 setup().catch((e) => console.error('Greenspark Widget -', e))
@@ -290,7 +320,7 @@ if (!window.GreensparkWidgets) {
           runGreenspark()
         }, 100)
       }
-    })
+    }).catch(() => {}) // optional: suppress errors
 
     return response
   }
