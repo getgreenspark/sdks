@@ -9,18 +9,30 @@ export class ApiConsumer {
   currentLocale: string
   api: ConnectionHandler
   isShopifyIntegration?: boolean
+  origin?: string
 
   constructor({
-    apiKey,
-    locale = DEFAULT_LOCALE,
-    integrationSlug,
-    shopUniqueName,
-    isShopifyIntegration = false,
-  }: ApiSettings) {
+                apiKey,
+                locale = DEFAULT_LOCALE,
+                integrationSlug,
+                shopUniqueName,
+                isShopifyIntegration = false,
+                origin,
+              }: ApiSettings) {
     this.apiKey = apiKey
     this.currentLocale = locale
     this.integrationSlug = integrationSlug || shopUniqueName
     this.isShopifyIntegration = isShopifyIntegration
+    this.api = this.instanciateApi()
+    this.origin = origin
+  }
+
+  get locale(): string {
+    return this.currentLocale
+  }
+
+  set locale(newLocale: string) {
+    this.currentLocale = this.validateLocale(newLocale)
     this.api = this.instanciateApi()
   }
 
@@ -30,6 +42,7 @@ export class ApiConsumer {
       integrationSlug: this.integrationSlug,
       locale: this.locale,
       isShopifyIntegration: this.isShopifyIntegration,
+      origin: this.origin,
     })
   }
 
@@ -43,14 +56,5 @@ export class ApiConsumer {
     }
 
     return language
-  }
-
-  get locale(): string {
-    return this.currentLocale
-  }
-
-  set locale(newLocale: string) {
-    this.currentLocale = this.validateLocale(newLocale)
-    this.api = this.instanciateApi()
   }
 }
