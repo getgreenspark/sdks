@@ -322,7 +322,9 @@ if (!window.GreensparkWidgets) {
           runGreenspark()
         }, 100)
       }
-    }).catch(() => {}) // optional: suppress errors
+    }).catch((error) => {
+      console.error('Error in fetch response handling:', error)
+    }) // log errors for debugging
 
     return response
   }
