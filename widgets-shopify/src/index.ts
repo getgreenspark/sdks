@@ -29,8 +29,7 @@ function runGreenspark() {
   if (!scriptSrc) return
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', runGreenspark)
-    return
+    document.addEventListener('DOMContentLoaded', runGreenspark, { once: true })
   }
 
   if (!window.GreensparkWidgets) {
