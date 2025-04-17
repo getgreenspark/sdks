@@ -6,7 +6,8 @@
   "scripts": {
     "postinstall": "cd widgets && npm install",
     "release:widgets": "npm --prefix ./widgets run release",
-    "release:widgets-shopify": "npm --prefix ./widgets-shopify run release"
+    "release:widgets-shopify": "npm --prefix ./widgets-shopify run release",
+    "release:widgets-general": "npm --prefix ./widgets-general run release"
   },
   "author": "",
   "license": "ISC"

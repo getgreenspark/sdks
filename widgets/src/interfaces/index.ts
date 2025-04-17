@@ -1,10 +1,10 @@
 import type {
   AVAILABLE_STATISTIC_TYPES,
   IMPACT_TYPES,
-  WIDGET_STYLES,
   POPUP_THEMES,
   STATIC_WIDGET_STYLES,
   WIDGET_COLORS,
+  WIDGET_STYLES,
 } from '@/constants'
 
 export type WidgetStyle = (typeof WIDGET_STYLES)[number]
@@ -16,6 +16,7 @@ type ApiSettingsBase = {
   apiKey?: string
   locale?: string
   isShopifyIntegration?: boolean
+  origin?: string
 }
 
 type WidgetPopupParams = {
@@ -74,43 +75,54 @@ export interface CartWidgetParams
   extends CartWidgetBaseParams,
     WidgetParams,
     WidgetPopupParams,
-    WidgetStyleParams {}
+    WidgetStyleParams {
+}
 
 export interface CartWidgetByIdParams
   extends WidgetParams,
     WidgetByIdParams,
-    CartWidgetBaseParams {}
+    CartWidgetBaseParams {
+}
 
 export interface SpendLevelWidgetParams
   extends WidgetCurrencyParams,
     WidgetParams,
     WidgetPopupParams,
-    WidgetStyleParams {}
+    WidgetStyleParams {
+}
 
 export interface SpendLevelWidgetByIdParams
   extends WidgetParams,
     WidgetByIdParams,
-    WidgetCurrencyParams {}
+    WidgetCurrencyParams {
+}
 
-export interface PerOrderWidgetParams extends WidgetParams, WidgetPopupParams, WidgetStyleParams {}
+export interface PerOrderWidgetParams extends WidgetParams, WidgetPopupParams, WidgetStyleParams {
+}
 
-export interface PerOrderWidgetByIdParams extends WidgetByIdParams, WidgetParams {}
+export interface PerOrderWidgetByIdParams extends WidgetByIdParams, WidgetParams {
+}
 
-export interface PerPurchaseWidgetParams extends WidgetPopupParams, WidgetStyleParams {}
+export interface PerPurchaseWidgetParams extends WidgetPopupParams, WidgetStyleParams {
+}
 
 export interface ByPercentageWidgetParams
   extends WidgetParams,
     WidgetPopupParams,
-    WidgetStyleParams {}
+    WidgetStyleParams {
+}
 
-export interface ByPercentageWidgetByIdParams extends WidgetByIdParams, WidgetParams {}
+export interface ByPercentageWidgetByIdParams extends WidgetByIdParams, WidgetParams {
+}
 
 export interface ByPercentageOfRevenueWidgetParams
   extends WidgetParams,
     WidgetPopupParams,
-    WidgetStyleParams {}
+    WidgetStyleParams {
+}
 
-export interface ByPercentageOfRevenueWidgetByIdParams extends WidgetByIdParams, WidgetParams {}
+export interface ByPercentageOfRevenueWidgetByIdParams extends WidgetByIdParams, WidgetParams {
+}
 
 export interface TieredSpendLevelWidgetParams
   extends WidgetParams,
@@ -144,7 +156,8 @@ export interface StaticWidgetParams extends WidgetParams {
   style?: StaticWidgetStyle
 }
 
-export interface StaticWidgetByIdParams extends WidgetByIdParams, WidgetParams {}
+export interface StaticWidgetByIdParams extends WidgetByIdParams, WidgetParams {
+}
 
 export interface FullWidthBannerWidgetParams extends WidgetParams {
   options: Array<(typeof AVAILABLE_STATISTIC_TYPES)[number]>
@@ -157,7 +170,8 @@ export interface FullWidthBannerWidgetParams extends WidgetParams {
   buttonTextColor?: string
 }
 
-export interface FullWidthBannerWidgetByIdParams extends WidgetByIdParams, WidgetParams {}
+export interface FullWidthBannerWidgetByIdParams extends WidgetByIdParams, WidgetParams {
+}
 
 export type CartWidgetRequestBody = ExternalShopContext & CartWidgetParams
 export type CartWidgetByIdRequestBody = ExternalShopContext & CartWidgetByIdParams

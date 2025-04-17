@@ -1,6 +1,6 @@
-import { Widget } from '@/widgets/base'
 import type { WidgetConfig } from '@/widgets/base'
-import {FullWidthBannerWidgetByIdParams} from '@/interfaces'
+import { Widget } from '@/widgets/base'
+import type { FullWidthBannerWidgetByIdParams } from '@/interfaces'
 
 export class FullWidthBannerWidgetById extends Widget implements FullWidthBannerWidgetByIdParams {
   widgetId: string
@@ -17,14 +17,6 @@ export class FullWidthBannerWidgetById extends Widget implements FullWidthBanner
       widgetId: this.widgetId,
       version: this.version,
     }
-  }
-
-  private updateDefaults({
-    widgetId,
-    version,
-  }: Partial<FullWidthBannerWidgetByIdParams>) {
-    this.widgetId = widgetId ?? this.widgetId
-    this.version = version ?? this.version
   }
 
   async render(
@@ -44,5 +36,13 @@ export class FullWidthBannerWidgetById extends Widget implements FullWidthBanner
   async renderToElement(options?: Partial<FullWidthBannerWidgetByIdParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
     return this.parseHtml(html)
+  }
+
+  private updateDefaults({
+                           widgetId,
+                           version,
+                         }: Partial<FullWidthBannerWidgetByIdParams>) {
+    this.widgetId = widgetId ?? this.widgetId
+    this.version = version ?? this.version
   }
 }
