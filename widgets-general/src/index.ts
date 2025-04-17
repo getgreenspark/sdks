@@ -1,7 +1,7 @@
 import { EnumToWidgetTypeMap } from './interfaces'
 
 const scriptSrc = document.currentScript?.getAttribute('src')
-const widgetUrl = 'https://cdn.getgreenspark.com/scripts/widgets%402.0.1-2.js' // TODO: set it to latest
+const widgetUrl = 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
 const popupHistory: HTMLElement[] = []
 
 function runGreenspark() {
