@@ -109,11 +109,14 @@ function runGreenspark() {
 }
 
 function loadScript(url: string): Promise<void> {
-  return new Promise<void>((resolve) => {
+  return new Promise<void>((resolve, reject) => {
     const script = document.createElement('script')
     script.type = 'text/javascript'
     script.onload = function() {
       resolve()
+    }
+    script.onerror = function() {
+      reject(new Error(`Failed to load script: ${url}`))
     }
 
     script.src = url
