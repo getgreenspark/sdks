@@ -116,7 +116,7 @@ function loadScript(url: string): Promise<void> {
       resolve()
     }
     script.onerror = function() {
-      reject(console.error(`Failed to load script: ${url}`))
+      reject(() => console.error(`Failed to load script: ${url}`))
     }
 
     script.src = url
