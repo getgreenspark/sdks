@@ -1,43 +1,45 @@
 import { ApiConsumer } from '@/network'
 import {
-  CartWidget,
-  SpendLevelWidget,
-  PerOrderWidget,
-  PerPurchaseWidget,
-  ByPercentageWidget,
   ByPercentageOfRevenueWidget,
-  TieredSpendLevelWidget,
-  PerProductWidget,
-  TopStatsWidget,
+  ByPercentageWidget,
+  CartWidget,
   FullWidthBannerWidget,
+  FullWidthBannerWidgetById,
+  PerOrderWidget,
   PerOrderWidgetById,
+  PerProductWidget,
+  PerPurchaseWidget,
+  SpendLevelWidget,
   StaticWidgetById,
+  TieredSpendLevelWidget,
   TieredSpendLevelWidgetById,
+  TopStatsWidget,
 } from '@/widgets'
 import { DEFAULT_CONTAINER_CSS_SELECTOR } from '@/constants'
 
 import type {
-  ByPercentageWidgetParams,
+  ByPercentageOfRevenueWidgetByIdParams,
   ByPercentageOfRevenueWidgetParams,
+  ByPercentageWidgetByIdParams,
+  ByPercentageWidgetParams,
+  CartWidgetByIdParams,
   CartWidgetParams,
+  FullWidthBannerWidgetByIdParams,
   FullWidthBannerWidgetParams,
+  PerOrderWidgetByIdParams,
   PerOrderWidgetParams,
+  PerProductWidgetByIdParams,
   PerProductWidgetParams,
   PerPurchaseWidgetParams,
+  SpendLevelWidgetByIdParams,
   SpendLevelWidgetParams,
+  StaticWidgetByIdParams,
+  StaticWidgetParams,
+  TieredSpendLevelWidgetByIdParams,
   TieredSpendLevelWidgetParams,
+  TopStatsWidgetByIdParams,
   TopStatsWidgetParams,
   WidgetParams,
-  StaticWidgetParams,
-  CartWidgetByIdParams,
-  SpendLevelWidgetByIdParams,
-  PerProductWidgetByIdParams,
-  ByPercentageWidgetByIdParams,
-  ByPercentageOfRevenueWidgetByIdParams,
-  PerOrderWidgetByIdParams,
-  StaticWidgetByIdParams,
-  TieredSpendLevelWidgetByIdParams,
-  TopStatsWidgetByIdParams,
 } from '@/interfaces'
 import { StaticWidget } from '@/widgets/static'
 import { CartWidgetById } from '@/widgets/cartById'
@@ -189,7 +191,10 @@ export default class GreensparkWidgets extends ApiConsumer {
     return new TopStatsWidget({ ...params, api: this.api, containerSelector, useShadowDom })
   }
 
-  topStatsById(params: TopStatsWidgetByIdParams & { containerSelector?: string; useShadowDom?: boolean }) {
+  topStatsById(params: TopStatsWidgetByIdParams & {
+    containerSelector?: string;
+    useShadowDom?: boolean
+  }) {
     const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
     return new TopStatsWidgetById({ ...params, api: this.api, containerSelector, useShadowDom })
   }
@@ -199,6 +204,21 @@ export default class GreensparkWidgets extends ApiConsumer {
   ) {
     const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
     return new FullWidthBannerWidget({ ...params, api: this.api, containerSelector, useShadowDom })
+  }
+
+  fullWidthBannerById(
+    params: FullWidthBannerWidgetByIdParams & {
+      containerSelector?: string;
+      useShadowDom?: boolean
+    },
+  ) {
+    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
+    return new FullWidthBannerWidgetById({
+      ...params,
+      api: this.api,
+      containerSelector,
+      useShadowDom,
+    })
   }
 }
 

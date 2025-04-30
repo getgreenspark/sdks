@@ -1,10 +1,10 @@
 {
-  "name": "@getgreenspark/widgets-shopify",
-  "version": "1.1.0",
+  "name": "@getgreenspark/widgets-general",
+  "version": "1.0.0",
   "bugs": {
     "url": "https://github.com/getgreenspark/sdks/issues"
   },
-  "main": "./dist/widgets-shopify@latest.js",
+  "main": "./dist/widgets-general@latest.js",
   "description": "An embedable script tag solution built on top of Greenspark Widget SDK.",
   "author": "Greenspark <support@getgreenspark.com>",
   "scripts": {
@@ -39,9 +39,9 @@
     "$schema": "https://unpkg.com/release-it/schema/release-it.json",
     "git": {
       "tag": true,
-      "commitMessage": "@getgreenspark/widgets-shopify v${version}",
-      "tagName": "widgets-shopify-v${version}",
-      "tagAnnotation": "@getgreenspark/widgets-shopify v${version}"
+      "commitMessage": "@getgreenspark/widgets-general v${version}",
+      "tagName": "widgets-general-v${version}",
+      "tagAnnotation": "@getgreenspark/widgets-general v${version}"
     },
     "npm": {
       "publish": false

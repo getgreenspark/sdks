@@ -1,30 +1,3 @@
-export interface Shopify {
-  shop: string
-  locale: string
-  currency: {
-    active: string
-  }
-}
-
-export interface ShopifyAnalytics {
-  meta: {
-    product: {
-      id: number
-    }
-  }
-}
-
-export interface ShopifyCartItem {
-  product_id: string
-  quantity: number
-}
-
-export interface ShopifyCart {
-  items: ShopifyCartItem[]
-  currency: string
-  total_price: number
-}
-
 type WIDGET_VARIANTS =
   | 'orderImpacts'
   | 'offsetPerOrder'
