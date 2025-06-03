@@ -119,6 +119,12 @@ export interface Project {
      * @memberof Project
      */
     projectPartnerLogo?: string;
+    /**
+     * The geometry of the project. http://datatracker.ietf.org/doc/html/rfc7946#section-3.3
+     * @type {any}
+     * @memberof Project
+     */
+    geoJSON?: any;
 }
 
 /**
