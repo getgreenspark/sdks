@@ -11,6 +11,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { GeoJsonDto } from './geo-json-dto';
 import { ProjectMetadata } from './project-metadata';
 /**
  * 
@@ -122,10 +123,10 @@ export interface ProjectDetails {
     projectPartnerLogo?: string;
     /**
      * The geometry of the project. http://datatracker.ietf.org/doc/html/rfc7946#section-3.3
-     * @type {any}
+     * @type {GeoJsonDto}
      * @memberof ProjectDetails
      */
-    geoJSON?: any;
+    geoJSON?: GeoJsonDto;
     /**
      * Defines project specific additional information.
      * @type {Array<ProjectMetadata>}
