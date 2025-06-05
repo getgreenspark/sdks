@@ -1,5 +1,5 @@
+export * from './feature-collection-dto';
 export * from './feature-dto';
-export * from './geo-json-dto';
 export * from './point-dto';
 export * from './project';
 export * from './project-category';

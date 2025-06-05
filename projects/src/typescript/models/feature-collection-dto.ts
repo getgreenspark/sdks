@@ -15,19 +15,19 @@ import { FeatureDto } from './feature-dto';
 /**
  * 
  * @export
- * @interface GeoJsonDto
+ * @interface FeatureCollectionDto
  */
-export interface GeoJsonDto {
+export interface FeatureCollectionDto {
     /**
      * A collection of feature objects. https://tools.ietf.org/html/rfc7946#section-3.3
      * @type {Array<FeatureDto>}
-     * @memberof GeoJsonDto
+     * @memberof FeatureCollectionDto
      */
     features: Array<FeatureDto>;
     /**
      * Specifies the type of GeoJSON object.
      * @type {string}
-     * @memberof GeoJsonDto
+     * @memberof FeatureCollectionDto
      */
     type: string;
 }
