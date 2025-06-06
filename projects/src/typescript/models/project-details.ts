@@ -11,6 +11,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { FeatureCollectionDto } from './feature-collection-dto';
 import { ProjectMetadata } from './project-metadata';
 /**
  * 
@@ -120,6 +121,12 @@ export interface ProjectDetails {
      * @memberof ProjectDetails
      */
     projectPartnerLogo?: string;
+    /**
+     * The geometry of the project. http://datatracker.ietf.org/doc/html/rfc7946#section-3.3
+     * @type {FeatureCollectionDto}
+     * @memberof ProjectDetails
+     */
+    geoJSON?: FeatureCollectionDto;
     /**
      * Defines project specific additional information.
      * @type {Array<ProjectMetadata>}
