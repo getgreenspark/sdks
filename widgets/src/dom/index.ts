@@ -5,9 +5,9 @@ export class DOMInjector {
   useShadowDom?: boolean
 
   constructor({
-    containerSelector,
-    useShadowDom = true,
-  }: {
+                containerSelector,
+                useShadowDom = true,
+              }: {
     containerSelector: string
     useShadowDom?: boolean
   }) {
@@ -23,6 +23,20 @@ export class DOMInjector {
     return container.shadowRoot ?? container.attachShadow({ mode: 'open' })
   }
 
+  // Remove any previous Greenspark overlays for the same instance
+  cleanupPreviousOverlay(instanceId: string) {
+    const selector = `#gs-${instanceId}-widget-overlay`
+    document.querySelectorAll(selector).forEach(el => el.remove())
+
+    const shadowContainers = document.querySelectorAll('[data-greenspark-shadow-dom-container="true"]')
+    shadowContainers.forEach(container => {
+      const shadow = (container as HTMLElement).shadowRoot
+      if (shadow) {
+        shadow.querySelectorAll(selector).forEach(el => el.remove())
+      }
+    })
+  }
+
   inject(widget: HTMLElement, containerSelector?: string) {
     if (!widget) return
 
@@ -32,6 +46,16 @@ export class DOMInjector {
       throw new Error(
         `Greenspark - The document.querySelector('${this.containerSelector}') does not return an Element. Are you sure that you input the correct 'containerSelector'? The default selector is ${DEFAULT_CONTAINER_CSS_SELECTOR}`,
       )
+    }
+
+    // Find instanceId from widget HTML for cleanup
+    const overlay = widget.querySelector('[id^="gs-"][id$="-widget-overlay"]')
+    if (overlay?.id) {
+      const match = overlay.id.match(/^gs-(.*)-widget-overlay$/)
+      const instanceId = match ? match[1] : null
+      if (instanceId) {
+        this.cleanupPreviousOverlay(instanceId)
+      }
     }
 
     container.setAttribute('data-greenspark-shadow-dom-container', 'true')
@@ -46,7 +70,7 @@ export class DOMInjector {
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
       scripts.forEach((s) => eval(s.innerHTML))
     } else {
-      document.addEventListener('DOMContentLoaded', function () {
+      document.addEventListener('DOMContentLoaded', function() {
         scripts.forEach((s) => eval(s.innerHTML))
       })
     }
