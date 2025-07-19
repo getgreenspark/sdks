@@ -1,0 +1,208 @@
+import { EnumToWidgetTypeMap } from './interfaces'
+
+const scriptSrc = document.currentScript?.getAttribute('src')
+const isDevStore = window.location.hostname.includes('greenspark-development-store')
+const widgetUrl = isDevStore
+  ? 'https://cdn.getgreenspark.com/scripts/widgets%401.9.1-5-umd.js'
+  : 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
+const popupHistory: HTMLElement[] = []
+
+const MAX_RETRIES = 5
+let retryCount = 0
+
+function parseCart(cart: {price: number, product_id: number, quantity: number}[]) {
+  return {
+    lineItems: [...cart.map(({quantity, product_id}) => ({
+      quantity, productId: product_id
+    }))],
+    currency: 'USD',
+    totalPrice: cart.reduce((prev, current) => prev + (current.price), 0),
+  }
+}
+
+function runGreenspark() {
+  if (!scriptSrc) return
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runGreenspark, { once: true })
+  }
+
+  if (!window.GreensparkWidgets) {
+    if (retryCount++ >= MAX_RETRIES) {
+      console.error('Greenspark Widget - Failed to load after max retries')
+      return
+    }
+    console.warn('Greenspark Widget - GreensparkWidgets not available yet, waiting 50ms')
+    setTimeout(runGreenspark, 50)
+    return
+  }
+
+  retryCount = 0 // reset on success
+
+  const useShadowDom = false
+  const version = 'v2'
+
+  const locale = window.navigator.language
+  const initialCart = {
+    items: [],
+    currency: 'GBP',
+    total_price: 0,
+  }
+  const greenspark = new window.GreensparkWidgets({
+    locale,
+    origin: window.origin,
+  })
+
+  const renderOrderImpacts = (widgetId: string, containerSelector: string) => {
+    const widget = greenspark.cartById({
+      widgetId,
+      order: parseCart(initialCart),
+      containerSelector,
+      useShadowDom,
+      version,
+    })
+
+    fetch('/cart.js')
+      .then((response) => response.json())
+      .then((updatedCart) => {
+        const order = parseCart(updatedCart)
+        if (order.lineItems.length <= 0) return
+
+        widget
+          .render({ order })
+          .then(movePopupToBody)
+          .catch((e: Error) => console.error('Greenspark Widget - ', e))
+      })
+      .catch((error) => {
+        console.error('Greenspark Widget - Failed to fetch cart.js:', error)
+      })
+  }
+
+
+
+  const movePopupToBody = () => {
+    popupHistory.forEach((outdatedPopup) => {
+      outdatedPopup.innerHTML = ''
+      outdatedPopup.style.display = 'none'
+    })
+
+    const popup = document.querySelector<HTMLElement>('.gs-popup')
+    if (popup) {
+      document.body.append(popup)
+      popupHistory.push(popup)
+    }
+  }
+
+  const targets = document.querySelectorAll('.greenspark-widget-target')
+
+  // Add styles for widget targets
+  if (!document.getElementById('greenspark-widget-style')) {
+    const style = document.createElement('style')
+    style.id = 'greenspark-widget-style'
+    style.textContent = `
+      .greenspark-widget-target {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 8px 0;
+      }
+    `
+    document.head.appendChild(style)
+  }
+
+  targets.forEach(target => {
+    // Remove any previously injected containers
+    target.querySelectorAll('.greenspark-widget-instance').forEach(el => el.remove())
+
+    const randomId = crypto.randomUUID()
+    let type: string
+    try {
+      [type] = atob(target.id).split('|')
+    } catch {
+      console.error('Invalid widget ID encoding:', target.id)
+      return
+    }
+
+    const variant = EnumToWidgetTypeMap[type]
+    const containerSelector = `[data-greenspark-widget-target-${randomId}]`
+    target.insertAdjacentHTML('afterbegin', `<div class="greenspark-widget-instance" data-greenspark-widget-target-${randomId}></div>`)
+
+    if (variant === 'orderImpacts') renderOrderImpacts(target.id, containerSelector)
+  })
+}
+
+function loadScript(url: string): Promise<void> {
+  return new Promise<void>((resolve) => {
+    const script = document.createElement('script')
+    script.type = 'text/javascript'
+    script.onload = function() {
+      resolve()
+    }
+
+    script.src = url
+    const head = document.querySelector('head')
+
+    if (head) {
+      head.appendChild(script)
+    }
+  })
+}
+
+async function setup() {
+  if (window.GreensparkWidgets) return
+
+  if (document.readyState === 'loading') {
+    return new Promise((resolve) => {
+      document.addEventListener('DOMContentLoaded', () => {
+        setup().then(resolve)
+      }, { once: true })
+    })
+  }
+
+  try {
+    await loadScript(widgetUrl)
+    window.dispatchEvent(new Event('greenspark-setup'))
+  } catch (error) {
+    console.error('Greenspark Widget - Failed to load script:', error)
+    setTimeout(() => setup(), 1000)
+  }
+}
+
+setup().catch((e) => console.error('Greenspark Widget -', e))
+
+if (!window.GreensparkWidgets) {
+  window.addEventListener('greenspark-setup', runGreenspark, { once: true })
+} else {
+  runGreenspark()
+}
+
+;(function(context, fetch) {
+  if (typeof fetch !== 'function') return
+
+  context.fetch = function(...args: [input: URL | RequestInfo, init?: RequestInit | undefined]) {
+    const response = fetch.apply(this, args)
+
+    response.then((res) => {
+      if (
+        [
+          `${window.location.origin}/cart/add`,
+          `${window.location.origin}/cart/update`,
+          `${window.location.origin}/cart/change`,
+          `${window.location.origin}/cart/clear`,
+          `${window.location.origin}/cart/add.js`,
+          `${window.location.origin}/cart/update.js`,
+          `${window.location.origin}/cart/change.js`,
+          `${window.location.origin}/cart/clear.js`,
+        ].includes(res.url)
+      ) {
+        setTimeout(() => {
+          runGreenspark()
+        }, 100)
+      }
+    }).catch((error) => {
+      console.error('Error in fetch response handling:', error)
+    }) // log errors for debugging
+
+    return response
+  }
+})(window, window.fetch)

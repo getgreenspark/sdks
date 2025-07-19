@@ -34,6 +34,17 @@ export class DOMInjector {
       )
     }
 
+    // ** NEW: Remove any old overlays for this widget instance **
+    const widgetId = widget.id || widget.getAttribute('data-greenspark-instance-id');
+    if (widgetId) {
+      // Overlay is always id="gs-<instanceId>-widget-overlay"
+      const overlaySelector = `#gs-${widgetId}-widget-overlay`;
+      const overlays = document.querySelectorAll(overlaySelector);
+      overlays.forEach(el => {
+        if (el.parentElement) el.parentElement.removeChild(el);
+      });
+    }
+
     container.setAttribute('data-greenspark-shadow-dom-container', 'true')
     const scripts = [...widget.children].filter((el) => el.tagName === 'SCRIPT')
     const nonScripts = [...widget.children].filter((el) => el.tagName !== 'SCRIPT')
