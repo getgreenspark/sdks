@@ -213,7 +213,8 @@ function runGreenspark() {
       outdatedPopup.style.display = 'none'
     })
 
-    const popup = document.querySelector<HTMLElement>(`.greenspark-widget-target-${widgetId} > div[class^="gs-popup-"]`)
+    const parent = document.getElementById(widgetId);
+    const popup = parent?.querySelector<HTMLElement>('div[class^="gs-popup-"]');
     if (popup) {
       document.body.append(popup)
       popupHistory.push(popup)
