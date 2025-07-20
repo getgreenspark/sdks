@@ -79,7 +79,7 @@ function runGreenspark() {
 
         widget
           .render({ order })
-          .then(movePopupToBody)
+          .then(() => movePopupToBody(widgetId))
           .catch((e: Error) => console.error('Greenspark Widget - ', e))
       })
       .catch((error) => {
@@ -95,7 +95,7 @@ function runGreenspark() {
       version,
     })
 
-    widget.render().then(movePopupToBody).catch((e) => {
+    widget.render().then(() => movePopupToBody(widgetId)).catch((e) => {
       if (!e.response) return console.error('Greenspark Widget - ', e)
     })
   }
@@ -109,7 +109,7 @@ function runGreenspark() {
       version,
     })
 
-    widget.render().then(movePopupToBody).catch((e) => {
+    widget.render().then(() => movePopupToBody(widgetId)).catch((e) => {
       if (!e.response) return console.error('Greenspark Widget - ', e)
     })
   }
@@ -123,7 +123,7 @@ function runGreenspark() {
       version,
     })
 
-    widget.render().then(movePopupToBody).catch((e) => {
+    widget.render().then(() => movePopupToBody(widgetId)).catch((e) => {
       if (!e.response) return console.error('Greenspark Widget - ', e)
     })
   }
@@ -137,7 +137,7 @@ function runGreenspark() {
       version,
     })
 
-    widget.render().then(movePopupToBody).catch((e) => {
+    widget.render().then(() => movePopupToBody(widgetId)).catch((e) => {
       if (!e.response) return console.error('Greenspark Widget - ', e)
     })
   }
@@ -150,7 +150,7 @@ function runGreenspark() {
       version,
     })
 
-    widget.render().then(movePopupToBody).catch((e) => {
+    widget.render().then(() => movePopupToBody(widgetId)).catch((e) => {
       if (!e.response) return console.error('Greenspark Widget - ', e)
     })
   }
@@ -163,7 +163,7 @@ function runGreenspark() {
       version,
     })
 
-    widget.render().then(movePopupToBody).catch((e) => {
+    widget.render().then(() => movePopupToBody(widgetId)).catch((e) => {
       if (!e.response) return console.error('Greenspark Widget - ', e)
     })
   }
@@ -176,7 +176,7 @@ function runGreenspark() {
       version,
     })
 
-    widget.render().then(movePopupToBody).catch((e) => {
+    widget.render().then(() => movePopupToBody(widgetId)).catch((e) => {
       if (!e.response) return console.error('Greenspark Widget - ', e)
     })
   }
@@ -189,7 +189,7 @@ function runGreenspark() {
       version,
     })
 
-    widget.render().then(movePopupToBody).catch((e) => {
+    widget.render().then(() => movePopupToBody(widgetId)).catch((e) => {
       if (!e.response) return console.error('Greenspark Widget - ', e)
     })
   }
@@ -202,18 +202,18 @@ function runGreenspark() {
       version,
     })
 
-    widget.render().then(movePopupToBody).catch((e) => {
+    widget.render().then(() => movePopupToBody(widgetId)).catch((e) => {
       if (!e.response) return console.error('Greenspark Widget - ', e)
     })
   }
 
-  const movePopupToBody = () => {
+  const movePopupToBody = (widgetId: string) => {
     popupHistory.forEach((outdatedPopup) => {
       outdatedPopup.innerHTML = ''
       outdatedPopup.style.display = 'none'
     })
 
-    const popup = document.querySelector<HTMLElement>('.gs-popup')
+    const popup = document.querySelector<HTMLElement>(`.greenspark-widget-target-${widgetId} > div[class^="gs-popup-"]`)
     if (popup) {
       document.body.append(popup)
       popupHistory.push(popup)
