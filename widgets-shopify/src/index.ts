@@ -62,13 +62,18 @@ function runGreenspark() {
     isShopifyIntegration: true,
   })
 
-  const renderOrderImpacts = (widgetId: string, containerSelector: string) => {
+  const renderOrderImpacts = (
+    widgetId: string,
+    containerSelector: string,
+    isCustomerContributionAvailable: boolean = false,
+  ) => {
     const widget = greenspark.cartById({
       widgetId,
       order: parseCart(initialCart),
       containerSelector,
       useShadowDom,
       version,
+      isCustomerContributionAvailable,
     })
 
     fetch('/cart.js')
@@ -78,7 +83,7 @@ function runGreenspark() {
         if (order.lineItems.length <= 0) return
 
         widget
-          .render({ order })
+          .render({ order, isCustomerContributionAvailable })
           .then(movePopupToBody)
           .catch((e: Error) => console.error('Greenspark Widget - ', e))
       })
@@ -95,9 +100,12 @@ function runGreenspark() {
       version,
     })
 
-    widget.render().then(movePopupToBody).catch((e) => {
-      if (!e.response) return console.error('Greenspark Widget - ', e)
-    })
+    widget
+      .render()
+      .then(movePopupToBody)
+      .catch((e) => {
+        if (!e.response) return console.error('Greenspark Widget - ', e)
+      })
   }
 
   const renderOffsetByProduct = (widgetId: string, containerSelector: string) => {
@@ -109,9 +117,12 @@ function runGreenspark() {
       version,
     })
 
-    widget.render().then(movePopupToBody).catch((e) => {
-      if (!e.response) return console.error('Greenspark Widget - ', e)
-    })
+    widget
+      .render()
+      .then(movePopupToBody)
+      .catch((e) => {
+        if (!e.response) return console.error('Greenspark Widget - ', e)
+      })
   }
 
   const renderOffsetBySpend = (widgetId: string, containerSelector: string) => {
@@ -123,9 +134,12 @@ function runGreenspark() {
       version,
     })
 
-    widget.render().then(movePopupToBody).catch((e) => {
-      if (!e.response) return console.error('Greenspark Widget - ', e)
-    })
+    widget
+      .render()
+      .then(movePopupToBody)
+      .catch((e) => {
+        if (!e.response) return console.error('Greenspark Widget - ', e)
+      })
   }
 
   const renderOffsetByStoreRevenue = (widgetId: string, containerSelector: string) => {
@@ -137,9 +151,12 @@ function runGreenspark() {
       version,
     })
 
-    widget.render().then(movePopupToBody).catch((e) => {
-      if (!e.response) return console.error('Greenspark Widget - ', e)
-    })
+    widget
+      .render()
+      .then(movePopupToBody)
+      .catch((e) => {
+        if (!e.response) return console.error('Greenspark Widget - ', e)
+      })
   }
 
   const renderByPercentage = (widgetId: string, containerSelector: string) => {
@@ -150,9 +167,12 @@ function runGreenspark() {
       version,
     })
 
-    widget.render().then(movePopupToBody).catch((e) => {
-      if (!e.response) return console.error('Greenspark Widget - ', e)
-    })
+    widget
+      .render()
+      .then(movePopupToBody)
+      .catch((e) => {
+        if (!e.response) return console.error('Greenspark Widget - ', e)
+      })
   }
 
   const renderByPercentageOfRevenue = (widgetId: string, containerSelector: string) => {
@@ -163,9 +183,12 @@ function runGreenspark() {
       version,
     })
 
-    widget.render().then(movePopupToBody).catch((e) => {
-      if (!e.response) return console.error('Greenspark Widget - ', e)
-    })
+    widget
+      .render()
+      .then(movePopupToBody)
+      .catch((e) => {
+        if (!e.response) return console.error('Greenspark Widget - ', e)
+      })
   }
 
   const renderStats = (widgetId: string, containerSelector: string) => {
@@ -176,9 +199,12 @@ function runGreenspark() {
       version,
     })
 
-    widget.render().then(movePopupToBody).catch((e) => {
-      if (!e.response) return console.error('Greenspark Widget - ', e)
-    })
+    widget
+      .render()
+      .then(movePopupToBody)
+      .catch((e) => {
+        if (!e.response) return console.error('Greenspark Widget - ', e)
+      })
   }
 
   const renderStatic = (widgetId: string, containerSelector: string) => {
@@ -189,9 +215,12 @@ function runGreenspark() {
       version,
     })
 
-    widget.render().then(movePopupToBody).catch((e) => {
-      if (!e.response) return console.error('Greenspark Widget - ', e)
-    })
+    widget
+      .render()
+      .then(movePopupToBody)
+      .catch((e) => {
+        if (!e.response) return console.error('Greenspark Widget - ', e)
+      })
   }
 
   const renderBanner = (widgetId: string, containerSelector: string) => {
@@ -202,9 +231,12 @@ function runGreenspark() {
       version,
     })
 
-    widget.render().then(movePopupToBody).catch((e) => {
-      if (!e.response) return console.error('Greenspark Widget - ', e)
-    })
+    widget
+      .render()
+      .then(movePopupToBody)
+      .catch((e) => {
+        if (!e.response) return console.error('Greenspark Widget - ', e)
+      })
   }
 
   const movePopupToBody = () => {
@@ -237,30 +269,36 @@ function runGreenspark() {
     document.head.appendChild(style)
   }
 
-  targets.forEach(target => {
+  targets.forEach((target) => {
     // Remove any previously injected containers
-    target.querySelectorAll('.greenspark-widget-instance').forEach(el => el.remove())
+    target.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
 
     const randomId = crypto.randomUUID()
     let type: string
     try {
-      [type] = atob(target.id).split('|')
+      ;[type] = atob(target.id).split('|')
     } catch {
       console.error('Invalid widget ID encoding:', target.id)
       return
     }
 
+    const isCustomerContributionAvailable = false // TODO: Implement logic to get the parameter from the data or widget options
     const variant = EnumToWidgetTypeMap[type]
     const containerSelector = `[data-greenspark-widget-target-${randomId}]`
-    target.insertAdjacentHTML('afterbegin', `<div class="greenspark-widget-instance" data-greenspark-widget-target-${randomId}></div>`)
+    target.insertAdjacentHTML(
+      'afterbegin',
+      `<div class="greenspark-widget-instance" data-greenspark-widget-target-${randomId}></div>`,
+    )
 
-    if (variant === 'orderImpacts') renderOrderImpacts(target.id, containerSelector)
+    if (variant === 'orderImpacts')
+      renderOrderImpacts(target.id, containerSelector, isCustomerContributionAvailable)
     if (variant === 'offsetPerOrder') renderOffsetPerOrder(target.id, containerSelector)
     if (variant === 'offsetByProduct') renderOffsetByProduct(target.id, containerSelector)
     if (variant === 'offsetBySpend') renderOffsetBySpend(target.id, containerSelector)
     if (variant === 'offsetByStoreRevenue') renderOffsetByStoreRevenue(target.id, containerSelector)
     if (variant === 'byPercentage') renderByPercentage(target.id, containerSelector)
-    if (variant === 'byPercentageOfRevenue') renderByPercentageOfRevenue(target.id, containerSelector)
+    if (variant === 'byPercentageOfRevenue')
+      renderByPercentageOfRevenue(target.id, containerSelector)
     if (variant === 'stats') renderStats(target.id, containerSelector)
     if (variant === 'static') renderStatic(target.id, containerSelector)
     if (variant === 'banner') renderBanner(target.id, containerSelector)
@@ -271,7 +309,7 @@ function loadScript(url: string): Promise<void> {
   return new Promise<void>((resolve) => {
     const script = document.createElement('script')
     script.type = 'text/javascript'
-    script.onload = function() {
+    script.onload = function () {
       resolve()
     }
 
@@ -289,9 +327,13 @@ async function setup() {
 
   if (document.readyState === 'loading') {
     return new Promise((resolve) => {
-      document.addEventListener('DOMContentLoaded', () => {
-        setup().then(resolve)
-      }, { once: true })
+      document.addEventListener(
+        'DOMContentLoaded',
+        () => {
+          setup().then(resolve)
+        },
+        { once: true },
+      )
     })
   }
 
@@ -312,32 +354,34 @@ if (!window.GreensparkWidgets) {
   runGreenspark()
 }
 
-;(function(context, fetch) {
+;(function (context, fetch) {
   if (typeof fetch !== 'function') return
 
-  context.fetch = function(...args: [input: URL | RequestInfo, init?: RequestInit | undefined]) {
+  context.fetch = function (...args: [input: URL | RequestInfo, init?: RequestInit | undefined]) {
     const response = fetch.apply(this, args)
 
-    response.then((res) => {
-      if (
-        [
-          `${window.location.origin}/cart/add`,
-          `${window.location.origin}/cart/update`,
-          `${window.location.origin}/cart/change`,
-          `${window.location.origin}/cart/clear`,
-          `${window.location.origin}/cart/add.js`,
-          `${window.location.origin}/cart/update.js`,
-          `${window.location.origin}/cart/change.js`,
-          `${window.location.origin}/cart/clear.js`,
-        ].includes(res.url)
-      ) {
-        setTimeout(() => {
-          runGreenspark()
-        }, 100)
-      }
-    }).catch((error) => {
-      console.error('Error in fetch response handling:', error)
-    }) // log errors for debugging
+    response
+      .then((res) => {
+        if (
+          [
+            `${window.location.origin}/cart/add`,
+            `${window.location.origin}/cart/update`,
+            `${window.location.origin}/cart/change`,
+            `${window.location.origin}/cart/clear`,
+            `${window.location.origin}/cart/add.js`,
+            `${window.location.origin}/cart/update.js`,
+            `${window.location.origin}/cart/change.js`,
+            `${window.location.origin}/cart/clear.js`,
+          ].includes(res.url)
+        ) {
+          setTimeout(() => {
+            runGreenspark()
+          }, 100)
+        }
+      })
+      .catch((error) => {
+        console.error('Error in fetch response handling:', error)
+      }) // log errors for debugging
 
     return response
   }

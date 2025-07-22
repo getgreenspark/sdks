@@ -231,6 +231,7 @@ export const Cart: StoryObj<{ widgetArgs: CartWidgetParams; widgetType: keyof Gr
           currency: { control: 'text' },
           totalPrice: { control: 'number' },
         },
+        isCustomerContributionAvailable: { control: 'boolean' },
       },
     },
     args: {
@@ -242,6 +243,7 @@ export const Cart: StoryObj<{ widgetArgs: CartWidgetParams; widgetType: keyof Gr
           currency: 'EUR',
           totalPrice: 1,
         },
+        isCustomerContributionAvailable: false,
       },
       widgetType: 'cart',
     },
