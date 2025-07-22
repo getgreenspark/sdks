@@ -49,6 +49,7 @@ export class CartWidget extends Widget implements CartWidgetParams {
     popupTheme,
     style,
     version,
+    isCustomerContributionAvailable,
   }: Partial<CartWidgetParams>) {
     this.color = color ?? this.color
     this.order = order ?? this.order
@@ -57,7 +58,7 @@ export class CartWidget extends Widget implements CartWidgetParams {
     this.style = style ?? this.style
     this.version = version ?? this.version
     this.isCustomerContributionAvailable =
-      this.isCustomerContributionAvailable ?? this.isCustomerContributionAvailable
+      isCustomerContributionAvailable ?? this.isCustomerContributionAvailable
   }
 
   private validateOptions() {
