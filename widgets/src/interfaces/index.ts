@@ -69,7 +69,7 @@ export interface WidgetCurrencyParams {
 
 export interface CartWidgetBaseParams {
   order: StoreOrder
-  isCustomerContributionAvailable?: boolean
+  isCustomerContributionEnabled?: boolean
 }
 
 export interface CartWidgetParams

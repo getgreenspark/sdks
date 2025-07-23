@@ -62,18 +62,13 @@ function runGreenspark() {
     isShopifyIntegration: true,
   })
 
-  const renderOrderImpacts = (
-    widgetId: string,
-    containerSelector: string,
-    isCustomerContributionAvailable: boolean = false,
-  ) => {
+  const renderOrderImpacts = (widgetId: string, containerSelector: string) => {
     const widget = greenspark.cartById({
       widgetId,
       order: parseCart(initialCart),
       containerSelector,
       useShadowDom,
       version,
-      isCustomerContributionAvailable,
     })
 
     fetch('/cart.js')
@@ -83,7 +78,7 @@ function runGreenspark() {
         if (order.lineItems.length <= 0) return
 
         widget
-          .render({ order, isCustomerContributionAvailable })
+          .render({ order })
           .then(movePopupToBody)
           .catch((e: Error) => console.error('Greenspark Widget - ', e))
       })
@@ -282,7 +277,6 @@ function runGreenspark() {
       return
     }
 
-    const isCustomerContributionAvailable = false // TODO: Implement logic to get the parameter from the data or widget options
     const variant = EnumToWidgetTypeMap[type]
     const containerSelector = `[data-greenspark-widget-target-${randomId}]`
     target.insertAdjacentHTML(
@@ -290,8 +284,7 @@ function runGreenspark() {
       `<div class="greenspark-widget-instance" data-greenspark-widget-target-${randomId}></div>`,
     )
 
-    if (variant === 'orderImpacts')
-      renderOrderImpacts(target.id, containerSelector, isCustomerContributionAvailable)
+    if (variant === 'orderImpacts') renderOrderImpacts(target.id, containerSelector)
     if (variant === 'offsetPerOrder') renderOffsetPerOrder(target.id, containerSelector)
     if (variant === 'offsetByProduct') renderOffsetByProduct(target.id, containerSelector)
     if (variant === 'offsetBySpend') renderOffsetBySpend(target.id, containerSelector)

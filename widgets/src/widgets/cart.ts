@@ -17,7 +17,7 @@ export class CartWidget extends Widget implements CartWidgetParams {
   popupTheme?: PopupTheme
   style?: WidgetStyle
   version?: 'v2'
-  isCustomerContributionAvailable?: boolean
+  isCustomerContributionEnabled?: boolean
 
   constructor(params: WidgetConfig & CartWidgetParams) {
     super(params)
@@ -27,7 +27,7 @@ export class CartWidget extends Widget implements CartWidgetParams {
     this.popupTheme = params.popupTheme
     this.style = params.style ?? 'default'
     this.version = params.version
-    this.isCustomerContributionAvailable = params.isCustomerContributionAvailable ?? false
+    this.isCustomerContributionEnabled = params.isCustomerContributionEnabled ?? false
   }
 
   private get requestBody(): CartWidgetParams {
@@ -38,7 +38,7 @@ export class CartWidget extends Widget implements CartWidgetParams {
       popupTheme: this.popupTheme,
       style: this.style,
       version: this.version,
-      isCustomerContributionAvailable: this.isCustomerContributionAvailable,
+      isCustomerContributionEnabled: this.isCustomerContributionEnabled,
     }
   }
 
@@ -49,7 +49,7 @@ export class CartWidget extends Widget implements CartWidgetParams {
     popupTheme,
     style,
     version,
-    isCustomerContributionAvailable,
+    isCustomerContributionEnabled,
   }: Partial<CartWidgetParams>) {
     this.color = color ?? this.color
     this.order = order ?? this.order
@@ -57,8 +57,8 @@ export class CartWidget extends Widget implements CartWidgetParams {
     this.popupTheme = popupTheme ?? this.popupTheme
     this.style = style ?? this.style
     this.version = version ?? this.version
-    this.isCustomerContributionAvailable =
-      isCustomerContributionAvailable ?? this.isCustomerContributionAvailable
+    this.isCustomerContributionEnabled =
+      isCustomerContributionEnabled ?? this.isCustomerContributionEnabled
   }
 
   private validateOptions() {
