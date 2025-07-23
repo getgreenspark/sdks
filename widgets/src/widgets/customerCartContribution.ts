@@ -3,23 +3,25 @@ import { WIDGET_COLORS } from '@/constants'
 import type { WidgetConfig } from '@/widgets/base'
 import type {
   OrderProduct,
-  CartWidgetParams,
+  CustomerCartContributionWidgetParams,
   StoreOrder,
   WidgetStyle,
   PopupTheme,
   WidgetColor,
 } from '@/interfaces'
 
-export class CartWidget extends Widget implements CartWidgetParams {
+export class CustomerCartContributionWidget
+  extends Widget
+  implements CustomerCartContributionWidgetParams
+{
   color: WidgetColor
   order: StoreOrder
   withPopup?: boolean
   popupTheme?: PopupTheme
   style?: WidgetStyle
   version?: 'v2'
-  isCustomerContributionEnabled?: boolean
 
-  constructor(params: WidgetConfig & CartWidgetParams) {
+  constructor(params: WidgetConfig & CustomerCartContributionWidgetParams) {
     super(params)
     this.color = params.color
     this.order = params.order
@@ -29,7 +31,7 @@ export class CartWidget extends Widget implements CartWidgetParams {
     this.version = params.version
   }
 
-  private get requestBody(): CartWidgetParams {
+  private get requestBody(): CustomerCartContributionWidgetParams {
     return {
       color: this.color,
       order: this.order,
@@ -47,7 +49,7 @@ export class CartWidget extends Widget implements CartWidgetParams {
     popupTheme,
     style,
     version,
-  }: Partial<CartWidgetParams>) {
+  }: Partial<CustomerCartContributionWidgetParams>) {
     this.color = color ?? this.color
     this.order = order ?? this.order
     this.withPopup = withPopup ?? this.withPopup
@@ -61,7 +63,7 @@ export class CartWidget extends Widget implements CartWidgetParams {
       throw new Error(
         `Greenspark - "${
           this.color
-        }" was selected as the color for the Cart Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.join(
+        }" was selected as the color for the Customer Cart Contribution Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.join(
           ', ',
         )}`,
       )
@@ -69,19 +71,19 @@ export class CartWidget extends Widget implements CartWidgetParams {
 
     if (!(typeof this.order.currency === 'string')) {
       throw new Error(
-        `Greenspark - "${this.order.currency}" was selected as the cart currency for the Cart Widget, but this currency is not available. Please use a valid currency code like "USD", "GBP" and "EUR".`,
+        `Greenspark - "${this.order.currency}" was selected as the cart currency for the Customer Cart Contribution Widget, but this currency is not available. Please use a valid currency code like "USD", "GBP" and "EUR".`,
       )
     }
 
     if (Number.isNaN(Number(this.order.totalPrice)) || this.order.totalPrice < 0) {
       throw new Error(
-        `Greenspark - ${this.order.totalPrice} was provided as the order's totalPrice, but this value is not a valid. Please provide a valid number to the Cart Widget.`,
+        `Greenspark - ${this.order.totalPrice} was provided as the order's totalPrice, but this value is not a valid. Please provide a valid number to the Customer Cart Contribution Widget.`,
       )
     }
 
     if (!Array.isArray(this.order.lineItems)) {
       throw new Error(
-        `Greenspark - ${this.order.lineItems} was provided as the order's items, but this value is not valid. Please provide a valid array of items to the Cart Widget.`,
+        `Greenspark - ${this.order.lineItems} was provided as the order's items, but this value is not valid. Please provide a valid array of items to the Customer Cart Contribution Widget.`,
       )
     }
 
@@ -93,24 +95,29 @@ export class CartWidget extends Widget implements CartWidgetParams {
 
     if (!this.order.lineItems.every(isValidProduct)) {
       throw new Error(
-        `Greenspark - The values provided to the Cart Widget as 'lineItems' are not valid products with a 'productId'(string) and a 'quantity'(number).`,
+        `Greenspark - The values provided to the Customer Cart Contribution Widget as 'lineItems' are not valid products with a 'productId'(string) and a 'quantity'(number).`,
       )
     }
   }
 
-  async render(options?: Partial<CartWidgetParams>, containerSelector?: string): Promise<void> {
+  async render(
+    options?: Partial<CustomerCartContributionWidgetParams>,
+    containerSelector?: string,
+  ): Promise<void> {
     const node = await this.renderToElement(options)
     this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<CartWidgetParams>): Promise<string> {
+  async renderToString(options?: Partial<CustomerCartContributionWidgetParams>): Promise<string> {
     if (options) this.updateDefaults(options)
     this.validateOptions()
-    const response = await this.api.fetchCartWidget(this.requestBody)
+    const response = await this.api.fetchCustomerCartContributionWidget(this.requestBody)
     return response.data
   }
 
-  async renderToElement(options?: Partial<CartWidgetParams>): Promise<HTMLElement> {
+  async renderToElement(
+    options?: Partial<CustomerCartContributionWidgetParams>,
+  ): Promise<HTMLElement> {
     const html = await this.renderToString(options)
     return this.parseHtml(html)
   }

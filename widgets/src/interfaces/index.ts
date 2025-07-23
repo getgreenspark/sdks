@@ -69,6 +69,10 @@ export interface WidgetCurrencyParams {
 
 export interface CartWidgetBaseParams {
   order: StoreOrder
+}
+
+export interface CustomerCartContributionWidgetBaseParams {
+  order: StoreOrder
   isCustomerContributionEnabled?: boolean
 }
 
@@ -82,6 +86,12 @@ export interface CartWidgetByIdParams
   extends WidgetParams,
     WidgetByIdParams,
     CartWidgetBaseParams {}
+
+export interface CustomerCartContributionWidgetParams
+  extends CustomerCartContributionWidgetBaseParams,
+    WidgetParams,
+    WidgetPopupParams,
+    WidgetStyleParams {}
 
 export interface SpendLevelWidgetParams
   extends WidgetCurrencyParams,
@@ -162,6 +172,8 @@ export interface FullWidthBannerWidgetByIdParams extends WidgetByIdParams, Widge
 
 export type CartWidgetRequestBody = ExternalShopContext & CartWidgetParams
 export type CartWidgetByIdRequestBody = ExternalShopContext & CartWidgetByIdParams
+export type CustomerCartContributionWidgetRequestBody = ExternalShopContext &
+  CustomerCartContributionWidgetParams
 export type SpendLevelRequestBody = ExternalShopContext & SpendLevelWidgetParams
 export type SpendLevelWidgetByIdRequestBody = ExternalShopContext & SpendLevelWidgetByIdParams
 export type PerOrderRequestBody = ExternalShopContext & PerOrderWidgetParams

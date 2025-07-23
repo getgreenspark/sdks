@@ -11,6 +11,7 @@ import type {
   ByPercentageOfRevenueWidgetParams,
   ByPercentageWidgetParams,
   CartWidgetParams,
+  CustomerCartContributionWidgetParams,
   FullWidthBannerWidgetParams,
   PerOrderWidgetParams,
   PerProductWidgetParams,
@@ -26,6 +27,7 @@ type WIDGET_VARIANTS =
   | 'byPercentage'
   | 'byPercentageOfRevenue'
   | 'cart'
+  | 'customerCartContribution'
   | 'fullWidthBanner'
   | 'perOrder'
   | 'perProduct'
@@ -104,6 +106,12 @@ const meta = {
 
       case 'cart':
         widget = widgets.cart(widgetArgs as CartWidgetParams)
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
+
+      case 'customerCartContribution':
+        widget = widgets.customerCartContribution(
+          widgetArgs as CustomerCartContributionWidgetParams,
+        )
         return createWidgetPage(widgetType, widget, WIDGET_COLORS, basicVariants)
 
       case 'fullWidthBanner':
@@ -231,7 +239,6 @@ export const Cart: StoryObj<{ widgetArgs: CartWidgetParams; widgetType: keyof Gr
           currency: { control: 'text' },
           totalPrice: { control: 'number' },
         },
-        isCustomerContributionEnabled: { control: 'boolean' },
       },
     },
     args: {
@@ -243,11 +250,42 @@ export const Cart: StoryObj<{ widgetArgs: CartWidgetParams; widgetType: keyof Gr
           currency: 'EUR',
           totalPrice: 1,
         },
-        isCustomerContributionEnabled: false,
       },
       widgetType: 'cart',
     },
   }
+
+export const CustomerCartContribution: StoryObj<{
+  widgetArgs: CustomerCartContributionWidgetParams
+  widgetType: keyof GreensparkWidgets
+}> = {
+  argTypes: {
+    widgetArgs: {
+      withPopup: { control: 'boolean' },
+      color: {
+        control: { type: 'select' },
+        options: WIDGET_COLORS,
+      },
+      order: {
+        lineItems: { control: 'text' },
+        currency: { control: 'text' },
+        totalPrice: { control: 'number' },
+      },
+    },
+  },
+  args: {
+    widgetArgs: {
+      color: 'beige',
+      withPopup: true,
+      order: {
+        lineItems: [{ productId: '1234', quantity: 0 }],
+        currency: 'EUR',
+        totalPrice: 1,
+      },
+    },
+    widgetType: 'customerCartContribution',
+  },
+}
 
 export const FullWidthBanner: StoryObj<{
   widgetArgs: FullWidthBannerWidgetParams

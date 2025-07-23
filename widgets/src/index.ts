@@ -24,6 +24,7 @@ import type {
   ByPercentageWidgetParams,
   CartWidgetByIdParams,
   CartWidgetParams,
+  CustomerCartContributionWidgetParams,
   FullWidthBannerWidgetByIdParams,
   FullWidthBannerWidgetParams,
   PerOrderWidgetByIdParams,
@@ -48,6 +49,7 @@ import { PerProductWidgetById } from '@/widgets/perProductById'
 import { ByPercentageWidgetById } from '@/widgets/byPercentageById'
 import { ByPercentageOfRevenueWidgetById } from '@/widgets/byPercentageOfRevenueById'
 import { TopStatsWidgetById } from '@/widgets/topStatsById'
+import { CustomerCartContributionWidget } from '@/widgets/customerCartContribution'
 
 export default class GreensparkWidgets extends ApiConsumer {
   cart(params: CartWidgetParams & { containerSelector?: string; useShadowDom?: boolean }) {
@@ -58,6 +60,21 @@ export default class GreensparkWidgets extends ApiConsumer {
   cartById(params: CartWidgetByIdParams & { containerSelector?: string; useShadowDom?: boolean }) {
     const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
     return new CartWidgetById({ ...params, api: this.api, containerSelector, useShadowDom })
+  }
+
+  customerCartContribution(
+    params: CustomerCartContributionWidgetParams & {
+      containerSelector?: string
+      useShadowDom?: boolean
+    },
+  ) {
+    const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
+    return new CustomerCartContributionWidget({
+      ...params,
+      api: this.api,
+      containerSelector,
+      useShadowDom,
+    })
   }
 
   spendLevel(
@@ -191,10 +208,12 @@ export default class GreensparkWidgets extends ApiConsumer {
     return new TopStatsWidget({ ...params, api: this.api, containerSelector, useShadowDom })
   }
 
-  topStatsById(params: TopStatsWidgetByIdParams & {
-    containerSelector?: string;
-    useShadowDom?: boolean
-  }) {
+  topStatsById(
+    params: TopStatsWidgetByIdParams & {
+      containerSelector?: string
+      useShadowDom?: boolean
+    },
+  ) {
     const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
     return new TopStatsWidgetById({ ...params, api: this.api, containerSelector, useShadowDom })
   }
@@ -208,7 +227,7 @@ export default class GreensparkWidgets extends ApiConsumer {
 
   fullWidthBannerById(
     params: FullWidthBannerWidgetByIdParams & {
-      containerSelector?: string;
+      containerSelector?: string
       useShadowDom?: boolean
     },
   ) {

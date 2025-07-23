@@ -1,5 +1,6 @@
 export { CartWidget } from './cart'
 export { CartWidgetById } from './cartById'
+export { CustomerCartContributionWidget } from './customerCartContribution'
 export { SpendLevelWidget } from './spendLevel'
 export { SpendLevelWidgetById } from './spendLevelById'
 export { PerOrderWidget } from './perOrder'
