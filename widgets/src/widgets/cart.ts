@@ -17,7 +17,6 @@ export class CartWidget extends Widget implements CartWidgetParams {
   popupTheme?: PopupTheme
   style?: WidgetStyle
   version?: 'v2'
-  isCustomerContributionEnabled?: boolean
 
   constructor(params: WidgetConfig & CartWidgetParams) {
     super(params)
