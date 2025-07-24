@@ -73,7 +73,6 @@ export interface CartWidgetBaseParams {
 
 export interface CustomerCartContributionWidgetBaseParams {
   order: StoreOrder
-  isCustomerContributionEnabled?: boolean
 }
 
 export interface CartWidgetParams
