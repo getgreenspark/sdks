@@ -219,7 +219,7 @@ function runGreenspark() {
           const order = parseCart(updatedCart)
           if (order.lineItems.length <= 0) return
           return window
-            .greensparkCartWidget!.render({ order }, containerSelector)
+            .greensparkCartWidget!.render({ order })
             .then(() => {
               setupPopupMove()
               if (typeof prevChecked === 'boolean') {
