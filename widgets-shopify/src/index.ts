@@ -212,6 +212,25 @@ function runGreenspark() {
         })
     }
 
+    if (window.greensparkCartWidget) {
+      return fetch('/cart.js')
+        .then((r) => r.json())
+        .then((updatedCart) => {
+          const order = parseCart(updatedCart)
+          if (order.lineItems.length <= 0) return
+          return window
+            .greensparkCartWidget!.render({ order }, containerSelector)
+            .then(() => {
+              setupPopupMove()
+              if (typeof prevChecked === 'boolean') {
+                const cb = getCheckbox()
+                if (cb) cb.checked = prevChecked
+              }
+            })
+            .catch((e: unknown) => console.error('Greenspark Widget - ', e))
+        })
+    }
+
     const widget = greenspark.cartById({
       widgetId,
       containerSelector,
@@ -220,21 +239,17 @@ function runGreenspark() {
       version,
     })
 
+    window.greensparkCartWidget = widget
     widget
       .render()
       .then(setupPopupMove)
       .then(() => fetch('/cart.js'))
       .then((r) => r?.json())
       .then((updatedCart) => {
+        if (!updatedCart) return
         const order = parseCart(updatedCart)
         if (order.lineItems.length <= 0) return
-        return widget.render({ order }).then(() => {
-          setupPopupMove()
-          if (typeof prevChecked === 'boolean') {
-            const cb = getCheckbox()
-            if (cb) cb.checked = prevChecked
-          }
-        })
+        return widget.render({ order }).then(setupPopupMove)
       })
       .then(ensureHandlers)
       .catch((e: unknown) => console.error('Greenspark Widget - ', e))
@@ -418,9 +433,6 @@ function runGreenspark() {
   }
 
   targets.forEach((target) => {
-    // Remove any previously injected containers
-    target.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
-
     const randomId = crypto.randomUUID()
     let type: string
     try {
@@ -431,11 +443,37 @@ function runGreenspark() {
     }
 
     const variant = EnumToWidgetTypeMap[type]
-    const containerSelector = `[data-greenspark-widget-target-${randomId}]`
-    target.insertAdjacentHTML(
-      'afterbegin',
-      `<div class="greenspark-widget-instance" data-greenspark-widget-target-${randomId}></div>`,
-    )
+    let containerSelector = ''
+
+    if (variant === 'orderImpacts') {
+      const existingInstance = target.querySelector(
+        '.greenspark-widget-instance',
+      ) as HTMLElement | null
+      if (existingInstance) {
+        const existingAttr = Array.from(existingInstance.attributes).find((a) =>
+          a.name.startsWith('data-greenspark-widget-target-'),
+        )
+        if (existingAttr) {
+          containerSelector = `[${existingAttr.name}]`
+        }
+      }
+
+      if (!containerSelector) {
+        target.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
+        containerSelector = `[data-greenspark-widget-target-${randomId}]`
+        target.insertAdjacentHTML(
+          'afterbegin',
+          `<div class="greenspark-widget-instance" data-greenspark-widget-target-${randomId}></div>`,
+        )
+      }
+    } else {
+      target.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
+      containerSelector = `[data-greenspark-widget-target-${randomId}]`
+      target.insertAdjacentHTML(
+        'afterbegin',
+        `<div class="greenspark-widget-instance" data-greenspark-widget-target-${randomId}></div>`,
+      )
+    }
 
     if (variant === 'orderImpacts') renderOrderImpacts(target.id, containerSelector)
     if (variant === 'offsetPerOrder') renderOffsetPerOrder(target.id, containerSelector)
