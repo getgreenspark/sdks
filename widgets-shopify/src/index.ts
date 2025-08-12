@@ -193,10 +193,10 @@ function runGreenspark() {
         .then((sections) => {
           if (!sections) return
           const parser = new DOMParser()
-          const existingDrawer = document.querySelector('#CartDrawer')
+          const existingDrawer = document.querySelector('#CartDrawer-Form')
           if (existingDrawer && sections['cart-drawer']) {
             const newDrawerDoc = parser.parseFromString(sections['cart-drawer'], 'text/html')
-            const newDrawerContent = newDrawerDoc.querySelector('#CartDrawer')?.innerHTML
+            const newDrawerContent = newDrawerDoc.querySelector('#CartDrawer-Form')?.innerHTML
             if (newDrawerContent !== undefined) existingDrawer.innerHTML = newDrawerContent
           }
           const cartPageSection = document.querySelector('#main-cart-items')
