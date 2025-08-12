@@ -212,25 +212,6 @@ function runGreenspark() {
         })
     }
 
-    if (window.greensparkCartWidget) {
-      return fetch('/cart.js')
-        .then((r) => r.json())
-        .then((updatedCart) => {
-          const order = parseCart(updatedCart)
-          if (order.lineItems.length <= 0) return
-          return window
-            .greensparkCartWidget!.render({ order })
-            .then(() => {
-              setupPopupMove()
-              if (typeof prevChecked === 'boolean') {
-                const cb = getCheckbox()
-                if (cb) cb.checked = prevChecked
-              }
-            })
-            .catch((e: unknown) => console.error('Greenspark Widget - ', e))
-        })
-    }
-
     const widget = greenspark.cartById({
       widgetId,
       containerSelector,
@@ -239,17 +220,21 @@ function runGreenspark() {
       version,
     })
 
-    window.greensparkCartWidget = widget
     widget
       .render()
       .then(setupPopupMove)
       .then(() => fetch('/cart.js'))
       .then((r) => r?.json())
       .then((updatedCart) => {
-        if (!updatedCart) return
         const order = parseCart(updatedCart)
         if (order.lineItems.length <= 0) return
-        return widget.render({ order }).then(setupPopupMove)
+        return widget.render({ order }).then(() => {
+          setupPopupMove()
+          if (typeof prevChecked === 'boolean') {
+            const cb = getCheckbox()
+            if (cb) cb.checked = prevChecked
+          }
+        })
       })
       .then(ensureHandlers)
       .catch((e: unknown) => console.error('Greenspark Widget - ', e))
