@@ -94,6 +94,8 @@ function runGreenspark() {
       }
 
       const bindCheckbox = () => {
+        if (window._greensparkCheckboxHandlerBound) return
+        window._greensparkCheckboxHandlerBound = true
         document.addEventListener('change', (e) => {
           const checkbox = (e.target as HTMLElement)?.closest<HTMLInputElement>(
             `${containerSelector} input[name='customerCartContribution']`,
