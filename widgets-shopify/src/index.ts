@@ -63,7 +63,7 @@ function runGreenspark() {
   })
 
   const renderOrderImpacts = (widgetId: string, containerSelector: string) => {
-    const checkboxSelector = `${containerSelector} input[name='customerCartContribution']`
+    const checkboxSelector = "input[name='customerCartContribution']"
     const getCheckbox = () => document.querySelector<HTMLInputElement>(checkboxSelector)
     const prevChecked = getCheckbox() ? getCheckbox()!.checked : undefined
 
@@ -98,7 +98,7 @@ function runGreenspark() {
         window._greensparkCheckboxHandlerBound = true
         document.addEventListener('change', (e) => {
           const checkbox = (e.target as HTMLElement)?.closest<HTMLInputElement>(
-            `${containerSelector} input[name='customerCartContribution']`,
+            "input[name='customerCartContribution']",
           )
           if (!checkbox) return
           const productId = checkbox.getAttribute('data-greenspark-product-external-id')
@@ -162,7 +162,6 @@ function runGreenspark() {
           if (!productId) return
           setTimeout(() => {
             updateCheckboxState(checkbox, productId)
-            location.reload()
           }, 400)
         })
       }
@@ -230,6 +229,7 @@ function runGreenspark() {
                 if (cb) cb.checked = prevChecked
               }
             })
+            .then(ensureHandlers)
             .catch((e: unknown) => console.error('Greenspark Widget - ', e))
         })
     }
@@ -252,7 +252,7 @@ function runGreenspark() {
         if (!updatedCart) return
         const order = parseCart(updatedCart)
         if (order.lineItems.length <= 0) return
-        return widget.render({ order }).then(setupPopupMove)
+  return widget.render({ order }, containerSelector).then(setupPopupMove)
       })
       .then(ensureHandlers)
       .catch((e: unknown) => console.error('Greenspark Widget - ', e))
