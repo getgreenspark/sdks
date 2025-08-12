@@ -160,7 +160,10 @@ function runGreenspark() {
           if (!checkbox) return
           const productId = checkbox.getAttribute('data-greenspark-product-external-id')
           if (!productId) return
-          setTimeout(() => updateCheckboxState(checkbox, productId), 400)
+          setTimeout(() => {
+            updateCheckboxState(checkbox, productId)
+            location.reload()
+          }, 400)
         })
       }
 
@@ -227,7 +230,6 @@ function runGreenspark() {
                 if (cb) cb.checked = prevChecked
               }
             })
-            .then(ensureHandlers)
             .catch((e: unknown) => console.error('Greenspark Widget - ', e))
         })
     }
