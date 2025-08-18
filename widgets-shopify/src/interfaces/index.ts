@@ -4,6 +4,9 @@ export interface Shopify {
   currency: {
     active: string
   }
+  routes?: {
+    root: string
+  }
 }
 
 export interface ShopifyAnalytics {
@@ -17,6 +20,7 @@ export interface ShopifyAnalytics {
 export interface ShopifyCartItem {
   product_id: string
   quantity: number
+  id?: string | number
 }
 
 export interface ShopifyCart {
