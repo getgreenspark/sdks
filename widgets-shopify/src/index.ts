@@ -67,21 +67,6 @@ function runGreenspark() {
     const getCheckbox = () => document.querySelector<HTMLInputElement>(checkboxSelector)
     const prevChecked = getCheckbox() ? getCheckbox()!.checked : undefined
 
-    const setupPopupMove = () => {
-      popupHistory.forEach((outdatedPopup) => {
-        outdatedPopup.innerHTML = ''
-        outdatedPopup.style.display = 'none'
-      })
-
-      const popup = document.querySelector<HTMLElement>(
-        `${containerSelector} > div[class^='gs-popup-']`,
-      )
-      if (popup) {
-        document.body.append(popup)
-        popupHistory.push(popup)
-      }
-    }
-
     const ensureHandlers = () => {
       const updateCheckboxState = (checkbox: HTMLInputElement, productId: string) => {
         fetch('/cart.js')
@@ -118,7 +103,7 @@ function runGreenspark() {
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
                   },
-                  body: JSON.stringify({ items: [{ id: parseInt(productId), quantity: 1 }] }),
+                  body: JSON.stringify({items: [{id: parseInt(productId), quantity: 1}]}),
                 })
                   .then((r) => r.json())
                   .then(refreshCartDrawer)
@@ -137,7 +122,7 @@ function runGreenspark() {
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
                   },
-                  body: JSON.stringify({ updates }),
+                  body: JSON.stringify({updates}),
                 })
               })
               .then((response) => {
@@ -177,7 +162,8 @@ function runGreenspark() {
             const present = cart.items.some((item) => String(item.id) === productId)
             checkbox.checked = present
           })
-          .catch(() => {})
+          .catch(() => {
+          })
       }
 
       bindCheckbox()
@@ -221,9 +207,10 @@ function runGreenspark() {
           const order = parseCart(updatedCart)
           if (order.lineItems.length <= 0) return
           return window
-            .greensparkCartWidget!.render({ order }, containerSelector)
+            .greensparkCartWidget!.render({order}, containerSelector)
             .then(() => {
-              setupPopupMove()
+              movePopupToBody(widgetId)
+
               if (typeof prevChecked === 'boolean') {
                 const cb = getCheckbox()
                 if (cb) cb.checked = prevChecked
@@ -245,14 +232,17 @@ function runGreenspark() {
     window.greensparkCartWidget = widget
     widget
       .render()
-      .then(setupPopupMove)
+      .then(() => movePopupToBody(widgetId))
       .then(() => fetch('/cart.js'))
       .then((r) => r?.json())
       .then((updatedCart) => {
         if (!updatedCart) return
         const order = parseCart(updatedCart)
         if (order.lineItems.length <= 0) return
-  return widget.render({ order }, containerSelector).then(setupPopupMove)
+        return widget
+          .render({order}, containerSelector)
+          .then(() => movePopupToBody(widgetId))
+          .catch((e: Error) => console.error('Greenspark Widget - ', e))
       })
       .then(ensureHandlers)
       .catch((e: unknown) => console.error('Greenspark Widget - ', e))
