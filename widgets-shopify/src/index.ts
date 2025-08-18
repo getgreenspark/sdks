@@ -1,5 +1,5 @@
-import type { ShopifyCart } from './interfaces'
-import { EnumToWidgetTypeMap } from './interfaces'
+import type {ShopifyCart} from './interfaces'
+import {EnumToWidgetTypeMap} from './interfaces'
 
 const scriptSrc = document.currentScript?.getAttribute('src')
 const isDevStore = window.location.hostname.includes('greenspark-development-store')
@@ -16,7 +16,7 @@ function parseCart(cart: ShopifyCart) {
     productId: item.product_id.toString(),
     quantity: item.quantity,
   }))
-  const { currency } = cart
+  const {currency} = cart
   const totalPrice = cart.total_price
   return {
     lineItems,
@@ -29,7 +29,7 @@ function runGreenspark() {
   if (!scriptSrc) return
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', runGreenspark, { once: true })
+    document.addEventListener('DOMContentLoaded', runGreenspark, {once: true})
   }
 
   if (!window.GreensparkWidgets) {
@@ -268,7 +268,7 @@ function runGreenspark() {
 
     widget
       .render()
-      .then(movePopupToBody)
+      .then(() => movePopupToBody(widgetId))
       .catch((e) => {
         if (!e.response) return console.error('Greenspark Widget - ', e)
       })
@@ -285,7 +285,7 @@ function runGreenspark() {
 
     widget
       .render()
-      .then(movePopupToBody)
+      .then(() => movePopupToBody(widgetId))
       .catch((e) => {
         if (!e.response) return console.error('Greenspark Widget - ', e)
       })
@@ -302,7 +302,7 @@ function runGreenspark() {
 
     widget
       .render()
-      .then(movePopupToBody)
+      .then(() => movePopupToBody(widgetId))
       .catch((e) => {
         if (!e.response) return console.error('Greenspark Widget - ', e)
       })
@@ -319,7 +319,7 @@ function runGreenspark() {
 
     widget
       .render()
-      .then(movePopupToBody)
+      .then(() => movePopupToBody(widgetId))
       .catch((e) => {
         if (!e.response) return console.error('Greenspark Widget - ', e)
       })
@@ -335,7 +335,7 @@ function runGreenspark() {
 
     widget
       .render()
-      .then(movePopupToBody)
+      .then(() => movePopupToBody(widgetId))
       .catch((e) => {
         if (!e.response) return console.error('Greenspark Widget - ', e)
       })
@@ -351,7 +351,7 @@ function runGreenspark() {
 
     widget
       .render()
-      .then(movePopupToBody)
+      .then(() => movePopupToBody(widgetId))
       .catch((e) => {
         if (!e.response) return console.error('Greenspark Widget - ', e)
       })
@@ -367,7 +367,7 @@ function runGreenspark() {
 
     widget
       .render()
-      .then(movePopupToBody)
+      .then(() => movePopupToBody(widgetId))
       .catch((e) => {
         if (!e.response) return console.error('Greenspark Widget - ', e)
       })
@@ -383,7 +383,7 @@ function runGreenspark() {
 
     widget
       .render()
-      .then(movePopupToBody)
+      .then(() => movePopupToBody(widgetId))
       .catch((e) => {
         if (!e.response) return console.error('Greenspark Widget - ', e)
       })
@@ -399,19 +399,20 @@ function runGreenspark() {
 
     widget
       .render()
-      .then(movePopupToBody)
+      .then(() => movePopupToBody(widgetId))
       .catch((e) => {
         if (!e.response) return console.error('Greenspark Widget - ', e)
       })
   }
 
-  const movePopupToBody = () => {
+  const movePopupToBody = (widgetId: string) => {
     popupHistory.forEach((outdatedPopup) => {
       outdatedPopup.innerHTML = ''
       outdatedPopup.style.display = 'none'
     })
 
-    const popup = document.querySelector<HTMLElement>('.gs-popup')
+    const parent = document.getElementById(widgetId);
+    const popup = parent?.querySelector<HTMLElement>('div[class^="gs-popup-"]');
     if (popup) {
       document.body.append(popup)
       popupHistory.push(popup)
@@ -436,6 +437,9 @@ function runGreenspark() {
   }
 
   targets.forEach((target) => {
+    // Remove any previously injected containers
+    target.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
+
     const randomId = crypto.randomUUID()
     let type: string
     try {
@@ -519,7 +523,7 @@ async function setup() {
         () => {
           setup().then(resolve)
         },
-        { once: true },
+        {once: true},
       )
     })
   }
@@ -536,7 +540,7 @@ async function setup() {
 setup().catch((e) => console.error('Greenspark Widget -', e))
 
 if (!window.GreensparkWidgets) {
-  window.addEventListener('greenspark-setup', runGreenspark, { once: true })
+  window.addEventListener('greenspark-setup', runGreenspark, {once: true})
 } else {
   runGreenspark()
 }
