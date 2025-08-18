@@ -1,13 +1,13 @@
-import { DEFAULT_CONTAINER_CSS_SELECTOR } from '@/constants'
+import {DEFAULT_CONTAINER_CSS_SELECTOR} from '@/constants'
 
 export class DOMInjector {
   containerSelector: string
   useShadowDom?: boolean
 
   constructor({
-    containerSelector,
-    useShadowDom = true,
-  }: {
+                containerSelector,
+                useShadowDom = true,
+              }: {
     containerSelector: string
     useShadowDom?: boolean
   }) {
@@ -20,7 +20,7 @@ export class DOMInjector {
       return container
     }
 
-    return container.shadowRoot ?? container.attachShadow({ mode: 'open' })
+    return container.shadowRoot ?? container.attachShadow({mode: 'open'})
   }
 
   inject(widget: HTMLElement, containerSelector?: string) {
