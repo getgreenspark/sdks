@@ -13,6 +13,8 @@ import type {
   CartWidgetByIdRequestBody,
   CartWidgetParams,
   CartWidgetRequestBody,
+  CustomerCartContributionWidgetParams,
+  CustomerCartContributionWidgetRequestBody,
   FullWidthBannerRequestBody,
   FullWidthBannerWidgetByIdParams,
   FullWidthBannerWidgetParams,
@@ -50,12 +52,12 @@ export class ConnectionHandler {
   locale: string
 
   constructor({
-                apiKey,
-                integrationSlug,
-                locale = 'en',
-                isShopifyIntegration = false,
-                origin,
-              }: {
+    apiKey,
+    integrationSlug,
+    locale = 'en',
+    isShopifyIntegration = false,
+    origin,
+  }: {
     apiKey?: string
     integrationSlug?: string
     locale: string
@@ -85,19 +87,20 @@ export class ConnectionHandler {
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
+
     return this.api.post<string, AxiosResponse<string>, CartWidgetRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/cart-widget`,
       version
         ? Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        )
+            {},
+            body,
+            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+          )
         : Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-        ),
+            {},
+            body,
+            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+          ),
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
@@ -119,6 +122,33 @@ export class ConnectionHandler {
     )
   }
 
+  async fetchCustomerCartContributionWidget(
+    { version, ...body }: CustomerCartContributionWidgetParams,
+    headers?: typeof AxiosHeaders,
+  ): Promise<AxiosResponse<string>> {
+    const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
+    const payload = isPreview ? { ...body, isCustomerContributionEnabled: true } : body
+
+    return this.api.post<string, AxiosResponse<string>, CustomerCartContributionWidgetRequestBody>(
+      `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/cart-widget`,
+      version
+        ? Object.assign(
+            {},
+            payload,
+            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+          )
+        : Object.assign(
+            {},
+            payload,
+            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+          ),
+      {
+        params: { lng: this.locale },
+        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
+      },
+    )
+  }
+
   async fetchSpendLevelWidget(
     { version, ...body }: SpendLevelWidgetParams,
     headers?: typeof AxiosHeaders,
@@ -128,15 +158,15 @@ export class ConnectionHandler {
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/spend-level-widget`,
       version
         ? Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        )
+            {},
+            body,
+            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+          )
         : Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-        ),
+            {},
+            body,
+            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+          ),
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
@@ -167,15 +197,15 @@ export class ConnectionHandler {
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/per-order-widget`,
       version
         ? Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        )
+            {},
+            body,
+            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+          )
         : Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-        ),
+            {},
+            body,
+            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+          ),
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
@@ -229,15 +259,15 @@ export class ConnectionHandler {
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/by-percentage-widget`,
       version
         ? Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        )
+            {},
+            body,
+            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+          )
         : Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-        ),
+            {},
+            body,
+            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+          ),
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
@@ -268,15 +298,15 @@ export class ConnectionHandler {
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/by-percentage-of-revenue-widget`,
       version
         ? Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        )
+            {},
+            body,
+            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+          )
         : Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-        ),
+            {},
+            body,
+            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+          ),
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
@@ -307,15 +337,15 @@ export class ConnectionHandler {
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/tiered-spend-level-widget`,
       version
         ? Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        )
+            {},
+            body,
+            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+          )
         : Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-        ),
+            {},
+            body,
+            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+          ),
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
@@ -346,15 +376,15 @@ export class ConnectionHandler {
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/per-product-widget`,
       version
         ? Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        )
+            {},
+            body,
+            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+          )
         : Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-        ),
+            {},
+            body,
+            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+          ),
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },

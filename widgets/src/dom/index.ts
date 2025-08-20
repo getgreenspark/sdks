@@ -1,4 +1,4 @@
-import { DEFAULT_CONTAINER_CSS_SELECTOR } from '@/constants'
+import {DEFAULT_CONTAINER_CSS_SELECTOR} from '@/constants'
 
 export class DOMInjector {
   containerSelector: string
@@ -20,7 +20,7 @@ export class DOMInjector {
       return container
     }
 
-    return container.shadowRoot ?? container.attachShadow({ mode: 'open' })
+    return container.shadowRoot ?? container.attachShadow({mode: 'open'})
   }
 
   inject(widget: HTMLElement, containerSelector?: string) {
@@ -46,7 +46,7 @@ export class DOMInjector {
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
       scripts.forEach((s) => eval(s.innerHTML))
     } else {
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', function () {
         scripts.forEach((s) => eval(s.innerHTML))
       })
     }

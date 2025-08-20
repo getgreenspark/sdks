@@ -71,58 +71,57 @@ export interface CartWidgetBaseParams {
   order: StoreOrder
 }
 
+export interface CustomerCartContributionWidgetBaseParams {
+  order: StoreOrder
+}
+
 export interface CartWidgetParams
   extends CartWidgetBaseParams,
     WidgetParams,
     WidgetPopupParams,
-    WidgetStyleParams {
-}
+    WidgetStyleParams {}
 
 export interface CartWidgetByIdParams
   extends WidgetParams,
     WidgetByIdParams,
-    CartWidgetBaseParams {
-}
+    CartWidgetBaseParams {}
+
+export interface CustomerCartContributionWidgetParams
+  extends CustomerCartContributionWidgetBaseParams,
+    WidgetParams,
+    WidgetPopupParams,
+    WidgetStyleParams {}
 
 export interface SpendLevelWidgetParams
   extends WidgetCurrencyParams,
     WidgetParams,
     WidgetPopupParams,
-    WidgetStyleParams {
-}
+    WidgetStyleParams {}
 
 export interface SpendLevelWidgetByIdParams
   extends WidgetParams,
     WidgetByIdParams,
-    WidgetCurrencyParams {
-}
+    WidgetCurrencyParams {}
 
-export interface PerOrderWidgetParams extends WidgetParams, WidgetPopupParams, WidgetStyleParams {
-}
+export interface PerOrderWidgetParams extends WidgetParams, WidgetPopupParams, WidgetStyleParams {}
 
-export interface PerOrderWidgetByIdParams extends WidgetByIdParams, WidgetParams {
-}
+export interface PerOrderWidgetByIdParams extends WidgetByIdParams, WidgetParams {}
 
-export interface PerPurchaseWidgetParams extends WidgetPopupParams, WidgetStyleParams {
-}
+export interface PerPurchaseWidgetParams extends WidgetPopupParams, WidgetStyleParams {}
 
 export interface ByPercentageWidgetParams
   extends WidgetParams,
     WidgetPopupParams,
-    WidgetStyleParams {
-}
+    WidgetStyleParams {}
 
-export interface ByPercentageWidgetByIdParams extends WidgetByIdParams, WidgetParams {
-}
+export interface ByPercentageWidgetByIdParams extends WidgetByIdParams, WidgetParams {}
 
 export interface ByPercentageOfRevenueWidgetParams
   extends WidgetParams,
     WidgetPopupParams,
-    WidgetStyleParams {
-}
+    WidgetStyleParams {}
 
-export interface ByPercentageOfRevenueWidgetByIdParams extends WidgetByIdParams, WidgetParams {
-}
+export interface ByPercentageOfRevenueWidgetByIdParams extends WidgetByIdParams, WidgetParams {}
 
 export interface TieredSpendLevelWidgetParams
   extends WidgetParams,
@@ -148,16 +147,14 @@ export interface TopStatsWidgetParams extends WidgetParams, WidgetPopupParams {
   impactTypes?: (typeof IMPACT_TYPES)[number][]
 }
 
-export interface TopStatsWidgetByIdParams extends WidgetByIdParams, WidgetParams {
-}
+export interface TopStatsWidgetByIdParams extends WidgetByIdParams, WidgetParams {}
 
 export interface StaticWidgetParams extends WidgetParams {
   color: WidgetColor
   style?: StaticWidgetStyle
 }
 
-export interface StaticWidgetByIdParams extends WidgetByIdParams, WidgetParams {
-}
+export interface StaticWidgetByIdParams extends WidgetByIdParams, WidgetParams {}
 
 export interface FullWidthBannerWidgetParams extends WidgetParams {
   options: Array<(typeof AVAILABLE_STATISTIC_TYPES)[number]>
@@ -170,11 +167,12 @@ export interface FullWidthBannerWidgetParams extends WidgetParams {
   buttonTextColor?: string
 }
 
-export interface FullWidthBannerWidgetByIdParams extends WidgetByIdParams, WidgetParams {
-}
+export interface FullWidthBannerWidgetByIdParams extends WidgetByIdParams, WidgetParams {}
 
 export type CartWidgetRequestBody = ExternalShopContext & CartWidgetParams
 export type CartWidgetByIdRequestBody = ExternalShopContext & CartWidgetByIdParams
+export type CustomerCartContributionWidgetRequestBody = ExternalShopContext &
+  CustomerCartContributionWidgetParams
 export type SpendLevelRequestBody = ExternalShopContext & SpendLevelWidgetParams
 export type SpendLevelWidgetByIdRequestBody = ExternalShopContext & SpendLevelWidgetByIdParams
 export type PerOrderRequestBody = ExternalShopContext & PerOrderWidgetParams
