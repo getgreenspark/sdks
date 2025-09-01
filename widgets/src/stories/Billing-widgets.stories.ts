@@ -1,17 +1,18 @@
-import { createWidgetPage } from '@/stories/Widgets'
-import { AVAILABLE_LOCALES, DEFAULT_LOCALE, POPUP_THEMES, WIDGET_COLORS } from '@/constants'
-import type { StoryObj, Meta } from '@storybook/html'
+import {createWidgetPage} from '@/stories/Widgets'
+import {AVAILABLE_LOCALES, DEFAULT_LOCALE, POPUP_THEMES, WIDGET_COLORS} from '@/constants'
+import type {Meta, StoryObj} from '@storybook/html'
 import type {
-  ByPercentageWidgetParams,
   ByPercentageOfRevenueWidgetParams,
+  ByPercentageWidgetParams,
+  PerProductWidgetParams,
   PerPurchaseWidgetParams,
   SpendLevelWidgetParams,
   TieredSpendLevelWidgetParams,
   WidgetParams,
 } from '@/interfaces'
 import GreensparkWidgets from '@/index'
-import type { Widget } from '@/widgets/base'
-import { BILLING_USERS as USERS } from '@/stories/users'
+import type {Widget} from '@/widgets/base'
+import {BILLING_USERS as USERS} from '@/stories/users'
 
 type WIDGET_VARIANTS =
   | 'byPercentage'
@@ -19,12 +20,13 @@ type WIDGET_VARIANTS =
   | 'perPurchase'
   | 'spendLevel'
   | 'tieredSpendLevel'
+  | 'perProduct'
 
 const meta = {
   title: 'Widget SDK/Billing Widgets',
   tags: ['autodocs'],
   render: (args) => {
-    const { apiKey, integrationSlug, widgetType, widgetArgs, locale, user } = args
+    const {apiKey, integrationSlug, widgetType, widgetArgs, locale, user} = args
 
     const widgets = new GreensparkWidgets({
       apiKey: apiKey || USERS[user].apiKey,
@@ -33,8 +35,8 @@ const meta = {
     })
 
     const variants = [
-      { version: 'v2', style: 'default' },
-      { version: 'v2', style: 'simplified' },
+      {version: 'v2', style: 'default'},
+      {version: 'v2', style: 'simplified'},
     ]
 
     let widget: Widget
@@ -59,6 +61,10 @@ const meta = {
         widget = widgets.tieredSpendLevel(widgetArgs as TieredSpendLevelWidgetParams)
         return createWidgetPage(widgetType, widget, WIDGET_COLORS, variants)
 
+      case 'perProduct':
+        widget = widgets.perProduct(widgetArgs as PerProductWidgetParams)
+        return createWidgetPage(widgetType, widget, WIDGET_COLORS, variants)
+
       default:
         widget = widgets.byPercentage(widgetArgs as ByPercentageWidgetParams)
         return createWidgetPage(widgetType, widget, WIDGET_COLORS, variants)
@@ -66,11 +72,11 @@ const meta = {
   },
   argTypes: {
     user: {
-      control: { type: 'select' },
+      control: {type: 'select'},
       options: Object.keys(USERS),
     },
     locale: {
-      control: { type: 'select' },
+      control: {type: 'select'},
       options: AVAILABLE_LOCALES,
     },
     apiKey: {
@@ -92,11 +98,11 @@ const meta = {
   },
 } satisfies Meta<
   GreensparkWidgets & {
-    widgetType: WIDGET_VARIANTS
-    widgetArgs: unknown
-    locale: (typeof AVAILABLE_LOCALES)[number]
-    user: keyof typeof USERS
-  }
+  widgetType: WIDGET_VARIANTS
+  widgetArgs: unknown
+  locale: (typeof AVAILABLE_LOCALES)[number]
+  user: keyof typeof USERS
+}
 >
 
 export default meta
@@ -108,13 +114,13 @@ export const ByPercentage: StoryObj<{
 }> = {
   argTypes: {
     widgetArgs: {
-      withPopup: { control: 'boolean' },
+      withPopup: {control: 'boolean'},
       popupTheme: {
-        control: { type: 'select' },
+        control: {type: 'select'},
         options: POPUP_THEMES,
       },
       color: {
-        control: { type: 'select' },
+        control: {type: 'select'},
         options: WIDGET_COLORS,
       },
     },
@@ -134,13 +140,13 @@ export const ByPercentageOfRevenue: StoryObj<{
 }> = {
   argTypes: {
     widgetArgs: {
-      withPopup: { control: 'boolean' },
+      withPopup: {control: 'boolean'},
       popupTheme: {
-        control: { type: 'select' },
+        control: {type: 'select'},
         options: POPUP_THEMES,
       },
       color: {
-        control: { type: 'select' },
+        control: {type: 'select'},
         options: WIDGET_COLORS,
       },
     },
@@ -160,14 +166,14 @@ export const PerPurchase: StoryObj<{
 }> = {
   argTypes: {
     widgetArgs: {
-      withPopup: { control: 'boolean' },
+      withPopup: {control: 'boolean'},
       popupTheme: {
-        control: { type: 'select' },
+        control: {type: 'select'},
         options: POPUP_THEMES,
       },
-      currency: { control: 'text' },
+      currency: {control: 'text'},
       color: {
-        control: { type: 'select' },
+        control: {type: 'select'},
         options: WIDGET_COLORS,
       },
     },
@@ -187,14 +193,14 @@ export const SpendLevel: StoryObj<{
 }> = {
   argTypes: {
     widgetArgs: {
-      currency: { control: 'text' },
-      withPopup: { control: 'boolean' },
+      currency: {control: 'text'},
+      withPopup: {control: 'boolean'},
       popupTheme: {
-        control: { type: 'select' },
+        control: {type: 'select'},
         options: POPUP_THEMES,
       },
       color: {
-        control: { type: 'select' },
+        control: {type: 'select'},
         options: WIDGET_COLORS,
       },
     },
@@ -215,14 +221,14 @@ export const TieredSpendLevel: StoryObj<{
 }> = {
   argTypes: {
     widgetArgs: {
-      withPopup: { control: 'boolean' },
+      withPopup: {control: 'boolean'},
       popupTheme: {
-        control: { type: 'select' },
+        control: {type: 'select'},
         options: POPUP_THEMES,
       },
-      currency: { control: 'text' },
+      currency: {control: 'text'},
       color: {
-        control: { type: 'select' },
+        control: {type: 'select'},
         options: WIDGET_COLORS,
       },
     },
@@ -234,5 +240,29 @@ export const TieredSpendLevel: StoryObj<{
       color: 'beige',
     },
     widgetType: 'tieredSpendLevel',
+  },
+}
+
+export const PerProduct: StoryObj<{
+  widgetArgs: PerProductWidgetParams
+  widgetType: keyof GreensparkWidgets
+}> = {
+  argTypes: {
+    widgetArgs: {
+      productId: {control: 'text'},
+      withPopup: {control: 'boolean'},
+      color: {
+        control: {type: 'select'},
+        options: WIDGET_COLORS,
+      },
+    },
+  },
+  args: {
+    widgetArgs: {
+      productId: undefined,
+      withPopup: true,
+      color: 'beige',
+    },
+    widgetType: 'perProduct',
   },
 }
