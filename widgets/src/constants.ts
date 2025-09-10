@@ -1,4 +1,4 @@
-export const AVAILABLE_LOCALES = ['en', 'de', 'fr', 'es', 'nl', 'it'] as const
+export const AVAILABLE_LOCALES = ['en', 'de', 'fr', 'es', 'nl', 'it', 'cs'] as const
 export const DEFAULT_LOCALE = 'en' as const
 
 export const DEFAULT_CONTAINER_CSS_SELECTOR = '[data-greenspark-widget-container]' as const
