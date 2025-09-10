@@ -1,5 +1,5 @@
-import type {ShopifyCart} from './interfaces'
-import {EnumToWidgetTypeMap} from './interfaces'
+import type { ShopifyCart } from './interfaces'
+import { EnumToWidgetTypeMap } from './interfaces'
 
 const scriptSrc = document.currentScript?.getAttribute('src')
 const isDevStore = window.location.hostname.includes('greenspark-development-store')
@@ -16,7 +16,7 @@ function parseCart(cart: ShopifyCart) {
     productId: item.product_id.toString(),
     quantity: item.quantity,
   }))
-  const {currency} = cart
+  const { currency } = cart
   const totalPrice = cart.total_price
   return {
     lineItems,
@@ -29,7 +29,7 @@ function runGreenspark() {
   if (!scriptSrc) return
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', runGreenspark, {once: true})
+    document.addEventListener('DOMContentLoaded', runGreenspark, { once: true })
   }
 
   if (!window.GreensparkWidgets) {
@@ -103,7 +103,7 @@ function runGreenspark() {
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
                   },
-                  body: JSON.stringify({items: [{id: parseInt(productId), quantity: 1}]}),
+                  body: JSON.stringify({ items: [{ id: parseInt(productId), quantity: 1 }] }),
                 })
                   .then((r) => r.json())
                   .then(refreshCartDrawer)
@@ -122,7 +122,7 @@ function runGreenspark() {
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
                   },
-                  body: JSON.stringify({updates}),
+                  body: JSON.stringify({ updates }),
                 })
               })
               .then((response) => {
@@ -162,8 +162,7 @@ function runGreenspark() {
             const present = cart.items.some((item) => String(item.id) === productId)
             checkbox.checked = present
           })
-          .catch(() => {
-          })
+          .catch(() => {})
       }
 
       bindCheckbox()
@@ -207,7 +206,7 @@ function runGreenspark() {
           const order = parseCart(updatedCart)
           if (order.lineItems.length <= 0) return
           return window
-            .greensparkCartWidget!.render({order}, containerSelector)
+            .greensparkCartWidget!.render({ order }, containerSelector)
             .then(() => {
               movePopupToBody(widgetId)
 
@@ -240,7 +239,7 @@ function runGreenspark() {
         const order = parseCart(updatedCart)
         if (order.lineItems.length <= 0) return
         return widget
-          .render({order}, containerSelector)
+          .render({ order }, containerSelector)
           .then(() => movePopupToBody(widgetId))
           .catch((e: Error) => console.error('Greenspark Widget - ', e))
       })
@@ -401,8 +400,8 @@ function runGreenspark() {
       outdatedPopup.style.display = 'none'
     })
 
-    const parent = document.getElementById(widgetId);
-    const popup = parent?.querySelector<HTMLElement>('div[class^="gs-popup-"]');
+    const parent = document.getElementById(widgetId)
+    const popup = parent?.querySelector<HTMLElement>('div[class^="gs-popup-"]')
     if (popup) {
       document.body.append(popup)
       popupHistory.push(popup)
@@ -513,7 +512,7 @@ async function setup() {
         () => {
           setup().then(resolve)
         },
-        {once: true},
+        { once: true },
       )
     })
   }
@@ -530,7 +529,7 @@ async function setup() {
 setup().catch((e) => console.error('Greenspark Widget -', e))
 
 if (!window.GreensparkWidgets) {
-  window.addEventListener('greenspark-setup', runGreenspark, {once: true})
+  window.addEventListener('greenspark-setup', runGreenspark, { once: true })
 } else {
   runGreenspark()
 }
@@ -543,18 +542,11 @@ if (!window.GreensparkWidgets) {
 
     response
       .then((res) => {
-        if (
-          [
-            `${window.location.origin}/cart/add`,
-            `${window.location.origin}/cart/update`,
-            `${window.location.origin}/cart/change`,
-            `${window.location.origin}/cart/clear`,
-            `${window.location.origin}/cart/add.js`,
-            `${window.location.origin}/cart/update.js`,
-            `${window.location.origin}/cart/change.js`,
-            `${window.location.origin}/cart/clear.js`,
-          ].includes(res.url)
-        ) {
+        const url = new URL(res.url, window.location.origin)
+        const pathname = url.pathname
+        const isCartMutation = /\/cart\/(add|update|change|clear)(\.js)?$/.test(pathname)
+
+        if (isCartMutation) {
           setTimeout(() => {
             runGreenspark()
           }, 100)
@@ -562,7 +554,7 @@ if (!window.GreensparkWidgets) {
       })
       .catch((error) => {
         console.error('Error in fetch response handling:', error)
-      }) // log errors for debugging
+      })
 
     return response
   }
