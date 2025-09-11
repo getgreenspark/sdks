@@ -267,18 +267,14 @@ function runGreenspark() {
             },
           ]
 
-          let updated = false
           for (const target of pageTargets) {
             if (!target.existing) continue
             const candidateNew = target.findNew(newCartDocItems) || target.findNew(newCartDocMain)
             if (candidateNew && candidateNew.innerHTML !== undefined) {
               ;(target.existing as Element).innerHTML = candidateNew.innerHTML
-              updated = true
               break
             }
           }
-
-          if (!updated) window.location.reload()
         })
         .catch((error) => {
           console.error('Greenspark Widget - Error refreshing cart UI:', error)
