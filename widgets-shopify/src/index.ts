@@ -156,10 +156,40 @@ function runGreenspark() {
         if (!checkbox) return
         const productId = checkbox.getAttribute('data-greenspark-product-external-id')
         if (!productId) return
+        const PREVIEW_EXTERNAL_ID = 'PREVIEW_EXTERNAL_ID'
+        const isPreviewProduct = productId === PREVIEW_EXTERNAL_ID
+
+        const preSelectedAttr = checkbox.getAttribute('data-greenspark-widget-pre-selected')
+        const isCheckboxPreSelected = preSelectedAttr === 'true'
+
         fetch('/cart.js')
           .then((r) => r.json())
           .then((cart: { items: { id?: string | number }[] }) => {
             const present = cart.items.some((item) => String(item.id) === productId)
+            if (
+              isCheckboxPreSelected &&
+              !present &&
+              !isPreviewProduct &&
+              !Number.isNaN(parseInt(productId, 10))
+            ) {
+              return fetch('/cart/add.js', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Accept: 'application/json',
+                },
+                body: JSON.stringify({ items: [{ id: parseInt(productId, 10), quantity: 1 }] }),
+              })
+                .then((r) => r.json())
+                .then(() => {
+                  checkbox.checked = true
+                  refreshCartDrawer()
+                })
+                .catch((err) => {
+                  console.error('Greenspark Widget - pre-selected add error', err)
+                  checkbox.checked = present
+                })
+            }
             checkbox.checked = present
           })
           .catch(() => {})
