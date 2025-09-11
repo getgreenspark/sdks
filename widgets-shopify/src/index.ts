@@ -110,6 +110,18 @@ function runGreenspark() {
     }
 
     const ensureHandlers = () => {
+      const WIDGET_PRESELECT_OPT_OUT_KEY = 'greenspark-preselect-optout'
+
+      const isWidgetPreselectOptedOut = (): boolean => {
+        try {
+          return localStorage.getItem(WIDGET_PRESELECT_OPT_OUT_KEY) === '1'
+        } catch {
+          return false
+        }
+      }
+      const setWidgetPreselectOptOut = () => localStorage.setItem(WIDGET_PRESELECT_OPT_OUT_KEY, '1')
+      const clearWidgetPreselectOptOut = () => localStorage.removeItem(WIDGET_PRESELECT_OPT_OUT_KEY)
+
       const updateCheckboxState = (checkbox: HTMLInputElement, productId: string) => {
         getCart()
           .then((cart) => {
@@ -134,7 +146,7 @@ function runGreenspark() {
           if (!productId || isPreviewProduct) return
 
           if (checkbox.checked) {
-            window._greensparkPreselectOptOut = false
+            clearWidgetPreselectOptOut()
 
             getCart()
               .then((cart) => {
@@ -143,7 +155,7 @@ function runGreenspark() {
               })
               .catch((err) => console.error('Greenspark Widget - add error', err))
           } else {
-            window._greensparkPreselectOptOut = true
+            setWidgetPreselectOptOut()
 
             getCart()
               .then((cart) => {
@@ -172,7 +184,7 @@ function runGreenspark() {
           if (!checkbox) return
           const productId = checkbox.getAttribute('data-greenspark-product-external-id')
           if (!productId) return
-          window._greensparkPreselectOptOut = true
+          setWidgetPreselectOptOut()
           setTimeout(() => {
             updateCheckboxState(checkbox, productId)
           }, 400)
@@ -197,7 +209,7 @@ function runGreenspark() {
               isCheckboxPreSelected &&
               !present &&
               !isPreviewProduct &&
-              !window._greensparkPreselectOptOut &&
+              !isWidgetPreselectOptedOut() &&
               !Number.isNaN(parseInt(productId, 10))
             ) {
               return addItemToCart(productId, 1)
