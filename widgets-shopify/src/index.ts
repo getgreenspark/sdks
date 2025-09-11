@@ -149,6 +149,7 @@ function runGreenspark() {
           if (!checkbox) return
           const productId = checkbox.getAttribute('data-greenspark-product-external-id')
           if (!productId) return
+          window._greensparkPreselectOptOut = true
           setTimeout(() => {
             updateCheckboxState(checkbox, productId)
           }, 400)
