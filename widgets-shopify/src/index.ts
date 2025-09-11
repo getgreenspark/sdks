@@ -62,16 +62,57 @@ function runGreenspark() {
     isShopifyIntegration: true,
   })
 
+  const CART_ENDPOINTS = {
+    get: '/cart.js',
+    add: '/cart/add.js',
+    update: '/cart/update.js',
+  }
+
+  function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
+    return fetch(url, options).then((response) => {
+      if (!response.ok) return Promise.reject(response)
+      return response.json() as Promise<T>
+    })
+  }
+
+  function getCart(): Promise<ShopifyCart> {
+    return fetchJSON<ShopifyCart>(CART_ENDPOINTS.get)
+  }
+
+  function addItemToCart(targetProductId: string, quantity = 1): Promise<unknown> {
+    return fetchJSON(CART_ENDPOINTS.add, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ items: [{ id: parseInt(targetProductId, 10), quantity }] }),
+    })
+  }
+
+  function updateCart(updates: Record<string, number>): Promise<Response> {
+    return fetch(CART_ENDPOINTS.update, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ updates }),
+    })
+  }
+
   const renderOrderImpacts = (widgetId: string, containerSelector: string) => {
     const checkboxSelector = "input[name='customerCartContribution']"
     const getCheckbox = () => document.querySelector<HTMLInputElement>(checkboxSelector)
     const prevChecked = getCheckbox() ? getCheckbox()!.checked : undefined
 
+    const SELECTORS = {
+      cartDrawerForm: '#CartDrawer-Form',
+      cartDrawer: '#CartDrawer',
+      mainCartItems: '#main-cart-items',
+      mainCart: '#main-cart',
+      interactiveCart: 'interactive-cart',
+      cartItemsForm: 'cart-items[form-id]',
+    }
+
     const ensureHandlers = () => {
       const updateCheckboxState = (checkbox: HTMLInputElement, productId: string) => {
-        fetch('/cart.js')
-          .then((r) => r.json())
-          .then((cart: { items: { id?: string | number }[] }) => {
+        getCart()
+          .then((cart) => {
             const matchingItem = cart.items.find((item) => String(item.id) === productId)
             checkbox.checked = Boolean(matchingItem)
           })
@@ -95,39 +136,21 @@ function runGreenspark() {
           if (checkbox.checked) {
             window._greensparkPreselectOptOut = false
 
-            fetch('/cart.js')
-              .then((r) => r.json())
-              .then((cart: { items: { id?: string | number }[] }) => {
+            getCart()
+              .then((cart) => {
                 if (cart.items.find((item) => String(item.id) === productId)) return
-                return fetch('/cart/add.js', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                  },
-                  body: JSON.stringify({ items: [{ id: parseInt(productId), quantity: 1 }] }),
-                })
-                  .then((r) => r.json())
-                  .then(refreshCartDrawer)
+                return addItemToCart(productId, 1).then(() => refreshCartDrawer())
               })
               .catch((err) => console.error('Greenspark Widget - add error', err))
           } else {
             window._greensparkPreselectOptOut = true
 
-            fetch('/cart.js')
-              .then((r) => r.json())
-              .then((cart: { items: { id?: string | number }[] }) => {
+            getCart()
+              .then((cart) => {
                 if (!cart.items.find((item) => String(item.id) === productId)) return
                 const updates: Record<string, number> = {}
                 updates[productId] = 0
-                return fetch('/cart/update.js', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                  },
-                  body: JSON.stringify({ updates }),
-                })
+                return updateCart(updates)
               })
               .then((response) => {
                 if (response && (response as Response).ok) refreshCartDrawer()
@@ -167,9 +190,8 @@ function runGreenspark() {
         const preSelectedAttr = checkbox.getAttribute('data-greenspark-widget-pre-selected')
         const isCheckboxPreSelected = preSelectedAttr === 'true'
 
-        fetch('/cart.js')
-          .then((r) => r.json())
-          .then((cart: { items: { id?: string | number }[] }) => {
+        getCart()
+          .then((cart) => {
             const present = cart.items.some((item) => String(item.id) === productId)
             if (
               isCheckboxPreSelected &&
@@ -178,15 +200,7 @@ function runGreenspark() {
               !window._greensparkPreselectOptOut &&
               !Number.isNaN(parseInt(productId, 10))
             ) {
-              return fetch('/cart/add.js', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  Accept: 'application/json',
-                },
-                body: JSON.stringify({ items: [{ id: parseInt(productId, 10), quantity: 1 }] }),
-              })
-                .then((r) => r.json())
+              return addItemToCart(productId, 1)
                 .then(() => {
                   checkbox.checked = true
                   refreshCartDrawer()
@@ -208,26 +222,63 @@ function runGreenspark() {
 
     const refreshCartDrawer = () => {
       const root = window.Shopify?.routes?.root ?? '/'
-      fetch(`${root}?sections=cart-drawer,main-cart-items`)
+      fetch(`${root}?sections=cart-drawer,main-cart-items,main-cart`)
         .then((response) => {
           if (!response.ok) return
           return response.json()
         })
         .then((sections) => {
-          if (!sections) return
           const parser = new DOMParser()
-          const existingDrawer = document.querySelector('#CartDrawer-Form')
+
+          const existingDrawer =
+            document.querySelector(SELECTORS.cartDrawerForm) ||
+            document.querySelector(SELECTORS.cartDrawer)
           if (existingDrawer && sections['cart-drawer']) {
             const newDrawerDoc = parser.parseFromString(sections['cart-drawer'], 'text/html')
-            const newDrawerContent = newDrawerDoc.querySelector('#CartDrawer-Form')?.innerHTML
+            const newDrawerContent =
+              newDrawerDoc.querySelector(SELECTORS.cartDrawerForm)?.innerHTML ??
+              newDrawerDoc.querySelector(SELECTORS.cartDrawer)?.innerHTML
             if (newDrawerContent !== undefined) existingDrawer.innerHTML = newDrawerContent
           }
-          const cartPageSection = document.querySelector('#main-cart-items')
-          if (cartPageSection && sections['main-cart-items']) {
-            const newCartDoc = parser.parseFromString(sections['main-cart-items'], 'text/html')
-            const newCartContent = newCartDoc.querySelector('#main-cart-items')?.innerHTML
-            if (newCartContent !== undefined) cartPageSection.innerHTML = newCartContent
+
+          const newCartDocItems = sections['main-cart-items']
+            ? parser.parseFromString(sections['main-cart-items'], 'text/html')
+            : null
+          const newCartDocMain = sections['main-cart']
+            ? parser.parseFromString(sections['main-cart'], 'text/html')
+            : null
+
+          const pageTargets = [
+            {
+              existing: document.querySelector(SELECTORS.mainCartItems),
+              findNew: (doc: Document | null) => doc?.querySelector(SELECTORS.mainCartItems),
+            },
+            {
+              existing: document.querySelector(SELECTORS.interactiveCart),
+              findNew: (doc: Document | null) => doc?.querySelector(SELECTORS.interactiveCart),
+            },
+            {
+              existing: document.querySelector(SELECTORS.mainCart),
+              findNew: (doc: Document | null) => doc?.querySelector(SELECTORS.mainCart),
+            },
+            {
+              existing: document.querySelector(SELECTORS.cartItemsForm),
+              findNew: (doc: Document | null) => doc?.querySelector(SELECTORS.cartItemsForm),
+            },
+          ]
+
+          let updated = false
+          for (const target of pageTargets) {
+            if (!target.existing) continue
+            const candidateNew = target.findNew(newCartDocItems) || target.findNew(newCartDocMain)
+            if (candidateNew && candidateNew.innerHTML !== undefined) {
+              ;(target.existing as Element).innerHTML = candidateNew.innerHTML
+              updated = true
+              break
+            }
           }
+
+          if (!updated) window.location.reload()
         })
         .catch((error) => {
           console.error('Greenspark Widget - Error refreshing cart UI:', error)
