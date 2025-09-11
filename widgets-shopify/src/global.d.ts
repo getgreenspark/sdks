@@ -7,9 +7,10 @@ declare global {
     GreensparkWidgets: typeof GreensparkWidgets
     Shopify: Shopify
     ShopifyAnalytics: ShopifyAnalytics
-  greensparkCartWidget?: CartWidgetById
-  _greensparkCheckboxHandlerBound?: boolean
-  _greensparkRemoveHandlerBound?: boolean
+    greensparkCartWidget?: CartWidgetById
+    _greensparkCheckboxHandlerBound?: boolean
+    _greensparkRemoveHandlerBound?: boolean
+    _greensparkPreselectOptOut?: boolean
   }
 }
 

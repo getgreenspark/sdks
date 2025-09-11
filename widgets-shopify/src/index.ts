@@ -93,6 +93,8 @@ function runGreenspark() {
           if (!productId || isPreviewProduct) return
 
           if (checkbox.checked) {
+            window._greensparkPreselectOptOut = false
+
             fetch('/cart.js')
               .then((r) => r.json())
               .then((cart: { items: { id?: string | number }[] }) => {
@@ -110,6 +112,8 @@ function runGreenspark() {
               })
               .catch((err) => console.error('Greenspark Widget - add error', err))
           } else {
+            window._greensparkPreselectOptOut = true
+
             fetch('/cart.js')
               .then((r) => r.json())
               .then((cart: { items: { id?: string | number }[] }) => {
@@ -170,6 +174,7 @@ function runGreenspark() {
               isCheckboxPreSelected &&
               !present &&
               !isPreviewProduct &&
+              !window._greensparkPreselectOptOut &&
               !Number.isNaN(parseInt(productId, 10))
             ) {
               return fetch('/cart/add.js', {
