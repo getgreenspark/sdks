@@ -332,37 +332,35 @@ function runGreenspark() {
         })
     }
 
-    const widget = greenspark.cartById({
-      widgetId,
-      containerSelector,
-      useShadowDom,
-      order: parseCart(initialCart),
-      version,
-    })
-
-    const key = `greensparkCartWidget-${widgetId}` as GreensparkCartWidgetKey
-    window[key] = widget
-    widget
-      .render()
-      .then(() => movePopupToBody(widgetId))
-      .then(() => fetch('/cart.js'))
+    // Fetch cart data first before creating the widget
+    fetch('/cart.js')
       .then((r) => {
-        console.log('Greenspark Widget - fetched cart after render 1', r.ok)
+        console.log('Greenspark Widget - fetched cart before widget creation', r.ok)
         return r?.json()
       })
-      .then((updatedCart) => {
-        console.log('Greenspark Widget - fetched cart after render 2', updatedCart)
-        if (!updatedCart) return
-        const order = parseCart(updatedCart)
-        console.log('order', order)
-        if (order.lineItems.length <= 0) return
+      .then((cartData) => {
+        console.log('Greenspark Widget - cart data before widget creation', cartData)
+        const order = parseCart(cartData || initialCart)
+        console.log('Greenspark Widget - parsed order', order)
+
+        const widget = greenspark.cartById({
+          widgetId,
+          containerSelector,
+          useShadowDom,
+          order,
+          version,
+        })
+
+        const key = `greensparkCartWidget-${widgetId}` as GreensparkCartWidgetKey
+        window[key] = widget
+
         return widget
-          .render({order}, containerSelector)
+          .render()
           .then(() => movePopupToBody(widgetId))
+          .then(ensureHandlers)
           .catch((e: Error) => console.error('Greenspark Widget - ', e))
       })
-      .then(ensureHandlers)
-      .catch((e: unknown) => console.error('Greenspark Widget - ', e))
+      .catch((e: unknown) => console.error('Greenspark Widget - Error fetching cart:', e))
   }
 
   const renderOffsetPerOrder = (widgetId: string, containerSelector: string) => {
