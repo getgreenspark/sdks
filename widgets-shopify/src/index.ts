@@ -34,7 +34,6 @@ function runGreenspark() {
 
   // Allow initial run even if isRendering is true (in case of race conditions)
   if (isRendering && hasInitialRun) {
-    console.log('Greenspark Widget - Already rendering, skipping recursive call')
     return
   }
 
@@ -110,8 +109,6 @@ function runGreenspark() {
   }
 
   const renderOrderImpacts = (widgetId: string, containerSelector: string) => {
-    console.log('renderOrderImpacts called', widgetId, 'containerSelector:', containerSelector)
-    console.log('Container element exists:', document.querySelector(containerSelector))
     const checkboxSelector = "input[name='customerCartContribution']"
     const getCheckbox = () => document.querySelector<HTMLInputElement>(checkboxSelector)
     const prevChecked = getCheckbox() ? getCheckbox()!.checked : undefined
@@ -335,13 +332,10 @@ function runGreenspark() {
     // Fetch cart data first before creating the widget
     fetch('/cart.js')
       .then((r) => {
-        console.log('Greenspark Widget - fetched cart before widget creation', r.ok)
         return r?.json()
       })
       .then((cartData) => {
-        console.log('Greenspark Widget - cart data before widget creation', cartData)
         const order = parseCart(cartData || initialCart)
-        console.log('Greenspark Widget - parsed order', order)
 
         const widget = greenspark.cartById({
           widgetId,
@@ -525,7 +519,6 @@ function runGreenspark() {
   }
 
   const targets = document.querySelectorAll('.greenspark-widget-target')
-  console.log('Found targets:', targets.length, Array.from(targets).map(t => t.id))
 
   // Add styles for widget targets
   if (!document.getElementById('greenspark-widget-style')) {
@@ -671,15 +664,11 @@ if (!window.GreensparkWidgets) {
         const url = new URL(res.url, window.location.origin)
         const pathname = url.pathname
         const isCartMutation = /^\/cart\/(?:add|update|change|clear)\.js$/.test(pathname)
-        console.log('isCartMutation', isCartMutation, pathname)
 
         if (isCartMutation && !isRendering) {
-          console.log('Greenspark Widget - Cart mutation detected, scheduling runGreenspark')
           setTimeout(() => {
             runGreenspark()
           }, 100)
-        } else if (isCartMutation && isRendering) {
-          console.log('Greenspark Widget - Cart mutation detected but already rendering, skipping')
         }
       })
       .catch((error) => {
