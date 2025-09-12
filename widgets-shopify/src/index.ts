@@ -331,7 +331,7 @@ function runGreenspark() {
           if (!container) {
             console.warn('Greenspark Widget - Container not found (likely due to Shopify drawer redraw), recreating widget')
             delete window[cartWidgetWindowKey]
-            // Fall through to create new widget below
+            // Continue to create new widget below
           } else {
             return window[cartWidgetWindowKey]!.render({order}, containerSelector)
               .then(() => {
@@ -344,6 +344,32 @@ function runGreenspark() {
               })
               .then(ensureHandlers)
               .catch((e: unknown) => console.error('Greenspark Widget - ', e))
+          }
+        })
+        .then(() => {
+          // If we deleted the widget above, create a new one
+          if (!window[cartWidgetWindowKey]) {
+            return fetch('/cart.js')
+              .then((r) => r.json())
+              .then((cartData) => {
+                const order = parseCart(cartData || initialCart)
+
+                const widget = greenspark.cartById({
+                  widgetId,
+                  containerSelector,
+                  useShadowDom,
+                  order,
+                  version,
+                })
+
+                window[cartWidgetWindowKey] = widget
+
+                return widget
+                  .render({order}, containerSelector)
+                  .then(() => movePopupToBody(widgetId))
+                  .then(ensureHandlers)
+                  .catch((e: Error) => console.error('Greenspark Widget - ', e))
+              })
           }
         })
     }
