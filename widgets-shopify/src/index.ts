@@ -263,7 +263,19 @@ function runGreenspark() {
             const newDrawerContent =
               newDrawerDoc.querySelector(SELECTORS.cartDrawerForm)?.innerHTML ??
               newDrawerDoc.querySelector(SELECTORS.cartDrawer)?.innerHTML
-            if (newDrawerContent !== undefined) existingDrawer.innerHTML = newDrawerContent
+            if (newDrawerContent !== undefined) {
+              existingDrawer.innerHTML = newDrawerContent
+              // After drawer refresh, check if we need to recreate widgets
+              setTimeout(() => {
+                const container = document.querySelector(containerSelector)
+                if (!container && window[cartWidgetWindowKey]) {
+                  console.log('Greenspark Widget - Container lost after drawer refresh, recreating widget')
+                  delete window[cartWidgetWindowKey]
+                  // Trigger widget recreation by calling runGreenspark
+                  runGreenspark()
+                }
+              }, 100)
+            }
           }
 
           const newCartDocItems = sections['main-cart-items']
@@ -313,17 +325,26 @@ function runGreenspark() {
         .then((updatedCart) => {
           const order = parseCart(updatedCart)
           if (order.lineItems.length <= 0) return
-          return window[cartWidgetWindowKey]!.render({order}, containerSelector)
-            .then(() => {
-              movePopupToBody(widgetId)
 
-              if (typeof prevChecked === 'boolean') {
-                const cb = getCheckbox()
-                if (cb) cb.checked = prevChecked
-              }
-            })
-            .then(ensureHandlers)
-            .catch((e: unknown) => console.error('Greenspark Widget - ', e))
+          // Check if container still exists, if not, recreate the widget
+          const container = document.querySelector(containerSelector)
+          if (!container) {
+            console.log('Greenspark Widget - Container not found (likely due to Shopify drawer redraw), recreating widget')
+            delete window[cartWidgetWindowKey]
+            // Fall through to create new widget below
+          } else {
+            return window[cartWidgetWindowKey]!.render({order}, containerSelector)
+              .then(() => {
+                movePopupToBody(widgetId)
+
+                if (typeof prevChecked === 'boolean') {
+                  const cb = getCheckbox()
+                  if (cb) cb.checked = prevChecked
+                }
+              })
+              .then(ensureHandlers)
+              .catch((e: unknown) => console.error('Greenspark Widget - ', e))
+          }
         })
     }
 
