@@ -111,6 +111,7 @@ function runGreenspark() {
     const checkboxSelector = "input[name='customerCartContribution']"
     const getCheckbox = () => document.querySelector<HTMLInputElement>(checkboxSelector)
     const prevChecked = getCheckbox() ? getCheckbox()!.checked : undefined
+    const cartWidgetWindowKey = `greensparkCartWidget-${widgetId}` as GreensparkCartWidgetKey
 
     const SELECTORS = {
       cartDrawerForm: '#CartDrawer-Form',
@@ -308,14 +309,14 @@ function runGreenspark() {
         })
     }
 
-    if (window[`greensparkCartWidget-${widgetId}` as GreensparkCartWidgetKey]) {
+    if (window[cartWidgetWindowKey]) {
       return fetch('/cart.js')
         .then((r) => r.json())
         .then((updatedCart) => {
           const order = parseCart(updatedCart)
           if (order.lineItems.length <= 0) return
           return window
-            .window[`greensparkCartWidget-${widgetId}` as GreensparkCartWidgetKey]!.render({order}, containerSelector)
+            .window[cartWidgetWindowKey]!.render({order}, containerSelector)
             .then(() => {
               movePopupToBody(widgetId)
 
@@ -345,8 +346,7 @@ function runGreenspark() {
           version,
         })
 
-        const key = `greensparkCartWidget-${widgetId}` as GreensparkCartWidgetKey
-        window[key] = widget
+        window[cartWidgetWindowKey] = widget
 
         return widget
           .render()
