@@ -315,8 +315,7 @@ function runGreenspark() {
         .then((updatedCart) => {
           const order = parseCart(updatedCart)
           if (order.lineItems.length <= 0) return
-          return window
-            .window[cartWidgetWindowKey]!.render({order}, containerSelector)
+          return window[cartWidgetWindowKey]!.render({order}, containerSelector)
             .then(() => {
               movePopupToBody(widgetId)
 
