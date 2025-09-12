@@ -14,7 +14,12 @@ export default tseslint.config(eslint.configs.recommended, ...tseslint.configs.r
     rules: {
         '@typescript-eslint/ban-ts-comment': 'error',
         '@typescript-eslint/consistent-type-imports': 'error',
-        'no-console': 'off',
+        'no-console': [
+            'error',
+            {
+                allow: ['error', 'warn'],
+            },
+        ],
         'max-len': 'off',
         semi: 'off',
     },
