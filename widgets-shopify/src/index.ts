@@ -269,7 +269,7 @@ function runGreenspark() {
               setTimeout(() => {
                 const container = document.querySelector(containerSelector)
                 if (!container && window[cartWidgetWindowKey]) {
-                  console.log('Greenspark Widget - Container lost after drawer refresh, recreating widget')
+                  console.warn('Greenspark Widget - Container lost after drawer refresh, recreating widget')
                   delete window[cartWidgetWindowKey]
                   // Trigger widget recreation by calling runGreenspark
                   runGreenspark()
@@ -329,7 +329,7 @@ function runGreenspark() {
           // Check if container still exists, if not, recreate the widget
           const container = document.querySelector(containerSelector)
           if (!container) {
-            console.log('Greenspark Widget - Container not found (likely due to Shopify drawer redraw), recreating widget')
+            console.warn('Greenspark Widget - Container not found (likely due to Shopify drawer redraw), recreating widget')
             delete window[cartWidgetWindowKey]
             // Fall through to create new widget below
           } else {
