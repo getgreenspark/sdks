@@ -12,6 +12,7 @@ const popupHistory: HTMLElement[] = []
 const MAX_RETRIES = 5
 let retryCount = 0
 let isRendering = false
+let hasInitialRun = false
 
 function parseCart(cart: ShopifyCart) {
   const lineItems = cart.items.map((item) => ({
@@ -28,10 +29,11 @@ function parseCart(cart: ShopifyCart) {
 }
 
 function runGreenspark() {
-  console.error('runGreenspark called')
+  console.error('runGreenspark called, isRendering:', isRendering, 'hasInitialRun:', hasInitialRun)
   if (!scriptSrc) return
 
-  if (isRendering) {
+  // Allow initial run even if isRendering is true (in case of race conditions)
+  if (isRendering && hasInitialRun) {
     console.log('Greenspark Widget - Already rendering, skipping recursive call')
     return
   }
@@ -43,15 +45,18 @@ function runGreenspark() {
   if (!window.GreensparkWidgets) {
     if (retryCount++ >= MAX_RETRIES) {
       console.error('Greenspark Widget - Failed to load after max retries')
+      isRendering = false
       return
     }
     console.warn('Greenspark Widget - GreensparkWidgets not available yet, waiting 50ms')
-    setTimeout(runGreenspark, 50)
+    setTimeout(() => {
+      isRendering = false
+      runGreenspark()
+    }, 50)
     return
   }
 
   retryCount = 0 // reset on success
-  isRendering = true
 
   const useShadowDom = false
   const version = 'v2'
@@ -105,7 +110,8 @@ function runGreenspark() {
   }
 
   const renderOrderImpacts = (widgetId: string, containerSelector: string) => {
-    console.log('renderOrderImpacts called', widgetId)
+    console.log('renderOrderImpacts called', widgetId, 'containerSelector:', containerSelector)
+    console.log('Container element exists:', document.querySelector(containerSelector))
     const checkboxSelector = "input[name='customerCartContribution']"
     const getCheckbox = () => document.querySelector<HTMLInputElement>(checkboxSelector)
     const prevChecked = getCheckbox() ? getCheckbox()!.checked : undefined
@@ -521,6 +527,7 @@ function runGreenspark() {
   }
 
   const targets = document.querySelectorAll('.greenspark-widget-target')
+  console.log('Found targets:', targets.length, Array.from(targets).map(t => t.id))
 
   // Add styles for widget targets
   if (!document.getElementById('greenspark-widget-style')) {
@@ -537,36 +544,47 @@ function runGreenspark() {
     document.head.appendChild(style)
   }
 
-  targets.forEach((target) => {
-    // Remove any previously injected containers
-    target.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
+  isRendering = true
 
-    const randomId = crypto.randomUUID()
-    let type: string
-    try {
-      ;[type] = atob(target.id).split('|')
-    } catch {
-      console.error('Invalid widget ID encoding:', target.id)
-      return
-    }
+  try {
+    targets.forEach((target) => {
+      // Remove any previously injected containers
+      target.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
 
-    const variant = EnumToWidgetTypeMap[type]
-    let containerSelector = ''
-
-    if (variant === 'orderImpacts') {
-      const existingInstance = target.querySelector(
-        '.greenspark-widget-instance',
-      ) as HTMLElement | null
-      if (existingInstance) {
-        const existingAttr = Array.from(existingInstance.attributes).find((a) =>
-          a.name.startsWith('data-greenspark-widget-target-'),
-        )
-        if (existingAttr) {
-          containerSelector = `[${existingAttr.name}]`
-        }
+      const randomId = crypto.randomUUID()
+      let type: string
+      try {
+        ;[type] = atob(target.id).split('|')
+      } catch {
+        console.error('Invalid widget ID encoding:', target.id)
+        return
       }
 
-      if (!containerSelector) {
+      const variant = EnumToWidgetTypeMap[type]
+      let containerSelector = ''
+
+      if (variant === 'orderImpacts') {
+        const existingInstance = target.querySelector(
+          '.greenspark-widget-instance',
+        ) as HTMLElement | null
+        if (existingInstance) {
+          const existingAttr = Array.from(existingInstance.attributes).find((a) =>
+            a.name.startsWith('data-greenspark-widget-target-'),
+          )
+          if (existingAttr) {
+            containerSelector = `[${existingAttr.name}]`
+          }
+        }
+
+        if (!containerSelector) {
+          target.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
+          containerSelector = `[data-greenspark-widget-target-${randomId}]`
+          target.insertAdjacentHTML(
+            'afterbegin',
+            `<div class="greenspark-widget-instance" data-greenspark-widget-target-${randomId}></div>`,
+          )
+        }
+      } else {
         target.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
         containerSelector = `[data-greenspark-widget-target-${randomId}]`
         target.insertAdjacentHTML(
@@ -574,29 +592,25 @@ function runGreenspark() {
           `<div class="greenspark-widget-instance" data-greenspark-widget-target-${randomId}></div>`,
         )
       }
-    } else {
-      target.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
-      containerSelector = `[data-greenspark-widget-target-${randomId}]`
-      target.insertAdjacentHTML(
-        'afterbegin',
-        `<div class="greenspark-widget-instance" data-greenspark-widget-target-${randomId}></div>`,
-      )
-    }
 
-    if (variant === 'orderImpacts') renderOrderImpacts(target.id, containerSelector)
-    if (variant === 'offsetPerOrder') renderOffsetPerOrder(target.id, containerSelector)
-    if (variant === 'offsetByProduct') renderOffsetByProduct(target.id, containerSelector)
-    if (variant === 'offsetBySpend') renderOffsetBySpend(target.id, containerSelector)
-    if (variant === 'offsetByStoreRevenue') renderOffsetByStoreRevenue(target.id, containerSelector)
-    if (variant === 'byPercentage') renderByPercentage(target.id, containerSelector)
-    if (variant === 'byPercentageOfRevenue')
-      renderByPercentageOfRevenue(target.id, containerSelector)
-    if (variant === 'stats') renderStats(target.id, containerSelector)
-    if (variant === 'static') renderStatic(target.id, containerSelector)
-    if (variant === 'banner') renderBanner(target.id, containerSelector)
-  })
-
-  isRendering = false
+      if (variant === 'orderImpacts') renderOrderImpacts(target.id, containerSelector)
+      if (variant === 'offsetPerOrder') renderOffsetPerOrder(target.id, containerSelector)
+      if (variant === 'offsetByProduct') renderOffsetByProduct(target.id, containerSelector)
+      if (variant === 'offsetBySpend') renderOffsetBySpend(target.id, containerSelector)
+      if (variant === 'offsetByStoreRevenue') renderOffsetByStoreRevenue(target.id, containerSelector)
+      if (variant === 'byPercentage') renderByPercentage(target.id, containerSelector)
+      if (variant === 'byPercentageOfRevenue')
+        renderByPercentageOfRevenue(target.id, containerSelector)
+      if (variant === 'stats') renderStats(target.id, containerSelector)
+      if (variant === 'static') renderStatic(target.id, containerSelector)
+      if (variant === 'banner') renderBanner(target.id, containerSelector)
+    })
+  } catch (error) {
+    console.error('Greenspark Widget - Error during rendering:', error)
+  } finally {
+    isRendering = false
+    hasInitialRun = true
+  }
 }
 
 function loadScript(url: string): Promise<void> {
@@ -658,13 +672,16 @@ if (!window.GreensparkWidgets) {
       .then((res) => {
         const url = new URL(res.url, window.location.origin)
         const pathname = url.pathname
-        const isCartMutation = /^\/cart(?:\/(?:add|update|change|clear))?\.js$/.test(pathname)
+        const isCartMutation = /^\/cart\/(?:add|update|change|clear)\.js$/.test(pathname)
         console.log('isCartMutation', isCartMutation, pathname)
 
         if (isCartMutation && !isRendering) {
+          console.log('Greenspark Widget - Cart mutation detected, scheduling runGreenspark')
           setTimeout(() => {
             runGreenspark()
           }, 100)
+        } else if (isCartMutation && isRendering) {
+          console.log('Greenspark Widget - Cart mutation detected but already rendering, skipping')
         }
       })
       .catch((error) => {
