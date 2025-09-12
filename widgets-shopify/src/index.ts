@@ -199,8 +199,7 @@ function runGreenspark() {
       console.warn('Elements before cart update:', elementMap.size)
 
       // Store reference to test after update
-      ; // @ts-ignore
-      (window as unknown)._greensparkElementTest = elementMap
+      window._greensparkElementTest = elementMap
     }
 
     // Uncomment to test element survival

@@ -13,6 +13,7 @@ declare global {
     _greensparkCheckboxHandlerBound?: boolean
     _greensparkRemoveHandlerBound?: boolean
     _greensparkPreselectOptOut?: boolean
+    _greensparkElementTest: Map<string, string>
   }
 }
 
