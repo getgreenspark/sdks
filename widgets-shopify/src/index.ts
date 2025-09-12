@@ -11,6 +11,7 @@ const popupHistory: HTMLElement[] = []
 
 const MAX_RETRIES = 5
 let retryCount = 0
+let isRendering = false
 
 function parseCart(cart: ShopifyCart) {
   const lineItems = cart.items.map((item) => ({
@@ -30,6 +31,11 @@ function runGreenspark() {
   console.error('runGreenspark called')
   if (!scriptSrc) return
 
+  if (isRendering) {
+    console.log('Greenspark Widget - Already rendering, skipping recursive call')
+    return
+  }
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', runGreenspark, {once: true})
   }
@@ -45,6 +51,7 @@ function runGreenspark() {
   }
 
   retryCount = 0 // reset on success
+  isRendering = true
 
   const useShadowDom = false
   const version = 'v2'
@@ -588,6 +595,8 @@ function runGreenspark() {
     if (variant === 'static') renderStatic(target.id, containerSelector)
     if (variant === 'banner') renderBanner(target.id, containerSelector)
   })
+
+  isRendering = false
 }
 
 function loadScript(url: string): Promise<void> {
@@ -652,7 +661,7 @@ if (!window.GreensparkWidgets) {
         const isCartMutation = /^\/cart(?:\/(?:add|update|change|clear))?\.js$/.test(pathname)
         console.log('isCartMutation', isCartMutation, pathname)
 
-        if (isCartMutation) {
+        if (isCartMutation && !isRendering) {
           setTimeout(() => {
             runGreenspark()
           }, 100)
