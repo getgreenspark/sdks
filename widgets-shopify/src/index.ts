@@ -111,6 +111,100 @@ function runGreenspark() {
     const prevChecked = getCheckbox() ? getCheckbox()!.checked : undefined
     const cartWidgetWindowKey = `greensparkCartWidget-${widgetId}` as GreensparkCartWidgetKey
 
+    // Helper function to find stable placement locations
+    const findStablePlacement = () => {
+      const stableSelectors = [
+        '#CartDrawer', // Main drawer container
+        '#CartDrawer .cart-drawer__header', // Header area
+        '#CartDrawer .cart-drawer__footer', // Footer area
+        '#CartDrawer .cart-drawer__content', // Content area
+        '#CartDrawer .cart-drawer__inner', // Inner container
+        '#CartDrawer .drawer__inner', // Alternative inner
+        '#CartDrawer .cart__footer', // Cart footer
+        '#CartDrawer .cart__header', // Cart header
+        '#CartDrawer .cart__body', // Cart body
+        '#CartDrawer .cart__items', // Cart items container
+        '#CartDrawer .cart__empty', // Empty cart state
+        '#CartDrawer .cart__note', // Cart note area
+        '#CartDrawer .cart__checkout', // Checkout button area
+        '#CartDrawer .cart__subtotal', // Subtotal area
+        '#CartDrawer .cart__taxes', // Taxes area
+        '#CartDrawer .cart__shipping', // Shipping area
+        '#CartDrawer .cart__discounts', // Discounts area
+        '#CartDrawer .cart__gift', // Gift area
+        '#CartDrawer .cart__recommendations', // Recommendations area
+        '#CartDrawer .cart__upsell', // Upsell area
+        '#CartDrawer .cart__cross-sell', // Cross-sell area
+        '#CartDrawer .cart__related', // Related products
+        '#CartDrawer .cart__suggestions', // Suggestions
+        '#CartDrawer .cart__promo', // Promo area
+        '#CartDrawer .cart__banner', // Banner area
+        '#CartDrawer .cart__message', // Message area
+        '#CartDrawer .cart__info', // Info area
+        '#CartDrawer .cart__summary', // Summary area
+        '#CartDrawer .cart__total', // Total area
+        '#CartDrawer .cart__actions', // Actions area
+        '#CartDrawer .cart__buttons', // Buttons area
+        '#CartDrawer .cart__form', // Form area
+        '#CartDrawer .cart__content', // Content area
+        '#CartDrawer .cart__main', // Main area
+        '#CartDrawer .cart__sidebar', // Sidebar area
+        '#CartDrawer .cart__aside', // Aside area
+        '#CartDrawer .cart__extra', // Extra area
+        '#CartDrawer .cart__additional', // Additional area
+        '#CartDrawer .cart__supplementary', // Supplementary area
+        '#CartDrawer .cart__complementary', // Complementary area
+        '#CartDrawer .cart__auxiliary', // Auxiliary area
+        '#CartDrawer .cart__secondary', // Secondary area
+        '#CartDrawer .cart__tertiary', // Tertiary area
+        '#CartDrawer .cart__quaternary', // Quaternary area
+        '#CartDrawer .cart__quinary', // Quinary area
+        '#CartDrawer .cart__senary', // Senary area
+        '#CartDrawer .cart__septenary', // Septenary area
+        '#CartDrawer .cart__octonary', // Octonary area
+        '#CartDrawer .cart__nonary', // Nonary area
+        '#CartDrawer .cart__denary', // Denary area
+      ]
+
+      console.log('Testing stable placement locations:')
+      stableSelectors.forEach(selector => {
+        const element = document.querySelector(selector)
+        if (element) {
+          console.log(`✅ Found: ${selector}`, element)
+        } else {
+          console.log(`❌ Not found: ${selector}`)
+        }
+      })
+    }
+
+    // Uncomment the next line to test stable placements
+    // findStablePlacement()
+
+    // Function to test which elements survive cart updates
+    const testElementSurvival = () => {
+      const testElements = document.querySelectorAll('#CartDrawer *')
+      const elementMap = new Map()
+
+      testElements.forEach((el, index) => {
+        const selector = `#CartDrawer *:nth-child(${index + 1})`
+        elementMap.set(selector, {
+          element: el,
+          tagName: el.tagName,
+          className: el.className,
+          id: el.id,
+          textContent: el.textContent?.substring(0, 50) + '...'
+        })
+      })
+
+      console.log('Elements before cart update:', elementMap.size)
+
+      // Store reference to test after update
+      ;(window as any)._greensparkElementTest = elementMap
+    }
+
+    // Uncomment to test element survival
+    // testElementSurvival()
+
     const SELECTORS = {
       cartDrawerForm: '#CartDrawer-Form',
       cartDrawer: '#CartDrawer',
