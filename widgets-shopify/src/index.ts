@@ -1,6 +1,6 @@
 import type {ShopifyCart} from './interfaces'
 import {EnumToWidgetTypeMap} from './interfaces'
-import {GreensparkCartWidgetKey} from "./global";
+import {type GreensparkCartWidgetKey} from "./global";
 
 const scriptSrc = document.currentScript?.getAttribute('src')
 const isDevStore = window.location.hostname.includes('greenspark-development-store')
