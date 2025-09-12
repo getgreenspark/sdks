@@ -649,7 +649,7 @@ if (!window.GreensparkWidgets) {
       .then((res) => {
         const url = new URL(res.url, window.location.origin)
         const pathname = url.pathname
-        const isCartMutation = /\/cart\/(add|update|change|clear)(\.js)?$/.test(pathname)
+        const isCartMutation = /^\/cart(?:\/(?:add|update|change|clear))?\.js$/.test(pathname)
         console.log('isCartMutation', isCartMutation, pathname)
 
         if (isCartMutation) {
