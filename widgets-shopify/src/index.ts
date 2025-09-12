@@ -113,68 +113,89 @@ function runGreenspark() {
 
     // Helper function to find stable placement locations
     const findStablePlacement = () => {
-      const stableSelectors = [
-        '#CartDrawer', // Main drawer container
-        '#CartDrawer .cart-drawer__header', // Header area
-        '#CartDrawer .cart-drawer__footer', // Footer area
-        '#CartDrawer .cart-drawer__content', // Content area
-        '#CartDrawer .cart-drawer__inner', // Inner container
-        '#CartDrawer .drawer__inner', // Alternative inner
-        '#CartDrawer .cart__footer', // Cart footer
-        '#CartDrawer .cart__header', // Cart header
-        '#CartDrawer .cart__body', // Cart body
-        '#CartDrawer .cart__items', // Cart items container
-        '#CartDrawer .cart__empty', // Empty cart state
-        '#CartDrawer .cart__note', // Cart note area
-        '#CartDrawer .cart__checkout', // Checkout button area
-        '#CartDrawer .cart__subtotal', // Subtotal area
-        '#CartDrawer .cart__taxes', // Taxes area
-        '#CartDrawer .cart__shipping', // Shipping area
-        '#CartDrawer .cart__discounts', // Discounts area
-        '#CartDrawer .cart__gift', // Gift area
-        '#CartDrawer .cart__recommendations', // Recommendations area
-        '#CartDrawer .cart__upsell', // Upsell area
-        '#CartDrawer .cart__cross-sell', // Cross-sell area
-        '#CartDrawer .cart__related', // Related products
-        '#CartDrawer .cart__suggestions', // Suggestions
-        '#CartDrawer .cart__promo', // Promo area
-        '#CartDrawer .cart__banner', // Banner area
-        '#CartDrawer .cart__message', // Message area
-        '#CartDrawer .cart__info', // Info area
-        '#CartDrawer .cart__summary', // Summary area
-        '#CartDrawer .cart__total', // Total area
-        '#CartDrawer .cart__actions', // Actions area
-        '#CartDrawer .cart__buttons', // Buttons area
-        '#CartDrawer .cart__form', // Form area
-        '#CartDrawer .cart__content', // Content area
-        '#CartDrawer .cart__main', // Main area
-        '#CartDrawer .cart__sidebar', // Sidebar area
-        '#CartDrawer .cart__aside', // Aside area
-        '#CartDrawer .cart__extra', // Extra area
-        '#CartDrawer .cart__additional', // Additional area
-        '#CartDrawer .cart__supplementary', // Supplementary area
-        '#CartDrawer .cart__complementary', // Complementary area
-        '#CartDrawer .cart__auxiliary', // Auxiliary area
-        '#CartDrawer .cart__secondary', // Secondary area
-        '#CartDrawer .cart__tertiary', // Tertiary area
-        '#CartDrawer .cart__quaternary', // Quaternary area
-        '#CartDrawer .cart__quinary', // Quinary area
-        '#CartDrawer .cart__senary', // Senary area
-        '#CartDrawer .cart__septenary', // Septenary area
-        '#CartDrawer .cart__octonary', // Octonary area
-        '#CartDrawer .cart__nonary', // Nonary area
-        '#CartDrawer .cart__denary', // Denary area
+      console.warn('=== CART DRAWER ANALYSIS ===')
+
+      // First, check if cart-drawer exists at all
+      const cartDrawer = document.querySelector('#cart-drawer')
+      if (!cartDrawer) {
+        console.warn('❌ #cart-drawer not found - cart drawer might not be open')
+        return
+      }
+
+      console.warn('✅ #cart-drawer found:', cartDrawer)
+      console.warn('Cart drawer innerHTML length:', cartDrawer.innerHTML.length)
+
+      // Get all elements inside cart drawer
+      const allElements = cartDrawer.querySelectorAll('*')
+      console.warn(`Total elements in cart drawer: ${allElements.length}`)
+
+      // Find elements with common patterns
+      const commonPatterns = [
+        'header', 'footer', 'content', 'inner', 'body', 'main', 'form', 'button', 'total', 'subtotal', 'checkout', 'items', 'empty', 'note', 'message', 'info', 'summary', 'actions', 'sidebar', 'aside', 'extra', 'additional', 'supplementary', 'complementary', 'auxiliary', 'secondary', 'tertiary', 'quaternary', 'quinary', 'senary', 'septenary', 'octonary', 'nonary', 'denary'
       ]
 
-      console.warn('Testing stable placement locations:')
-      stableSelectors.forEach(selector => {
-        const element = document.querySelector(selector)
-        if (element) {
-          console.warn(`✅ Found: ${selector}`, element)
-        } else {
-          console.warn(`❌ Not found: ${selector}`)
+      console.warn('=== ELEMENTS WITH COMMON PATTERNS ===')
+      allElements.forEach((el, index) => {
+        const tagName = el.tagName.toLowerCase()
+        const className = el.className
+        const id = el.id
+        const textContent = el.textContent?.trim().substring(0, 30) + '...'
+
+        // Check if element has any common patterns
+        const hasPattern = commonPatterns.some(pattern =>
+          className.toLowerCase().includes(pattern) ||
+          id.toLowerCase().includes(pattern) ||
+          tagName.includes(pattern)
+        )
+
+        if (hasPattern) {
+          console.warn(`✅ Element ${index}:`, {
+            tagName,
+            className,
+            id,
+            textContent,
+            element: el
+          })
         }
       })
+
+      // Check for any elements with data attributes
+      console.warn('=== ELEMENTS WITH DATA ATTRIBUTES ===')
+      const allElementsForData = cartDrawer.querySelectorAll('*')
+      const dataElements = Array.from(allElementsForData).filter(el =>
+        Array.from(el.attributes).some(attr => attr.name.startsWith('data-'))
+      )
+      dataElements.forEach((el, index) => {
+        console.warn(`Data element ${index}:`, {
+          tagName: el.tagName,
+          className: el.className,
+          id: el.id,
+          attributes: Array.from(el.attributes).map(attr => `${attr.name}="${attr.value}"`).join(' '),
+          element: el
+        })
+      })
+
+      // Check for form elements
+      console.warn('=== FORM ELEMENTS ===')
+      const formElements = cartDrawer.querySelectorAll('form, input, button, select, textarea')
+      formElements.forEach((el, index) => {
+        console.warn(`Form element ${index}:`, {
+          tagName: el.tagName,
+          type: (el as HTMLInputElement).type,
+          name: (el as HTMLInputElement).name,
+          className: el.className,
+          id: el.id,
+          element: el
+        })
+      })
+    }
+
+    // Check if widget target already exists
+    const existingTarget = document.querySelector(`[data-greenspark-widget-target-${widgetId}]`)
+    if (existingTarget) {
+      console.warn('✅ Widget target already exists:', existingTarget)
+    } else {
+      console.warn('❌ Widget target not found, will create new one')
     }
 
     // Uncomment the next line to test stable placements
@@ -182,11 +203,17 @@ function runGreenspark() {
 
     // Function to test which elements survive cart updates
     const testElementSurvival = () => {
-      const testElements = document.querySelectorAll('#CartDrawer *')
+      const cartDrawer = document.querySelector('#cart-drawer')
+      if (!cartDrawer) {
+        console.warn('❌ cart-drawer not found for survival test')
+        return
+      }
+
+      const testElements = cartDrawer.querySelectorAll('*')
       const elementMap = new Map()
 
       testElements.forEach((el, index) => {
-        const selector = `#CartDrawer *:nth-child(${index + 1})`
+        const selector = `#cart-drawer *:nth-child(${index + 1})`
         elementMap.set(selector, {
           element: el,
           tagName: el.tagName,
@@ -202,12 +229,46 @@ function runGreenspark() {
       window._greensparkElementTest = elementMap
     }
 
+    // Function to monitor cart drawer state changes
+    const monitorCartDrawer = () => {
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.type === 'childList') {
+            console.warn('🔄 CartDrawer DOM changed:', {
+              addedNodes: mutation.addedNodes.length,
+              removedNodes: mutation.removedNodes.length,
+              target: mutation.target
+            })
+
+            // Re-run analysis when drawer changes
+            setTimeout(() => {
+              console.warn('=== AFTER DRAWER CHANGE ===')
+              findStablePlacement()
+            }, 100)
+          }
+        })
+      })
+
+      const cartDrawer = document.querySelector('#cart-drawer')
+      if (cartDrawer) {
+        observer.observe(cartDrawer, {
+          childList: true,
+          subtree: true,
+          attributes: true
+        })
+        console.warn('👀 Monitoring cart-drawer for changes')
+      }
+    }
+
     // Uncomment to test element survival
     testElementSurvival()
 
+    // Uncomment to monitor cart drawer changes
+    monitorCartDrawer()
+
     const SELECTORS = {
-      cartDrawerForm: '#CartDrawer-Form',
-      cartDrawer: '#CartDrawer',
+      cartDrawerForm: '#cart-drawer-Form',
+      cartDrawer: '#cart-drawer',
       mainCartItems: '#main-cart-items',
       mainCart: '#main-cart',
       interactiveCart: 'interactive-cart',
