@@ -12,7 +12,6 @@ const popupHistory: HTMLElement[] = []
 const MAX_RETRIES = 5
 let retryCount = 0
 let isRendering = false
-let hasInitialRun = false
 
 function parseCart(cart: ShopifyCart) {
   const lineItems = cart.items.map((item) => ({
@@ -31,8 +30,7 @@ function parseCart(cart: ShopifyCart) {
 function runGreenspark() {
   if (!scriptSrc) return
 
-  // Allow initial run even if isRendering is true (in case of race conditions)
-  if (isRendering && hasInitialRun) {
+  if (isRendering) {
     return
   }
 
@@ -348,7 +346,7 @@ function runGreenspark() {
         window[cartWidgetWindowKey] = widget
 
         return widget
-          .render()
+          .render({order}, containerSelector)
           .then(() => movePopupToBody(widgetId))
           .then(ensureHandlers)
           .catch((e: Error) => console.error('Greenspark Widget - ', e))
@@ -599,7 +597,6 @@ function runGreenspark() {
     console.error('Greenspark Widget - Error during rendering:', error)
   } finally {
     isRendering = false
-    hasInitialRun = true
   }
 }
 
@@ -662,7 +659,7 @@ if (!window.GreensparkWidgets) {
       .then((res) => {
         const url = new URL(res.url, window.location.origin)
         const pathname = url.pathname
-        const isCartMutation = /\/cart\/(add|update|change|clear)(\.js)?$/.test(pathname)
+        const isCartMutation = /^\/cart\/(?:add|update|change|clear)\.js$/.test(pathname)
 
         if (isCartMutation && !isRendering) {
           setTimeout(() => {
