@@ -331,10 +331,15 @@ function runGreenspark() {
       .render()
       .then(() => movePopupToBody(widgetId))
       .then(() => fetch('/cart.js'))
-      .then((r) => r?.json())
+      .then((r) => {
+        console.log('Greenspark Widget - fetched cart after render 1', r.ok)
+        return r?.json()
+      })
       .then((updatedCart) => {
+        console.log('Greenspark Widget - fetched cart after render 2', updatedCart)
         if (!updatedCart) return
         const order = parseCart(updatedCart)
+        console.log('order', order)
         if (order.lineItems.length <= 0) return
         return widget
           .render({order}, containerSelector)
