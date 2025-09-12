@@ -29,7 +29,6 @@ function parseCart(cart: ShopifyCart) {
 }
 
 function runGreenspark() {
-  console.error('runGreenspark called, isRendering:', isRendering, 'hasInitialRun:', hasInitialRun)
   if (!scriptSrc) return
 
   // Allow initial run even if isRendering is true (in case of race conditions)
