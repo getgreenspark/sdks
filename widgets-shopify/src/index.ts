@@ -178,7 +178,7 @@ function runGreenspark() {
     }
 
     // Uncomment the next line to test stable placements
-    // findStablePlacement()
+    findStablePlacement()
 
     // Function to test which elements survive cart updates
     const testElementSurvival = () => {
@@ -203,7 +203,7 @@ function runGreenspark() {
     }
 
     // Uncomment to test element survival
-    // testElementSurvival()
+    testElementSurvival()
 
     const SELECTORS = {
       cartDrawerForm: '#CartDrawer-Form',
