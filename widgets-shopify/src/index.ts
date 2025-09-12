@@ -1,6 +1,6 @@
 import type {ShopifyCart} from './interfaces'
 import {EnumToWidgetTypeMap} from './interfaces'
-import {GreensparkCartWidgetKey} from "./global";
+import {type GreensparkCartWidgetKey} from "./global";
 
 const scriptSrc = document.currentScript?.getAttribute('src')
 const isDevStore = window.location.hostname.includes('greenspark-development-store')
@@ -317,31 +317,32 @@ function runGreenspark() {
         })
     }
 
-    const widget = greenspark.cartById({
-      widgetId,
-      containerSelector,
-      useShadowDom,
-      order: parseCart(initialCart),
-      version,
-    })
+    // Fetch cart data first before creating the widget
+    fetch('/cart.js')
+      .then((r) => {
+        return r?.json()
+      })
+      .then((cartData) => {
+        if (!cartData) return
+        const order = parseCart(cartData)
+        if (order?.lineItems?.length <= 0) return
 
-    window[cartWidgetWindowKey] = widget
-    widget
-      .render()
-      .then(() => movePopupToBody(widgetId))
-      .then(() => fetch('/cart.js'))
-      .then((r) => r?.json())
-      .then((updatedCart) => {
-        if (!updatedCart) return
-        const order = parseCart(updatedCart)
-        if (order.lineItems.length <= 0) return
+        const widget = greenspark.cartById({
+          widgetId,
+          containerSelector,
+          useShadowDom,
+          order,
+          version,
+        })
+        window[cartWidgetWindowKey] = widget
+
         return widget
-          .render({order}, containerSelector)
+          .render()
           .then(() => movePopupToBody(widgetId))
+          .then(ensureHandlers)
           .catch((e: Error) => console.error('Greenspark Widget - ', e))
       })
-      .then(ensureHandlers)
-      .catch((e: unknown) => console.error('Greenspark Widget - ', e))
+      .catch((e: unknown) => console.error('Greenspark Widget - Error fetching cart:', e))
   }
 
   const renderOffsetPerOrder = (widgetId: string, containerSelector: string) => {
