@@ -27,6 +27,7 @@ function parseCart(cart: ShopifyCart) {
 }
 
 function runGreenspark() {
+  console.error('runGreenspark called')
   if (!scriptSrc) return
 
   if (document.readyState === 'loading') {
@@ -97,6 +98,7 @@ function runGreenspark() {
   }
 
   const renderOrderImpacts = (widgetId: string, containerSelector: string) => {
+    console.log('renderOrderImpacts called', widgetId)
     const checkboxSelector = "input[name='customerCartContribution']"
     const getCheckbox = () => document.querySelector<HTMLInputElement>(checkboxSelector)
     const prevChecked = getCheckbox() ? getCheckbox()!.checked : undefined
@@ -648,6 +650,7 @@ if (!window.GreensparkWidgets) {
         const url = new URL(res.url, window.location.origin)
         const pathname = url.pathname
         const isCartMutation = /\/cart\/(add|update|change|clear)(\.js)?$/.test(pathname)
+        console.log('isCartMutation', isCartMutation, pathname)
 
         if (isCartMutation) {
           setTimeout(() => {
