@@ -166,13 +166,13 @@ function runGreenspark() {
         '#CartDrawer .cart__denary', // Denary area
       ]
 
-      console.log('Testing stable placement locations:')
+      console.warn('Testing stable placement locations:')
       stableSelectors.forEach(selector => {
         const element = document.querySelector(selector)
         if (element) {
-          console.log(`✅ Found: ${selector}`, element)
+          console.warn(`✅ Found: ${selector}`, element)
         } else {
-          console.log(`❌ Not found: ${selector}`)
+          console.warn(`❌ Not found: ${selector}`)
         }
       })
     }
@@ -196,7 +196,7 @@ function runGreenspark() {
         })
       })
 
-      console.log('Elements before cart update:', elementMap.size)
+      console.warn('Elements before cart update:', elementMap.size)
 
       // Store reference to test after update
       ;(window as any)._greensparkElementTest = elementMap
