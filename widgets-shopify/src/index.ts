@@ -236,7 +236,8 @@ function runGreenspark() {
             }
             checkbox.checked = present
           })
-          .catch(() => {
+          .catch((err) => {
+            console.error('Greenspark Widget - initCheckboxState error', err);
           })
       }
 
