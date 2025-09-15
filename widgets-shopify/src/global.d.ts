@@ -15,3 +15,5 @@ declare global {
     _greensparkPreselectOptOut?: boolean
   }
 }
+
+export {}
