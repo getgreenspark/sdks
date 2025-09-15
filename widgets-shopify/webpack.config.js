@@ -5,10 +5,19 @@ const PACKAGE = require('./package.json')
 const versionedEntries = {
   [PACKAGE.version]: {
     import: './src/index.ts',
-    library: { type: 'commonjs-static' },
+    library: {
+      type: 'umd',
+      name: 'GreensparkWidgets',
+      umdNamedDefine: true,
+    },
   },
   [`${PACKAGE.version}-umd`]: {
     import: './src/index.ts',
+    library: {
+      type: 'umd',
+      name: 'GreensparkWidgets',
+      umdNamedDefine: true,
+    },
   },
 }
 
@@ -17,7 +26,14 @@ module.exports = (env, { mode }) => {
   return {
     entry: isProduction
       ? {
-          latest: './src/index.ts',
+          latest: {
+            import: './src/index.ts',
+            library: {
+              type: 'umd',
+              name: 'GreensparkWidgets',
+              umdNamedDefine: true,
+            },
+          },
           ...versionedEntries,
         }
       : {
