@@ -333,7 +333,7 @@ function runGreenspark() {
         window[cartWidgetWindowKey] = widget
 
         return widget
-          .render()
+          .render({order}, containerSelector)
           .then(() => movePopupToBody(widgetId))
           .then(ensureHandlers)
           .catch((e: Error) => console.error('Greenspark Widget - ', e))
