@@ -51,11 +51,6 @@ function runGreenspark() {
   const currency = window.Shopify.currency.active
   const productId = String(window?.ShopifyAnalytics?.meta?.product?.id ?? '')
   const locale = window.Shopify.locale as 'en'
-  const initialCart = {
-    items: [],
-    currency: 'GBP',
-    total_price: 0,
-  }
   const shopUniqueName = window.Shopify.shop
   const greenspark = new window.GreensparkWidgets({
     locale,
