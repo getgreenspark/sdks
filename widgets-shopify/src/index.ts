@@ -1,6 +1,6 @@
-import type {ShopifyCart} from './interfaces'
-import {EnumToWidgetTypeMap} from './interfaces'
-import {type GreensparkCartWidgetKey} from './global.d';
+import type { ShopifyCart } from './interfaces'
+import { EnumToWidgetTypeMap } from './interfaces'
+import { type GreensparkCartWidgetKey } from './global.d'
 
 const scriptSrc = document.currentScript?.getAttribute('src')
 const isDevStore = window.location.hostname.includes('greenspark-development-store')
@@ -17,7 +17,7 @@ function parseCart(cart: ShopifyCart) {
     productId: item.product_id.toString(),
     quantity: item.quantity,
   }))
-  const {currency} = cart
+  const { currency } = cart
   const totalPrice = cart.total_price
   return {
     lineItems,
@@ -30,7 +30,7 @@ function runGreenspark() {
   if (!scriptSrc) return
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', runGreenspark, {once: true})
+    document.addEventListener('DOMContentLoaded', runGreenspark, { once: true })
   }
 
   if (!window.GreensparkWidgets) {
@@ -78,20 +78,32 @@ function runGreenspark() {
   function addItemToCart(targetProductId: string, quantity = 1): Promise<unknown> {
     return fetchJSON(CART_ENDPOINTS.add, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json', Accept: 'application/json'},
-      body: JSON.stringify({items: [{id: parseInt(targetProductId, 10), quantity}]}),
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ items: [{ id: parseInt(targetProductId, 10), quantity }] }),
     })
   }
 
   function updateCart(updates: Record<string, number>): Promise<Response> {
     return fetch(CART_ENDPOINTS.update, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json', Accept: 'application/json'},
-      body: JSON.stringify({updates}),
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ updates }),
     })
   }
 
   const renderOrderImpacts = (widgetId: string, containerSelector: string) => {
+    let targetContainerSelector = containerSelector
+    const targetEl = document.getElementById(widgetId)
+    if (!document.querySelector(targetContainerSelector) && targetEl) {
+      targetEl.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
+      const newId = crypto.randomUUID()
+      targetContainerSelector = `[data-greenspark-widget-target-${newId}]`
+      targetEl.insertAdjacentHTML(
+        'afterbegin',
+        `<div class="greenspark-widget-instance" data-greenspark-widget-target-${newId}></div>`,
+      )
+    }
+
     const checkboxSelector = "input[name='customerCartContribution']"
     const getCheckbox = () => document.querySelector<HTMLInputElement>(checkboxSelector)
     const prevChecked = getCheckbox() ? getCheckbox()!.checked : undefined
@@ -299,7 +311,7 @@ function runGreenspark() {
         .then((updatedCart) => {
           const order = parseCart(updatedCart)
           if (order.lineItems.length <= 0) return
-          return window[cartWidgetWindowKey]!.render({order}, containerSelector)
+          return window[cartWidgetWindowKey]!.render({ order }, targetContainerSelector)
             .then(() => {
               movePopupToBody(widgetId)
 
@@ -325,7 +337,7 @@ function runGreenspark() {
 
         const widget = greenspark.cartById({
           widgetId,
-          containerSelector,
+          containerSelector: targetContainerSelector,
           useShadowDom,
           order,
           version,
@@ -333,7 +345,7 @@ function runGreenspark() {
         window[cartWidgetWindowKey] = widget
 
         return widget
-          .render({order}, containerSelector)
+          .render({ order }, targetContainerSelector)
           .then(() => movePopupToBody(widgetId))
           .then(ensureHandlers)
           .catch((e: Error) => console.error('Greenspark Widget - ', e))
@@ -606,7 +618,7 @@ async function setup() {
         () => {
           setup().then(resolve)
         },
-        {once: true},
+        { once: true },
       )
     })
   }
@@ -623,7 +635,7 @@ async function setup() {
 setup().catch((e) => console.error('Greenspark Widget -', e))
 
 if (!window.GreensparkWidgets) {
-  window.addEventListener('greenspark-setup', runGreenspark, {once: true})
+  window.addEventListener('greenspark-setup', runGreenspark, { once: true })
 } else {
   runGreenspark()
 }
