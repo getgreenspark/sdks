@@ -1,6 +1,6 @@
 import type {ShopifyCart} from './interfaces'
 import {EnumToWidgetTypeMap} from './interfaces'
-import {type GreensparkCartWidgetKey} from "./global";
+import {type GreensparkCartWidgetKey} from './global';
 
 const scriptSrc = document.currentScript?.getAttribute('src')
 const isDevStore = window.location.hostname.includes('greenspark-development-store')
@@ -221,7 +221,8 @@ function runGreenspark() {
             }
             checkbox.checked = present
           })
-          .catch(() => {
+          .catch((err) => {
+            console.error('Greenspark Widget - getCart error', err)
           })
       }
 
@@ -320,7 +321,7 @@ function runGreenspark() {
       .then((cartData) => {
         if (!cartData) return
         const order = parseCart(cartData)
-        if (order?.lineItems?.length <= 0) return
+        if (order.lineItems.length === 0) return
 
         const widget = greenspark.cartById({
           widgetId,
