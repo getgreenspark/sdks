@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "module": "NodeNext",
+    "module": "esnext",
     "strict": true,
     "noImplicitAny": true,
     "jsx": "preserve",
     "importHelpers": true,
     "esModuleInterop": true,
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "bundler",
     "sourceMap": true,
     "resolveJsonModule": true,
     "baseUrl": ".",
