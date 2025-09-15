@@ -5,7 +5,11 @@ const PACKAGE = require('./package.json')
 const versionedEntries = {
   [PACKAGE.version]: {
     import: './src/index.ts',
-    library: { type: 'commonjs-static' },
+    library: {
+      type: 'umd',
+      name: 'GreensparkWidgets',
+      umdNamedDefine: true,
+    },
   },
   [`${PACKAGE.version}-umd`]: {
     import: './src/index.ts',
