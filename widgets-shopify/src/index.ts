@@ -33,7 +33,7 @@ function runGreenspark() {
     document.addEventListener('DOMContentLoaded', runGreenspark, { once: true })
   }
 
-  if (!window.GreensparkWidgets) {
+  if (!window.GreensparkWidgets || typeof window.GreensparkWidgets !== 'function') {
     if (retryCount++ >= MAX_RETRIES) {
       console.error('Greenspark Widget - Failed to load after max retries')
       return
@@ -609,7 +609,7 @@ function loadScript(url: string): Promise<void> {
 }
 
 async function setup() {
-  if (window.GreensparkWidgets) return
+  if (window.GreensparkWidgets && typeof window.GreensparkWidgets === 'function') return
 
   if (document.readyState === 'loading') {
     return new Promise((resolve) => {
@@ -634,7 +634,7 @@ async function setup() {
 
 setup().catch((e) => console.error('Greenspark Widget -', e))
 
-if (!window.GreensparkWidgets) {
+if (!window.GreensparkWidgets || typeof window.GreensparkWidgets !== 'function') {
   window.addEventListener('greenspark-setup', runGreenspark, { once: true })
 } else {
   runGreenspark()

@@ -7,7 +7,7 @@ const versionedEntries = {
     import: './src/index.ts',
     library: {
       type: 'umd',
-      name: 'GreensparkWidgets',
+      name: 'GreensparkShopify',
       umdNamedDefine: true,
     },
   },
@@ -15,7 +15,7 @@ const versionedEntries = {
     import: './src/index.ts',
     library: {
       type: 'umd',
-      name: 'GreensparkWidgets',
+      name: 'GreensparkShopify',
       umdNamedDefine: true,
     },
   },
@@ -30,7 +30,7 @@ module.exports = (env, { mode }) => {
             import: './src/index.ts',
             library: {
               type: 'umd',
-              name: 'GreensparkWidgets',
+              name: 'GreensparkShopify',
               umdNamedDefine: true,
             },
           },
