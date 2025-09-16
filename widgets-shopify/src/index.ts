@@ -13,6 +13,8 @@ const MAX_RETRIES = 5
 let retryCount = 0
 
 const containerRetries = new Map<string, number>()
+const targetObservers = new Map<string, MutationObserver>()
+const rerenderDebounce = new Map<string, number>()
 
 function parseCart(cart: ShopifyCart) {
   const lineItems = cart.items.map((item) => ({
@@ -108,8 +110,8 @@ function runGreenspark() {
     }
 
     let targetContainerSelector = containerSelector
-    const targetEl = document.getElementById(widgetId)
-    if (!document.querySelector(targetContainerSelector) && targetEl) {
+    const targetEl = document.getElementById(widgetId)!
+    if (!document.querySelector(targetContainerSelector)) {
       targetEl.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
       const newId = crypto.randomUUID()
       targetContainerSelector = `[data-greenspark-widget-target-${newId}]`
@@ -128,6 +130,19 @@ function runGreenspark() {
         console.error('Greenspark Widget - Container not found for', widgetId)
       }
       return
+    }
+
+    if (!targetObservers.has(widgetId)) {
+      const observer = new MutationObserver(() => {
+        const existing = rerenderDebounce.get(widgetId)
+        if (existing) window.clearTimeout(existing)
+        const timeoutId = window.setTimeout(() => {
+          renderOrderImpacts(widgetId, targetContainerSelector)
+        }, 400)
+        rerenderDebounce.set(widgetId, timeoutId)
+      })
+      observer.observe(targetEl, { childList: true, subtree: true })
+      targetObservers.set(widgetId, observer)
     }
 
     containerRetries.delete(widgetId)
