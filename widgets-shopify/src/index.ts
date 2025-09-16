@@ -13,8 +13,6 @@ const MAX_RETRIES = 5
 let retryCount = 0
 
 const containerRetries = new Map<string, number>()
-/* const targetObservers = new Map<string, MutationObserver>()
-const rerenderDebounce = new Map<string, number>() */
 
 function parseCart(cart: ShopifyCart) {
   const lineItems = cart.items.map((item) => ({
@@ -139,19 +137,6 @@ function runGreenspark() {
       }
       return
     }
-
-    /*     if (!targetObservers.has(widgetId)) {
-      const observer = new MutationObserver(() => {
-        const existing = rerenderDebounce.get(widgetId)
-        if (existing) window.clearTimeout(existing)
-        const timeoutId = window.setTimeout(() => {
-          renderOrderImpacts(widgetId, targetContainerSelector)
-        }, 400)
-        rerenderDebounce.set(widgetId, timeoutId)
-      })
-      observer.observe(targetEl, { childList: true, subtree: true })
-      targetObservers.set(widgetId, observer)
-    } */
 
     containerRetries.delete(widgetId)
 
