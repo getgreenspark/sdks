@@ -95,31 +95,40 @@ function runGreenspark() {
     })
   }
 
-  const renderOrderImpacts = (widgetId: string, containerSelector: string) => {
+  const getSafeId = (widgetId: string) => widgetId.replace(/[^a-z0-9_-]/gi, '-').toLowerCase()
+  const ensureContainer = (widgetId: string): string => {
+    const safe = getSafeId(widgetId)
+    const selector = `[data-greenspark-widget-container-for="${safe}"]`
+    const target = document.getElementById(widgetId)
+    if (!target) return selector
+    const el = target.querySelector(selector) as HTMLElement | null
+    if (!el) {
+      target.querySelectorAll('.greenspark-widget-instance').forEach((e) => e.remove())
+      target.insertAdjacentHTML(
+        'afterbegin',
+        `<div class="greenspark-widget-instance" data-greenspark-widget-container-for="${safe}"></div>`,
+      )
+    }
+    return selector
+  }
+
+  const renderOrderImpacts = (widgetId: string, _containerSelector: string) => {
     const MAX_CONTAINER_RETRIES = 10
 
-    if (!document.getElementById(widgetId)) {
+    const targetEl = document.getElementById(widgetId)
+    if (!targetEl) {
       const count = (containerRetries.get(widgetId) || 0) + 1
       containerRetries.set(widgetId, count)
       if (count <= MAX_CONTAINER_RETRIES) {
-        setTimeout(() => renderOrderImpacts(widgetId, containerSelector), 150)
+        setTimeout(() => renderOrderImpacts(widgetId, _containerSelector), 150)
       } else {
         console.error('Greenspark Widget - Target element not found for', widgetId)
       }
       return
     }
 
-    let targetContainerSelector = containerSelector
-    const targetEl = document.getElementById(widgetId)!
-    if (!document.querySelector(targetContainerSelector)) {
-      targetEl.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
-      const newId = crypto.randomUUID()
-      targetContainerSelector = `[data-greenspark-widget-target-${newId}]`
-      targetEl.insertAdjacentHTML(
-        'afterbegin',
-        `<div class="greenspark-widget-instance" data-greenspark-widget-target-${newId}></div>`,
-      )
-    }
+    // Always ensure a stable container right before use
+    let targetContainerSelector = ensureContainer(widgetId)
 
     if (!document.querySelector(targetContainerSelector)) {
       const count = (containerRetries.get(widgetId) || 0) + 1
@@ -132,6 +141,7 @@ function runGreenspark() {
       return
     }
 
+    // Observe target DOM for drawer re-renders; re-run rendering after changes
     if (!targetObservers.has(widgetId)) {
       const observer = new MutationObserver(() => {
         const existing = rerenderDebounce.get(widgetId)
@@ -145,6 +155,7 @@ function runGreenspark() {
       targetObservers.set(widgetId, observer)
     }
 
+    // At this point, container is present; clear retry tracking for this widget
     containerRetries.delete(widgetId)
 
     const checkboxSelector = "input[name='customerCartContribution']"
@@ -354,6 +365,9 @@ function runGreenspark() {
         .then((updatedCart) => {
           const order = parseCart(updatedCart)
           if (order.lineItems.length <= 0) return
+          // Re-ensure container immediately before render to avoid stale selector
+          targetContainerSelector = ensureContainer(widgetId)
+          if (!document.querySelector(targetContainerSelector)) return
           return window[cartWidgetWindowKey]!.render({ order }, targetContainerSelector)
             .then(() => {
               movePopupToBody(widgetId)
@@ -377,6 +391,10 @@ function runGreenspark() {
         if (!cartData) return
         const order = parseCart(cartData)
         if (order.lineItems.length === 0) return
+
+        // Ensure container right before creating/rendering widget
+        targetContainerSelector = ensureContainer(widgetId)
+        if (!document.querySelector(targetContainerSelector)) return
 
         const widget = greenspark.cartById({
           widgetId,
@@ -578,7 +596,6 @@ function runGreenspark() {
     // Remove any previously injected containers
     target.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
 
-    const randomId = crypto.randomUUID()
     let type: string
     try {
       ;[type] = atob(target.id).split('|')
@@ -588,37 +605,9 @@ function runGreenspark() {
     }
 
     const variant = EnumToWidgetTypeMap[type]
-    let containerSelector = ''
 
-    if (variant === 'orderImpacts') {
-      const existingInstance = target.querySelector(
-        '.greenspark-widget-instance',
-      ) as HTMLElement | null
-      if (existingInstance) {
-        const existingAttr = Array.from(existingInstance.attributes).find((a) =>
-          a.name.startsWith('data-greenspark-widget-target-'),
-        )
-        if (existingAttr) {
-          containerSelector = `[${existingAttr.name}]`
-        }
-      }
-
-      if (!containerSelector) {
-        target.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
-        containerSelector = `[data-greenspark-widget-target-${randomId}]`
-        target.insertAdjacentHTML(
-          'afterbegin',
-          `<div class="greenspark-widget-instance" data-greenspark-widget-target-${randomId}></div>`,
-        )
-      }
-    } else {
-      target.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
-      containerSelector = `[data-greenspark-widget-target-${randomId}]`
-      target.insertAdjacentHTML(
-        'afterbegin',
-        `<div class="greenspark-widget-instance" data-greenspark-widget-target-${randomId}></div>`,
-      )
-    }
+    // Use stable container selector derived from widgetId
+    const containerSelector = ensureContainer(target.id)
 
     if (variant === 'orderImpacts') renderOrderImpacts(target.id, containerSelector)
     if (variant === 'offsetPerOrder') renderOffsetPerOrder(target.id, containerSelector)
