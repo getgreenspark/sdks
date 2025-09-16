@@ -12,8 +12,6 @@ const popupHistory: HTMLElement[] = []
 const MAX_RETRIES = 5
 let retryCount = 0
 
-const containerRetries = new Map<string, number>()
-
 function parseCart(cart: ShopifyCart) {
   const lineItems = cart.items.map((item) => ({
     productId: item.product_id.toString(),
@@ -110,35 +108,17 @@ function runGreenspark() {
     return selector
   }
 
-  const renderOrderImpacts = (widgetId: string, _containerSelector: string) => {
-    const MAX_CONTAINER_RETRIES = 10
-
+  const renderOrderImpacts = (widgetId: string) => {
     const targetEl = document.getElementById(widgetId)
     if (!targetEl) {
-      const count = (containerRetries.get(widgetId) || 0) + 1
-      containerRetries.set(widgetId, count)
-      if (count <= MAX_CONTAINER_RETRIES) {
-        setTimeout(() => renderOrderImpacts(widgetId, _containerSelector), 150)
-      } else {
-        console.error('Greenspark Widget - Target element not found for', widgetId)
-      }
       return
     }
 
     let targetContainerSelector = ensureContainer(widgetId)
 
     if (!document.querySelector(targetContainerSelector)) {
-      const count = (containerRetries.get(widgetId) || 0) + 1
-      containerRetries.set(widgetId, count)
-      if (count <= MAX_CONTAINER_RETRIES) {
-        setTimeout(() => renderOrderImpacts(widgetId, targetContainerSelector), 100)
-      } else {
-        console.error('Greenspark Widget - Container not found for', widgetId)
-      }
       return
     }
-
-    containerRetries.delete(widgetId)
 
     const checkboxSelector = "input[name='customerCartContribution']"
     const getCheckbox = () => document.querySelector<HTMLInputElement>(checkboxSelector)
@@ -585,7 +565,7 @@ function runGreenspark() {
 
     const containerSelector = ensureContainer(target.id)
 
-    if (variant === 'orderImpacts') renderOrderImpacts(target.id, containerSelector)
+    if (variant === 'orderImpacts') renderOrderImpacts(target.id)
     if (variant === 'offsetPerOrder') renderOffsetPerOrder(target.id, containerSelector)
     if (variant === 'offsetByProduct') renderOffsetByProduct(target.id, containerSelector)
     if (variant === 'offsetBySpend') renderOffsetBySpend(target.id, containerSelector)
