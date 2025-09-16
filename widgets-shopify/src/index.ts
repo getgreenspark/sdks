@@ -13,8 +13,8 @@ const MAX_RETRIES = 5
 let retryCount = 0
 
 const containerRetries = new Map<string, number>()
-const targetObservers = new Map<string, MutationObserver>()
-const rerenderDebounce = new Map<string, number>()
+/* const targetObservers = new Map<string, MutationObserver>()
+const rerenderDebounce = new Map<string, number>() */
 
 function parseCart(cart: ShopifyCart) {
   const lineItems = cart.items.map((item) => ({
@@ -127,7 +127,6 @@ function runGreenspark() {
       return
     }
 
-    // Always ensure a stable container right before use
     let targetContainerSelector = ensureContainer(widgetId)
 
     if (!document.querySelector(targetContainerSelector)) {
@@ -141,8 +140,7 @@ function runGreenspark() {
       return
     }
 
-    // Observe target DOM for drawer re-renders; re-run rendering after changes
-    if (!targetObservers.has(widgetId)) {
+    /*     if (!targetObservers.has(widgetId)) {
       const observer = new MutationObserver(() => {
         const existing = rerenderDebounce.get(widgetId)
         if (existing) window.clearTimeout(existing)
@@ -153,9 +151,8 @@ function runGreenspark() {
       })
       observer.observe(targetEl, { childList: true, subtree: true })
       targetObservers.set(widgetId, observer)
-    }
+    } */
 
-    // At this point, container is present; clear retry tracking for this widget
     containerRetries.delete(widgetId)
 
     const checkboxSelector = "input[name='customerCartContribution']"
@@ -365,7 +362,6 @@ function runGreenspark() {
         .then((updatedCart) => {
           const order = parseCart(updatedCart)
           if (order.lineItems.length <= 0) return
-          // Re-ensure container immediately before render to avoid stale selector
           targetContainerSelector = ensureContainer(widgetId)
           if (!document.querySelector(targetContainerSelector)) return
           return window[cartWidgetWindowKey]!.render({ order }, targetContainerSelector)
@@ -382,7 +378,6 @@ function runGreenspark() {
         })
     }
 
-    // Fetch cart data first before creating the widget
     fetch('/cart.js')
       .then((r) => {
         return r?.json()
@@ -392,7 +387,6 @@ function runGreenspark() {
         const order = parseCart(cartData)
         if (order.lineItems.length === 0) return
 
-        // Ensure container right before creating/rendering widget
         targetContainerSelector = ensureContainer(widgetId)
         if (!document.querySelector(targetContainerSelector)) return
 
@@ -577,7 +571,6 @@ function runGreenspark() {
 
   const targets = document.querySelectorAll('.greenspark-widget-target')
 
-  // Add styles for widget targets
   if (!document.getElementById('greenspark-widget-style')) {
     const style = document.createElement('style')
     style.id = 'greenspark-widget-style'
@@ -593,7 +586,6 @@ function runGreenspark() {
   }
 
   targets.forEach((target) => {
-    // Remove any previously injected containers
     target.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
 
     let type: string
@@ -606,7 +598,6 @@ function runGreenspark() {
 
     const variant = EnumToWidgetTypeMap[type]
 
-    // Use stable container selector derived from widgetId
     const containerSelector = ensureContainer(target.id)
 
     if (variant === 'orderImpacts') renderOrderImpacts(target.id, containerSelector)
