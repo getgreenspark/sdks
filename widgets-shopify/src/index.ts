@@ -12,6 +12,8 @@ const popupHistory: HTMLElement[] = []
 const MAX_RETRIES = 5
 let retryCount = 0
 
+const containerRetries = new Map<string, number>()
+
 function parseCart(cart: ShopifyCart) {
   const lineItems = cart.items.map((item) => ({
     productId: item.product_id.toString(),
@@ -92,6 +94,19 @@ function runGreenspark() {
   }
 
   const renderOrderImpacts = (widgetId: string, containerSelector: string) => {
+    const MAX_CONTAINER_RETRIES = 10
+
+    if (!document.getElementById(widgetId)) {
+      const count = (containerRetries.get(widgetId) || 0) + 1
+      containerRetries.set(widgetId, count)
+      if (count <= MAX_CONTAINER_RETRIES) {
+        setTimeout(() => renderOrderImpacts(widgetId, containerSelector), 150)
+      } else {
+        console.error('Greenspark Widget - Target element not found for', widgetId)
+      }
+      return
+    }
+
     let targetContainerSelector = containerSelector
     const targetEl = document.getElementById(widgetId)
     if (!document.querySelector(targetContainerSelector) && targetEl) {
@@ -103,6 +118,19 @@ function runGreenspark() {
         `<div class="greenspark-widget-instance" data-greenspark-widget-target-${newId}></div>`,
       )
     }
+
+    if (!document.querySelector(targetContainerSelector)) {
+      const count = (containerRetries.get(widgetId) || 0) + 1
+      containerRetries.set(widgetId, count)
+      if (count <= MAX_CONTAINER_RETRIES) {
+        setTimeout(() => renderOrderImpacts(widgetId, targetContainerSelector), 100)
+      } else {
+        console.error('Greenspark Widget - Container not found for', widgetId)
+      }
+      return
+    }
+
+    containerRetries.delete(widgetId)
 
     const checkboxSelector = "input[name='customerCartContribution']"
     const getCheckbox = () => document.querySelector<HTMLInputElement>(checkboxSelector)
@@ -655,7 +683,7 @@ if (!window.GreensparkWidgets || typeof window.GreensparkWidgets !== 'function')
         if (isCartMutation) {
           setTimeout(() => {
             runGreenspark()
-          }, 100)
+          }, 300)
         }
       })
       .catch((error) => {
