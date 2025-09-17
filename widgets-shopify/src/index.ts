@@ -33,7 +33,7 @@ function runGreenspark() {
     document.addEventListener('DOMContentLoaded', runGreenspark, { once: true })
   }
 
-  if (!window.GreensparkWidgets || typeof window.GreensparkWidgets !== 'function') {
+  if (!window.GreensparkWidgets) {
     if (retryCount++ >= MAX_RETRIES) {
       console.error('Greenspark Widget - Failed to load after max retries')
       return
@@ -91,32 +91,30 @@ function runGreenspark() {
     })
   }
 
-  const getSafeId = (widgetId: string) => widgetId.replace(/[^a-z0-9_-]/gi, '-').toLowerCase()
   const ensureContainer = (widgetId: string): string => {
-    const safe = getSafeId(widgetId)
-    const selector = `[data-greenspark-widget-container-for="${safe}"]`
+    const targetId = widgetId.replace(/[^a-z0-9_-]/gi, '-').toLowerCase()
+    const containerSelector = `[data-greenspark-widget-container-for="${targetId}"]`
     const target = document.getElementById(widgetId)
-    if (!target) return selector
-    const el = target.querySelector(selector) as HTMLElement | null
+    if (!target) return containerSelector
+    const el = target.querySelector(containerSelector) as HTMLElement | null
     if (!el) {
       target.querySelectorAll('.greenspark-widget-instance').forEach((e) => e.remove())
       target.insertAdjacentHTML(
         'afterbegin',
-        `<div class="greenspark-widget-instance" data-greenspark-widget-container-for="${safe}"></div>`,
+        `<div class="greenspark-widget-instance" data-greenspark-widget-container-for="${targetId}"></div>`,
       )
     }
-    return selector
+    return containerSelector
   }
 
-  const renderOrderImpacts = (widgetId: string) => {
+  const renderOrderImpacts = (widgetId: string, containerSelector: string) => {
     const targetEl = document.getElementById(widgetId)
+
     if (!targetEl) {
       return
     }
 
-    let targetContainerSelector = ensureContainer(widgetId)
-
-    if (!document.querySelector(targetContainerSelector)) {
+    if (!document.querySelector(containerSelector)) {
       return
     }
 
@@ -327,9 +325,9 @@ function runGreenspark() {
         .then((updatedCart) => {
           const order = parseCart(updatedCart)
           if (order.lineItems.length <= 0) return
-          targetContainerSelector = ensureContainer(widgetId)
-          if (!document.querySelector(targetContainerSelector)) return
-          return window[cartWidgetWindowKey]!.render({ order }, targetContainerSelector)
+          containerSelector = ensureContainer(widgetId)
+          if (!document.querySelector(containerSelector)) return
+          return window[cartWidgetWindowKey]!.render({ order }, containerSelector)
             .then(() => {
               movePopupToBody(widgetId)
 
@@ -352,12 +350,12 @@ function runGreenspark() {
         const order = parseCart(cartData)
         if (order.lineItems.length === 0) return
 
-        targetContainerSelector = ensureContainer(widgetId)
-        if (!document.querySelector(targetContainerSelector)) return
+        containerSelector = ensureContainer(widgetId)
+        if (!document.querySelector(containerSelector)) return
 
         const widget = greenspark.cartById({
           widgetId,
-          containerSelector: targetContainerSelector,
+          containerSelector,
           useShadowDom,
           order,
           version,
@@ -365,7 +363,7 @@ function runGreenspark() {
         window[cartWidgetWindowKey] = widget
 
         return widget
-          .render({ order }, targetContainerSelector)
+          .render({ order }, containerSelector)
           .then(() => movePopupToBody(widgetId))
           .then(ensureHandlers)
           .catch((e: Error) => console.error('Greenspark Widget - ', e))
@@ -565,7 +563,7 @@ function runGreenspark() {
 
     const containerSelector = ensureContainer(target.id)
 
-    if (variant === 'orderImpacts') renderOrderImpacts(target.id)
+    if (variant === 'orderImpacts') renderOrderImpacts(target.id, containerSelector)
     if (variant === 'offsetPerOrder') renderOffsetPerOrder(target.id, containerSelector)
     if (variant === 'offsetByProduct') renderOffsetByProduct(target.id, containerSelector)
     if (variant === 'offsetBySpend') renderOffsetBySpend(target.id, containerSelector)
@@ -622,7 +620,7 @@ async function setup() {
 
 setup().catch((e) => console.error('Greenspark Widget -', e))
 
-if (!window.GreensparkWidgets || typeof window.GreensparkWidgets !== 'function') {
+if (!window.GreensparkWidgets) {
   window.addEventListener('greenspark-setup', runGreenspark, { once: true })
 } else {
   runGreenspark()
