@@ -91,7 +91,7 @@ function runGreenspark() {
     })
   }
 
-  const ensureContainer = (widgetId: string): string => {
+  const getWidgetContainer = (widgetId: string): string => {
     const targetId = widgetId.replace(/[^a-z0-9_-]/gi, '-').toLowerCase()
     const containerSelector = `[data-greenspark-widget-container-for="${targetId}"]`
     const target = document.getElementById(widgetId)
@@ -325,7 +325,7 @@ function runGreenspark() {
         .then((updatedCart) => {
           const order = parseCart(updatedCart)
           if (order.lineItems.length <= 0) return
-          containerSelector = ensureContainer(widgetId)
+          containerSelector = getWidgetContainer(widgetId)
           if (!document.querySelector(containerSelector)) return
           return window[cartWidgetWindowKey]!.render({ order }, containerSelector)
             .then(() => {
@@ -350,7 +350,7 @@ function runGreenspark() {
         const order = parseCart(cartData)
         if (order.lineItems.length === 0) return
 
-        containerSelector = ensureContainer(widgetId)
+        containerSelector = getWidgetContainer(widgetId)
         if (!document.querySelector(containerSelector)) return
 
         const widget = greenspark.cartById({
@@ -561,7 +561,7 @@ function runGreenspark() {
 
     const variant = EnumToWidgetTypeMap[type]
 
-    const containerSelector = ensureContainer(target.id)
+    const containerSelector = getWidgetContainer(target.id)
 
     if (variant === 'orderImpacts') renderOrderImpacts(target.id, containerSelector)
     if (variant === 'offsetPerOrder') renderOffsetPerOrder(target.id, containerSelector)
@@ -595,7 +595,7 @@ function loadScript(url: string): Promise<void> {
 }
 
 async function setup() {
-  if (window.GreensparkWidgets && typeof window.GreensparkWidgets === 'function') return
+  if (window.GreensparkWidgets) return
 
   if (document.readyState === 'loading') {
     return new Promise((resolve) => {
