@@ -1,6 +1,6 @@
-import type {ShopifyCart} from './interfaces'
-import {EnumToWidgetTypeMap} from './interfaces'
-import {type GreensparkCartWidgetKey} from './global.d';
+import type { ShopifyCart } from './interfaces'
+import { EnumToWidgetTypeMap } from './interfaces'
+import { type GreensparkCartWidgetKey } from './global.d'
 
 const scriptSrc = document.currentScript?.getAttribute('src')
 const isDevStore = window.location.hostname.includes('greenspark-development-store')
@@ -17,7 +17,7 @@ function parseCart(cart: ShopifyCart) {
     productId: item.product_id.toString(),
     quantity: item.quantity,
   }))
-  const {currency} = cart
+  const { currency } = cart
   const totalPrice = cart.total_price
   return {
     lineItems,
@@ -30,7 +30,7 @@ function runGreenspark() {
   if (!scriptSrc) return
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', runGreenspark, {once: true})
+    document.addEventListener('DOMContentLoaded', runGreenspark, { once: true })
   }
 
   if (!window.GreensparkWidgets) {
@@ -78,20 +78,46 @@ function runGreenspark() {
   function addItemToCart(targetProductId: string, quantity = 1): Promise<unknown> {
     return fetchJSON(CART_ENDPOINTS.add, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json', Accept: 'application/json'},
-      body: JSON.stringify({items: [{id: parseInt(targetProductId, 10), quantity}]}),
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ items: [{ id: parseInt(targetProductId, 10), quantity }] }),
     })
   }
 
   function updateCart(updates: Record<string, number>): Promise<Response> {
     return fetch(CART_ENDPOINTS.update, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json', Accept: 'application/json'},
-      body: JSON.stringify({updates}),
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ updates }),
     })
   }
 
+  const getWidgetContainer = (widgetId: string): string => {
+    const targetId = widgetId.replace(/[^a-z0-9_-]/gi, '-').toLowerCase()
+    const containerSelector = `[data-greenspark-widget-container-for="${targetId}"]`
+    const target = document.getElementById(widgetId)
+    if (!target) return containerSelector
+    const el = target.querySelector(containerSelector) as HTMLElement | null
+    if (!el) {
+      target.querySelectorAll('.greenspark-widget-instance').forEach((e) => e.remove())
+      target.insertAdjacentHTML(
+        'afterbegin',
+        `<div class="greenspark-widget-instance" data-greenspark-widget-container-for="${targetId}"></div>`,
+      )
+    }
+    return containerSelector
+  }
+
   const renderOrderImpacts = (widgetId: string, containerSelector: string) => {
+    const targetEl = document.getElementById(widgetId)
+
+    if (!targetEl) {
+      return
+    }
+
+    if (!document.querySelector(containerSelector)) {
+      return
+    }
+
     const checkboxSelector = "input[name='customerCartContribution']"
     const getCheckbox = () => document.querySelector<HTMLInputElement>(checkboxSelector)
     const prevChecked = getCheckbox() ? getCheckbox()!.checked : undefined
@@ -299,7 +325,9 @@ function runGreenspark() {
         .then((updatedCart) => {
           const order = parseCart(updatedCart)
           if (order.lineItems.length <= 0) return
-          return window[cartWidgetWindowKey]!.render({order}, containerSelector)
+          containerSelector = getWidgetContainer(widgetId)
+          if (!document.querySelector(containerSelector)) return
+          return window[cartWidgetWindowKey]!.render({ order }, containerSelector)
             .then(() => {
               movePopupToBody(widgetId)
 
@@ -313,7 +341,6 @@ function runGreenspark() {
         })
     }
 
-    // Fetch cart data first before creating the widget
     fetch('/cart.js')
       .then((r) => {
         return r?.json()
@@ -322,6 +349,9 @@ function runGreenspark() {
         if (!cartData) return
         const order = parseCart(cartData)
         if (order.lineItems.length === 0) return
+
+        containerSelector = getWidgetContainer(widgetId)
+        if (!document.querySelector(containerSelector)) return
 
         const widget = greenspark.cartById({
           widgetId,
@@ -333,7 +363,7 @@ function runGreenspark() {
         window[cartWidgetWindowKey] = widget
 
         return widget
-          .render({order}, containerSelector)
+          .render({ order }, containerSelector)
           .then(() => movePopupToBody(widgetId))
           .then(ensureHandlers)
           .catch((e: Error) => console.error('Greenspark Widget - ', e))
@@ -504,7 +534,6 @@ function runGreenspark() {
 
   const targets = document.querySelectorAll('.greenspark-widget-target')
 
-  // Add styles for widget targets
   if (!document.getElementById('greenspark-widget-style')) {
     const style = document.createElement('style')
     style.id = 'greenspark-widget-style'
@@ -520,10 +549,8 @@ function runGreenspark() {
   }
 
   targets.forEach((target) => {
-    // Remove any previously injected containers
     target.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
 
-    const randomId = crypto.randomUUID()
     let type: string
     try {
       ;[type] = atob(target.id).split('|')
@@ -533,37 +560,8 @@ function runGreenspark() {
     }
 
     const variant = EnumToWidgetTypeMap[type]
-    let containerSelector = ''
 
-    if (variant === 'orderImpacts') {
-      const existingInstance = target.querySelector(
-        '.greenspark-widget-instance',
-      ) as HTMLElement | null
-      if (existingInstance) {
-        const existingAttr = Array.from(existingInstance.attributes).find((a) =>
-          a.name.startsWith('data-greenspark-widget-target-'),
-        )
-        if (existingAttr) {
-          containerSelector = `[${existingAttr.name}]`
-        }
-      }
-
-      if (!containerSelector) {
-        target.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
-        containerSelector = `[data-greenspark-widget-target-${randomId}]`
-        target.insertAdjacentHTML(
-          'afterbegin',
-          `<div class="greenspark-widget-instance" data-greenspark-widget-target-${randomId}></div>`,
-        )
-      }
-    } else {
-      target.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
-      containerSelector = `[data-greenspark-widget-target-${randomId}]`
-      target.insertAdjacentHTML(
-        'afterbegin',
-        `<div class="greenspark-widget-instance" data-greenspark-widget-target-${randomId}></div>`,
-      )
-    }
+    const containerSelector = getWidgetContainer(target.id)
 
     if (variant === 'orderImpacts') renderOrderImpacts(target.id, containerSelector)
     if (variant === 'offsetPerOrder') renderOffsetPerOrder(target.id, containerSelector)
@@ -606,7 +604,7 @@ async function setup() {
         () => {
           setup().then(resolve)
         },
-        {once: true},
+        { once: true },
       )
     })
   }
@@ -623,7 +621,7 @@ async function setup() {
 setup().catch((e) => console.error('Greenspark Widget -', e))
 
 if (!window.GreensparkWidgets) {
-  window.addEventListener('greenspark-setup', runGreenspark, {once: true})
+  window.addEventListener('greenspark-setup', runGreenspark, { once: true })
 } else {
   runGreenspark()
 }
@@ -643,7 +641,7 @@ if (!window.GreensparkWidgets) {
         if (isCartMutation) {
           setTimeout(() => {
             runGreenspark()
-          }, 100)
+          }, 300)
         }
       })
       .catch((error) => {
