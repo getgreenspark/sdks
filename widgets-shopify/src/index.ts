@@ -11,6 +11,31 @@ const popupHistory: HTMLElement[] = []
 
 const MAX_RETRIES = 5
 let retryCount = 0
+let shopifyEventsInitialized = false
+let rerenderDebounceTimer: number | null = null
+
+function debounceRunGreenspark(delay = 120) {
+  if (rerenderDebounceTimer) window.clearTimeout(rerenderDebounceTimer)
+  rerenderDebounceTimer = window.setTimeout(() => {
+    runGreenspark()
+  }, delay)
+}
+
+function setupShopifyEventListeners() {
+  if (shopifyEventsInitialized) return
+  shopifyEventsInitialized = true
+
+  const commonEvents = [
+    'shopify:section:load',
+    'shopify:section:unload',
+    'cart:updated',
+    'cart:refresh',
+  ] as const
+
+  commonEvents.forEach((eventName) => {
+    document.addEventListener(eventName, () => debounceRunGreenspark())
+  })
+}
 
 function parseCart(cart: ShopifyCart) {
   const lineItems = cart.items.map((item) => ({
@@ -32,6 +57,8 @@ function runGreenspark() {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', runGreenspark, { once: true })
   }
+
+  setupShopifyEventListeners()
 
   if (!window.GreensparkWidgets) {
     if (retryCount++ >= MAX_RETRIES) {
