@@ -28,20 +28,24 @@ function setupCartDrawerObserver() {
 
   try {
     const drawer = drawerEl as Element
+
     cartDrawerObserver = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         if (mutation.type !== 'childList') continue
         if (cartDrawerDebounceTimer) window.clearTimeout(cartDrawerDebounceTimer)
+
         cartDrawerDebounceTimer = window.setTimeout(() => {
-          const hasInstance = Boolean(drawer.querySelector('.greenspark-widget-instance'))
-          const hasTarget = Boolean(drawer.querySelector('.greenspark-widget-target'))
-          if (!hasInstance && hasTarget) {
+          const hasWidgetInstance = Boolean(drawer.querySelector('.greenspark-widget-instance'))
+          const hasWidgetTarget = Boolean(drawer.querySelector('.greenspark-widget-target'))
+
+          if (!hasWidgetInstance && hasWidgetTarget) {
             runGreenspark()
           }
         }, 120)
         break
       }
     })
+
     cartDrawerObserver.observe(drawerEl, { childList: true, subtree: true })
     cartDrawerObserverInitialized = true
   } catch (err) {
@@ -70,7 +74,6 @@ function runGreenspark() {
     document.addEventListener('DOMContentLoaded', runGreenspark, { once: true })
   }
 
-  // Ensure observer is attached so we detect cart drawer content refreshes
   setupCartDrawerObserver()
 
   if (!window.GreensparkWidgets) {
@@ -320,15 +323,16 @@ function runGreenspark() {
             if (newDrawerContent !== undefined) existingDrawer.innerHTML = newDrawerContent
           }
 
-          const existingMini =
+          const existingMiniCart =
             document.querySelector(SELECTORS.miniCartForm) ||
             document.querySelector(SELECTORS.miniCart)
-          if (existingMini && sections['mini-cart']) {
+          if (existingMiniCart && sections['mini-cart']) {
             const newMiniDoc = parser.parseFromString(sections['mini-cart'], 'text/html')
             const newMiniContent =
               newMiniDoc.querySelector(SELECTORS.miniCartForm)?.innerHTML ??
               newMiniDoc.querySelector(SELECTORS.miniCart)?.innerHTML
-            if (newMiniContent !== undefined) (existingMini as Element).innerHTML = newMiniContent
+            if (newMiniContent !== undefined)
+              (existingMiniCart as Element).innerHTML = newMiniContent
           }
 
           const newCartDocItems = sections['main-cart-items']
