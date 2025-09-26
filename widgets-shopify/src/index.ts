@@ -27,12 +27,17 @@ function setupCartDrawerObserver() {
   }
 
   try {
+    const drawer = drawerEl as Element
     cartDrawerObserver = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         if (mutation.type !== 'childList') continue
         if (cartDrawerDebounceTimer) window.clearTimeout(cartDrawerDebounceTimer)
         cartDrawerDebounceTimer = window.setTimeout(() => {
-          runGreenspark()
+          const hasInstance = Boolean(drawer.querySelector('.greenspark-widget-instance'))
+          const hasTarget = Boolean(drawer.querySelector('.greenspark-widget-target'))
+          if (!hasInstance && hasTarget) {
+            runGreenspark()
+          }
         }, 120)
         break
       }
