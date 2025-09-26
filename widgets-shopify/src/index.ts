@@ -10,6 +10,17 @@ const widgetUrl = isDevStore
 const popupHistory: HTMLElement[] = []
 
 const MAX_RETRIES = 5
+const SELECTORS = {
+  cartDrawerForm: '#CartDrawer-Form',
+  cartDrawer: '#CartDrawer',
+  miniCartForm: '#mini-cart-form',
+  miniCart: '#mini-cart',
+  mainCartItems: '#main-cart-items',
+  mainCart: '#main-cart',
+  interactiveCart: 'interactive-cart',
+  cartItemsForm: 'cart-items[form-id]',
+  cartDrawerElement: 'cart-drawer',
+} as const
 let retryCount = 0
 let cartDrawerObserverInitialized = false
 let cartDrawerObserver: MutationObserver | null = null
@@ -18,7 +29,9 @@ let cartDrawerDebounceTimer: number | null = null
 function setupCartDrawerObserver() {
   if (cartDrawerObserverInitialized) return
 
-  const drawerEl = document.querySelector('cart-drawer, #CartDrawer, #mini-cart')
+  const drawerEl = document.querySelector(
+    [SELECTORS.cartDrawerElement, SELECTORS.cartDrawer, SELECTORS.miniCart].join(', '),
+  )
   if (!drawerEl) {
     window.setTimeout(() => {
       if (!cartDrawerObserverInitialized) setupCartDrawerObserver()
@@ -165,17 +178,6 @@ function runGreenspark() {
     const getCheckbox = () => document.querySelector<HTMLInputElement>(checkboxSelector)
     const prevChecked = getCheckbox() ? getCheckbox()!.checked : undefined
     const cartWidgetWindowKey = `greensparkCartWidget-${widgetId}` as GreensparkCartWidgetKey
-
-    const SELECTORS = {
-      cartDrawerForm: '#CartDrawer-Form',
-      cartDrawer: '#CartDrawer',
-      miniCartForm: '#mini-cart-form',
-      miniCart: '#mini-cart',
-      mainCartItems: '#main-cart-items',
-      mainCart: '#main-cart',
-      interactiveCart: 'interactive-cart',
-      cartItemsForm: 'cart-items[form-id]',
-    }
 
     const ensureHandlers = () => {
       const WIDGET_PRESELECT_OPT_OUT_KEY = 'greenspark-preselect-optout'
