@@ -10,7 +10,70 @@ const widgetUrl = isDevStore
 const popupHistory: HTMLElement[] = []
 
 const MAX_RETRIES = 5
+const SELECTORS = {
+  cartDrawerForm: '#CartDrawer-Form',
+  cartDrawer: '#CartDrawer',
+  miniCartForm: '#mini-cart-form',
+  miniCart: '#mini-cart',
+  mainCartItems: '#main-cart-items',
+  mainCart: '#main-cart',
+  interactiveCart: 'interactive-cart',
+  cartItemsForm: 'cart-items[form-id]',
+  cartDrawerElement: 'cart-drawer',
+} as const
 let retryCount = 0
+let cartDrawerRetryCount = 0
+let cartDrawerObserverInitialized = false
+let cartDrawerObserver: MutationObserver | null = null
+let cartDrawerDebounceTimer: number | null = null
+
+function setupCartDrawerObserver() {
+  if (cartDrawerObserverInitialized) return
+
+  const drawerEl = document.querySelector(
+    [SELECTORS.cartDrawerElement, SELECTORS.cartDrawer, SELECTORS.miniCart].join(', '),
+  )
+  if (!drawerEl) {
+    if (cartDrawerRetryCount++ >= MAX_RETRIES) {
+      cartDrawerObserverInitialized = true
+      console.warn(
+        'Greenspark Widget - Cart drawer not found after max retries; stopping observer setup',
+      )
+      return
+    }
+    window.setTimeout(() => {
+      if (!cartDrawerObserverInitialized) setupCartDrawerObserver()
+    }, 400)
+    return
+  }
+
+  try {
+    const drawer = drawerEl as Element
+
+    cartDrawerObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type !== 'childList') continue
+        if (cartDrawerDebounceTimer) window.clearTimeout(cartDrawerDebounceTimer)
+
+        cartDrawerDebounceTimer = window.setTimeout(() => {
+          const hasWidgetInstance = Boolean(drawer.querySelector('.greenspark-widget-instance'))
+          const hasWidgetTarget = Boolean(drawer.querySelector('.greenspark-widget-target'))
+
+          if (!hasWidgetInstance && hasWidgetTarget) {
+            runGreenspark()
+          }
+        }, 120)
+        break
+      }
+    })
+
+    cartDrawerObserver.observe(drawerEl, { childList: true, subtree: true })
+    cartDrawerObserverInitialized = true
+    cartDrawerRetryCount = 0
+  } catch (err) {
+    console.warn('Greenspark Widget - Failed to attach cart drawer observer', err)
+  }
+}
 
 function parseCart(cart: ShopifyCart) {
   const lineItems = cart.items.map((item) => ({
@@ -32,6 +95,8 @@ function runGreenspark() {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', runGreenspark, { once: true })
   }
+
+  setupCartDrawerObserver()
 
   if (!window.GreensparkWidgets) {
     if (retryCount++ >= MAX_RETRIES) {
@@ -122,15 +187,6 @@ function runGreenspark() {
     const getCheckbox = () => document.querySelector<HTMLInputElement>(checkboxSelector)
     const prevChecked = getCheckbox() ? getCheckbox()!.checked : undefined
     const cartWidgetWindowKey = `greensparkCartWidget-${widgetId}` as GreensparkCartWidgetKey
-
-    const SELECTORS = {
-      cartDrawerForm: '#CartDrawer-Form',
-      cartDrawer: '#CartDrawer',
-      mainCartItems: '#main-cart-items',
-      mainCart: '#main-cart',
-      interactiveCart: 'interactive-cart',
-      cartItemsForm: 'cart-items[form-id]',
-    }
 
     const ensureHandlers = () => {
       const WIDGET_PRESELECT_OPT_OUT_KEY = 'greenspark-preselect-optout'
@@ -259,7 +315,7 @@ function runGreenspark() {
 
     const refreshCartDrawer = () => {
       const root = window.Shopify?.routes?.root ?? '/'
-      fetch(`${root}?sections=cart-drawer,main-cart-items,main-cart`)
+      fetch(`${root}?sections=cart-drawer,main-cart-items,main-cart,mini-cart`)
         .then((response) => {
           if (!response.ok) return
           return response.json()
@@ -278,11 +334,26 @@ function runGreenspark() {
             if (newDrawerContent !== undefined) existingDrawer.innerHTML = newDrawerContent
           }
 
+          const existingMiniCart =
+            document.querySelector(SELECTORS.miniCartForm) ||
+            document.querySelector(SELECTORS.miniCart)
+          if (existingMiniCart && sections['mini-cart']) {
+            const newMiniDoc = parser.parseFromString(sections['mini-cart'], 'text/html')
+            const newMiniContent =
+              newMiniDoc.querySelector(SELECTORS.miniCartForm)?.innerHTML ??
+              newMiniDoc.querySelector(SELECTORS.miniCart)?.innerHTML
+            if (newMiniContent !== undefined)
+              (existingMiniCart as Element).innerHTML = newMiniContent
+          }
+
           const newCartDocItems = sections['main-cart-items']
             ? parser.parseFromString(sections['main-cart-items'], 'text/html')
             : null
           const newCartDocMain = sections['main-cart']
             ? parser.parseFromString(sections['main-cart'], 'text/html')
+            : null
+          const newMiniCartDoc = sections['mini-cart']
+            ? parser.parseFromString(sections['mini-cart'], 'text/html')
             : null
 
           const pageTargets = [
@@ -302,11 +373,22 @@ function runGreenspark() {
               existing: document.querySelector(SELECTORS.cartItemsForm),
               findNew: (doc: Document | null) => doc?.querySelector(SELECTORS.cartItemsForm),
             },
+            {
+              existing: document.querySelector(SELECTORS.miniCartForm),
+              findNew: (doc: Document | null) => doc?.querySelector(SELECTORS.miniCartForm),
+            },
+            {
+              existing: document.querySelector(SELECTORS.miniCart),
+              findNew: (doc: Document | null) => doc?.querySelector(SELECTORS.miniCart),
+            },
           ]
 
           for (const target of pageTargets) {
             if (!target.existing) continue
-            const candidateNew = target.findNew(newCartDocItems) || target.findNew(newCartDocMain)
+            const candidateNew =
+              target.findNew(newCartDocItems) ||
+              target.findNew(newCartDocMain) ||
+              target.findNew(newMiniCartDoc)
             if (candidateNew && candidateNew.innerHTML !== undefined) {
               ;(target.existing as Element).innerHTML = candidateNew.innerHTML
               break
