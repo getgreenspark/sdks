@@ -22,6 +22,7 @@ const SELECTORS = {
   cartDrawerElement: 'cart-drawer',
 } as const
 let retryCount = 0
+let cartDrawerRetryCount = 0
 let cartDrawerObserverInitialized = false
 let cartDrawerObserver: MutationObserver | null = null
 let cartDrawerDebounceTimer: number | null = null
@@ -33,6 +34,13 @@ function setupCartDrawerObserver() {
     [SELECTORS.cartDrawerElement, SELECTORS.cartDrawer, SELECTORS.miniCart].join(', '),
   )
   if (!drawerEl) {
+    if (cartDrawerRetryCount++ >= MAX_RETRIES) {
+      cartDrawerObserverInitialized = true
+      console.warn(
+        'Greenspark Widget - Cart drawer not found after max retries; stopping observer setup',
+      )
+      return
+    }
     window.setTimeout(() => {
       if (!cartDrawerObserverInitialized) setupCartDrawerObserver()
     }, 400)
@@ -61,6 +69,7 @@ function setupCartDrawerObserver() {
 
     cartDrawerObserver.observe(drawerEl, { childList: true, subtree: true })
     cartDrawerObserverInitialized = true
+    cartDrawerRetryCount = 0
   } catch (err) {
     console.warn('Greenspark Widget - Failed to attach cart drawer observer', err)
   }
