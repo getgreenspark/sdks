@@ -166,6 +166,8 @@ function runGreenspark() {
     const SELECTORS = {
       cartDrawerForm: '#CartDrawer-Form',
       cartDrawer: '#CartDrawer',
+      miniCartForm: '#mini-cart-form',
+      miniCart: '#mini-cart',
       mainCartItems: '#main-cart-items',
       mainCart: '#main-cart',
       interactiveCart: 'interactive-cart',
@@ -299,7 +301,7 @@ function runGreenspark() {
 
     const refreshCartDrawer = () => {
       const root = window.Shopify?.routes?.root ?? '/'
-      fetch(`${root}?sections=cart-drawer,main-cart-items,main-cart`)
+      fetch(`${root}?sections=cart-drawer,main-cart-items,main-cart,mini-cart`)
         .then((response) => {
           if (!response.ok) return
           return response.json()
@@ -318,11 +320,25 @@ function runGreenspark() {
             if (newDrawerContent !== undefined) existingDrawer.innerHTML = newDrawerContent
           }
 
+          const existingMini =
+            document.querySelector(SELECTORS.miniCartForm) ||
+            document.querySelector(SELECTORS.miniCart)
+          if (existingMini && sections['mini-cart']) {
+            const newMiniDoc = parser.parseFromString(sections['mini-cart'], 'text/html')
+            const newMiniContent =
+              newMiniDoc.querySelector(SELECTORS.miniCartForm)?.innerHTML ??
+              newMiniDoc.querySelector(SELECTORS.miniCart)?.innerHTML
+            if (newMiniContent !== undefined) (existingMini as Element).innerHTML = newMiniContent
+          }
+
           const newCartDocItems = sections['main-cart-items']
             ? parser.parseFromString(sections['main-cart-items'], 'text/html')
             : null
           const newCartDocMain = sections['main-cart']
             ? parser.parseFromString(sections['main-cart'], 'text/html')
+            : null
+          const newMiniCartDoc = sections['mini-cart']
+            ? parser.parseFromString(sections['mini-cart'], 'text/html')
             : null
 
           const pageTargets = [
@@ -342,11 +358,22 @@ function runGreenspark() {
               existing: document.querySelector(SELECTORS.cartItemsForm),
               findNew: (doc: Document | null) => doc?.querySelector(SELECTORS.cartItemsForm),
             },
+            {
+              existing: document.querySelector(SELECTORS.miniCartForm),
+              findNew: (doc: Document | null) => doc?.querySelector(SELECTORS.miniCartForm),
+            },
+            {
+              existing: document.querySelector(SELECTORS.miniCart),
+              findNew: (doc: Document | null) => doc?.querySelector(SELECTORS.miniCart),
+            },
           ]
 
           for (const target of pageTargets) {
             if (!target.existing) continue
-            const candidateNew = target.findNew(newCartDocItems) || target.findNew(newCartDocMain)
+            const candidateNew =
+              target.findNew(newCartDocItems) ||
+              target.findNew(newCartDocMain) ||
+              target.findNew(newMiniCartDoc)
             if (candidateNew && candidateNew.innerHTML !== undefined) {
               ;(target.existing as Element).innerHTML = candidateNew.innerHTML
               break
