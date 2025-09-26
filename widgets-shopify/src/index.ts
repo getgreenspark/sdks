@@ -11,30 +11,37 @@ const popupHistory: HTMLElement[] = []
 
 const MAX_RETRIES = 5
 let retryCount = 0
-let shopifyEventsInitialized = false
-let rerenderDebounceTimer: number | null = null
+let cartDrawerObserverInitialized = false
+let cartDrawerObserver: MutationObserver | null = null
+let cartDrawerDebounceTimer: number | null = null
 
-function debounceRunGreenspark(delay = 120) {
-  if (rerenderDebounceTimer) window.clearTimeout(rerenderDebounceTimer)
-  rerenderDebounceTimer = window.setTimeout(() => {
-    runGreenspark()
-  }, delay)
-}
+function setupCartDrawerObserver() {
+  if (cartDrawerObserverInitialized) return
 
-function setupShopifyEventListeners() {
-  if (shopifyEventsInitialized) return
-  shopifyEventsInitialized = true
+  const drawerEl = document.querySelector('cart-drawer, #CartDrawer, #mini-cart')
+  if (!drawerEl) {
+    window.setTimeout(() => {
+      if (!cartDrawerObserverInitialized) setupCartDrawerObserver()
+    }, 400)
+    return
+  }
 
-  const commonEvents = [
-    'shopify:section:load',
-    'shopify:section:unload',
-    'cart:updated',
-    'cart:refresh',
-  ] as const
-
-  commonEvents.forEach((eventName) => {
-    document.addEventListener(eventName, () => debounceRunGreenspark())
-  })
+  try {
+    cartDrawerObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type !== 'childList') continue
+        if (cartDrawerDebounceTimer) window.clearTimeout(cartDrawerDebounceTimer)
+        cartDrawerDebounceTimer = window.setTimeout(() => {
+          runGreenspark()
+        }, 120)
+        break
+      }
+    })
+    cartDrawerObserver.observe(drawerEl, { childList: true, subtree: true })
+    cartDrawerObserverInitialized = true
+  } catch (err) {
+    console.warn('Greenspark Widget - Failed to attach cart drawer observer', err)
+  }
 }
 
 function parseCart(cart: ShopifyCart) {
@@ -58,7 +65,8 @@ function runGreenspark() {
     document.addEventListener('DOMContentLoaded', runGreenspark, { once: true })
   }
 
-  setupShopifyEventListeners()
+  // Ensure observer is attached so we detect cart drawer content refreshes
+  setupCartDrawerObserver()
 
   if (!window.GreensparkWidgets) {
     if (retryCount++ >= MAX_RETRIES) {
