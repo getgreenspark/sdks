@@ -52,7 +52,7 @@ describe('Cart Widget', () => {
       containerSelector: containerSelector,
     })
 
-    const mockHtml = '<p class="hi"><strong>Hi</strong> there cart!</p>'
+    const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
     expect(await cart.renderToString()).toEqual(mockHtml)
   })
