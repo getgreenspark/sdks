@@ -1,19 +1,18 @@
+import type { WidgetConfig } from '@/widgets/base'
 import { Widget } from '@/widgets/base'
 import { WIDGET_COLORS } from '@/constants'
-import type { WidgetConfig } from '@/widgets/base'
 import type {
-  OrderProduct,
   CustomerCartContributionWidgetParams,
-  StoreOrder,
-  WidgetStyle,
+  OrderProduct,
   PopupTheme,
+  StoreOrder,
   WidgetColor,
+  WidgetStyle,
 } from '@/interfaces'
 
 export class CustomerCartContributionWidget
   extends Widget
-  implements CustomerCartContributionWidgetParams
-{
+  implements CustomerCartContributionWidgetParams {
   color: WidgetColor
   order: StoreOrder
   withPopup?: boolean
@@ -42,14 +41,35 @@ export class CustomerCartContributionWidget
     }
   }
 
+  async render(
+    options?: Partial<CustomerCartContributionWidgetParams>,
+    containerSelector?: string,
+  ): Promise<void> {
+    const node = await this.renderToElement(options)
+    this.inject(node, containerSelector)
+  }
+
+  async renderToString(options?: Partial<CustomerCartContributionWidgetParams>): Promise<string> {
+    if (options) this.updateDefaults(options)
+    this.validateOptions()
+    return await this.api.fetchCustomerCartContributionWidget(this.requestBody)
+  }
+
+  async renderToElement(
+    options?: Partial<CustomerCartContributionWidgetParams>,
+  ): Promise<HTMLElement> {
+    const html = await this.renderToString(options)
+    return this.parseHtml(html)
+  }
+
   private updateDefaults({
-    color,
-    order,
-    withPopup,
-    popupTheme,
-    style,
-    version,
-  }: Partial<CustomerCartContributionWidgetParams>) {
+                           color,
+                           order,
+                           withPopup,
+                           popupTheme,
+                           style,
+                           version,
+                         }: Partial<CustomerCartContributionWidgetParams>) {
     this.color = color ?? this.color
     this.order = order ?? this.order
     this.withPopup = withPopup ?? this.withPopup
@@ -98,27 +118,5 @@ export class CustomerCartContributionWidget
         `Greenspark - The values provided to the Customer Cart Contribution Widget as 'lineItems' are not valid products with a 'productId'(string) and a 'quantity'(number).`,
       )
     }
-  }
-
-  async render(
-    options?: Partial<CustomerCartContributionWidgetParams>,
-    containerSelector?: string,
-  ): Promise<void> {
-    const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
-  }
-
-  async renderToString(options?: Partial<CustomerCartContributionWidgetParams>): Promise<string> {
-    if (options) this.updateDefaults(options)
-    this.validateOptions()
-    const response = await this.api.fetchCustomerCartContributionWidget(this.requestBody)
-    return response.data
-  }
-
-  async renderToElement(
-    options?: Partial<CustomerCartContributionWidgetParams>,
-  ): Promise<HTMLElement> {
-    const html = await this.renderToString(options)
-    return this.parseHtml(html)
   }
 }

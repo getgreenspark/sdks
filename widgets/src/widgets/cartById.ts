@@ -1,6 +1,6 @@
-import { Widget } from '@/widgets/base'
 import type { WidgetConfig } from '@/widgets/base'
-import type { OrderProduct, StoreOrder, CartWidgetByIdParams } from '@/interfaces'
+import { Widget } from '@/widgets/base'
+import type { CartWidgetByIdParams, OrderProduct, StoreOrder } from '@/interfaces'
 
 export class CartWidgetById extends Widget implements CartWidgetByIdParams {
   widgetId: string
@@ -20,6 +20,22 @@ export class CartWidgetById extends Widget implements CartWidgetByIdParams {
       order: this.order,
       version: this.version,
     }
+  }
+
+  async render(options?: Partial<CartWidgetByIdParams>, containerSelector?: string): Promise<void> {
+    const node = await this.renderToElement(options)
+    this.inject(node, containerSelector)
+  }
+
+  async renderToString(options?: Partial<CartWidgetByIdParams>): Promise<string> {
+    if (options) this.updateDefaults(options)
+    this.validateOptions()
+    return await this.api.fetchCartWidgetById(this.requestBody)
+  }
+
+  async renderToElement(options?: Partial<CartWidgetByIdParams>): Promise<HTMLElement> {
+    const html = await this.renderToString(options)
+    return this.parseHtml(html)
   }
 
   private updateDefaults({ widgetId, order, version }: Partial<CartWidgetByIdParams>) {
@@ -58,22 +74,5 @@ export class CartWidgetById extends Widget implements CartWidgetByIdParams {
         `Greenspark - The values provided to the Cart Widget as 'lineItems' are not valid products with a 'productId'(string) and a 'quantity'(number).`,
       )
     }
-  }
-
-  async render(options?: Partial<CartWidgetByIdParams>, containerSelector?: string): Promise<void> {
-    const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
-  }
-
-  async renderToString(options?: Partial<CartWidgetByIdParams>): Promise<string> {
-    if (options) this.updateDefaults(options)
-    this.validateOptions()
-    const response = await this.api.fetchCartWidgetById(this.requestBody)
-    return response.data
-  }
-
-  async renderToElement(options?: Partial<CartWidgetByIdParams>): Promise<HTMLElement> {
-    const html = await this.renderToString(options)
-    return this.parseHtml(html)
   }
 }
