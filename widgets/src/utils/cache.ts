@@ -80,9 +80,12 @@ class CartWidgetCache {
     integrationContext?: string,
   ): string {
     // Create a normalized copy of params
-    const normalized = {
+    const normalized: TParams = {
       ...params,
-      lineItems: this.normalizeLineItems(params?.order?.lineItems || []),
+      order: {
+        ...params?.order,
+        lineItems: this.normalizeLineItems(params?.order?.lineItems || []),
+      },
     }
 
     // Add locale and integration context to ensure cache separation
