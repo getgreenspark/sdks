@@ -10,8 +10,9 @@ interface CacheEntry<T> {
  * Provides in-memory caching to prevent request bursts
  */
 class CartWidgetCache {
+  private static readonly TTL: number = 20_000 as const // 20 seconds in milliseconds
+  private static readonly MAX_ENTRIES: number = 20 as const // Maximum number of cache entries
   private cache: Map<string, CacheEntry<string>> = new Map()
-  private readonly TTL: number = 20_000 // 20 seconds in milliseconds
 
   /**
    * Retrieves a cached entry if it exists and hasn't expired
@@ -32,7 +33,7 @@ class CartWidgetCache {
     const now = Date.now()
     const age = now - entry.timestamp
 
-    if (age > this.TTL) {
+    if (age > CartWidgetCache.TTL) {
       // Entry expired, remove it
       this.cache.delete(key)
       return null
@@ -57,8 +58,7 @@ class CartWidgetCache {
     })
 
     // Clean up expired entries periodically (when cache size grows)
-    // This is a simple approach - in production you might want more sophisticated cleanup
-    if (this.cache.size > 20) {
+    if (this.cache.size > CartWidgetCache.MAX_ENTRIES) {
       this.cleanup()
     }
   }
@@ -110,7 +110,7 @@ class CartWidgetCache {
     const now = Date.now()
     const keysToDelete: string[] = []
     this.cache.forEach((entry, key) => {
-      if (now - entry.timestamp > this.TTL) {
+      if (now - entry.timestamp > CartWidgetCache.TTL) {
         keysToDelete.push(key)
       }
     })
@@ -118,6 +118,5 @@ class CartWidgetCache {
   }
 }
 
-// Export a singleton instance
 export const cartWidgetCache = new CartWidgetCache()
 
