@@ -6,7 +6,7 @@ const scriptSrc = document.currentScript?.getAttribute('src')
 const isDevStore = window.location.hostname.includes('greenspark-development-store')
 const widgetUrl = isDevStore
   ? 'https://cdn.getgreenspark.com/scripts/widgets%402.2.0-2-umd.js'
-  : 'https://cdn.getgreenspark.com/scripts/widgets%402.4.1-0.js'
+  : 'https://cdn.getgreenspark.com/scripts/widgets%402.4.1-1.js'
 const popupHistory: HTMLElement[] = []
 
 const MAX_RETRIES = 5
