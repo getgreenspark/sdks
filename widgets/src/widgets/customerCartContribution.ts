@@ -46,20 +46,20 @@ export class CustomerCartContributionWidget
     containerSelector?: string,
   ): Promise<void> {
     const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
+    if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<CustomerCartContributionWidgetParams>): Promise<string> {
+  async renderToString(options?: Partial<CustomerCartContributionWidgetParams>): Promise<string | undefined> {
     if (options) this.updateDefaults(options)
-    this.validateOptions()
-    return await this.api.fetchCustomerCartContributionWidget(this.requestBody)
+    if (this.validateOptions())
+      return await this.api.fetchCustomerCartContributionWidget(this.requestBody)
   }
 
   async renderToElement(
     options?: Partial<CustomerCartContributionWidgetParams>,
-  ): Promise<HTMLElement> {
+  ): Promise<HTMLElement | undefined> {
     const html = await this.renderToString(options)
-    return this.parseHtml(html)
+    if (html) return this.parseHtml(html)
   }
 
   private updateDefaults({
@@ -78,7 +78,7 @@ export class CustomerCartContributionWidget
     this.version = version ?? this.version
   }
 
-  private validateOptions() {
+  private validateOptions(): boolean {
     if (!WIDGET_COLORS.includes(this.color)) {
       throw new Error(
         `Greenspark - "${
@@ -118,5 +118,7 @@ export class CustomerCartContributionWidget
         `Greenspark - The values provided to the Customer Cart Contribution Widget as 'lineItems' are not valid products with a 'productId'(string) and a 'quantity'(number).`,
       )
     }
+
+    return this.order.lineItems?.length !== 0
   }
 }

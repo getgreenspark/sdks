@@ -41,18 +41,19 @@ export class CartWidget extends Widget implements CartWidgetParams {
 
   async render(options?: Partial<CartWidgetParams>, containerSelector?: string): Promise<void> {
     const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
+    if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<CartWidgetParams>): Promise<string> {
+  async renderToString(options?: Partial<CartWidgetParams>): Promise<string | undefined> {
     if (options) this.updateDefaults(options)
-    this.validateOptions()
-    return await this.api.fetchCartWidget(this.requestBody)
+    if (this.validateOptions()) {
+      return await this.api.fetchCartWidget(this.requestBody)
+    }
   }
 
-  async renderToElement(options?: Partial<CartWidgetParams>): Promise<HTMLElement> {
+  async renderToElement(options?: Partial<CartWidgetParams>): Promise<HTMLElement | undefined> {
     const html = await this.renderToString(options)
-    return this.parseHtml(html)
+    if (html) return this.parseHtml(html)
   }
 
   private updateDefaults({
@@ -71,7 +72,7 @@ export class CartWidget extends Widget implements CartWidgetParams {
     this.version = version ?? this.version
   }
 
-  private validateOptions() {
+  private validateOptions(): boolean {
     if (!WIDGET_COLORS.includes(this.color)) {
       throw new Error(
         `Greenspark - "${
@@ -111,5 +112,7 @@ export class CartWidget extends Widget implements CartWidgetParams {
         `Greenspark - The values provided to the Cart Widget as 'lineItems' are not valid products with a 'productId'(string) and a 'quantity'(number).`,
       )
     }
+
+    return this.order.lineItems?.length !== 0
   }
 }

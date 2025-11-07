@@ -24,18 +24,18 @@ export class CartWidgetById extends Widget implements CartWidgetByIdParams {
 
   async render(options?: Partial<CartWidgetByIdParams>, containerSelector?: string): Promise<void> {
     const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
+    if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<CartWidgetByIdParams>): Promise<string> {
+  async renderToString(options?: Partial<CartWidgetByIdParams>): Promise<string | undefined> {
     if (options) this.updateDefaults(options)
-    this.validateOptions()
-    return await this.api.fetchCartWidgetById(this.requestBody)
+    if (this.validateOptions())
+      return await this.api.fetchCartWidgetById(this.requestBody)
   }
 
-  async renderToElement(options?: Partial<CartWidgetByIdParams>): Promise<HTMLElement> {
+  async renderToElement(options?: Partial<CartWidgetByIdParams>): Promise<HTMLElement | undefined> {
     const html = await this.renderToString(options)
-    return this.parseHtml(html)
+    if (html) return this.parseHtml(html)
   }
 
   private updateDefaults({ widgetId, order, version }: Partial<CartWidgetByIdParams>) {
@@ -44,7 +44,7 @@ export class CartWidgetById extends Widget implements CartWidgetByIdParams {
     this.version = version ?? this.version
   }
 
-  private validateOptions() {
+  private validateOptions(): boolean {
     if (!(typeof this.order.currency === 'string')) {
       throw new Error(
         `Greenspark - "${this.order.currency}" was selected as the cart currency for the Cart Widget, but this currency is not available. Please use a valid currency code like "USD", "GBP" and "EUR".`,
@@ -74,5 +74,7 @@ export class CartWidgetById extends Widget implements CartWidgetByIdParams {
         `Greenspark - The values provided to the Cart Widget as 'lineItems' are not valid products with a 'productId'(string) and a 'quantity'(number).`,
       )
     }
+
+    return this.order.lineItems?.length !== 0
   }
 }

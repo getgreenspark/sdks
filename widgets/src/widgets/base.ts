@@ -9,8 +9,10 @@ export interface WidgetConfig {
 
 export abstract class WidgetTemplate {
   abstract render(options?: unknown, containerSelector?: string): Promise<void>
-  abstract renderToString(options?: unknown): Promise<string>
-  abstract renderToElement(options?: unknown): Promise<HTMLElement>
+
+  abstract renderToString(options?: unknown): Promise<string | undefined>
+
+  abstract renderToElement(options?: unknown): Promise<HTMLElement | undefined>
 }
 
 export class Widget extends DOMInjector implements WidgetTemplate {
@@ -25,11 +27,11 @@ export class Widget extends DOMInjector implements WidgetTemplate {
     throw new Error(`Greenspark - This widget does not support the 'render' method`)
   }
 
-  renderToString(): Promise<string> {
+  renderToString(): Promise<string | undefined> {
     throw new Error(`Greenspark - This widget does not support the 'renderToString' method`)
   }
 
-  renderToElement(): Promise<HTMLElement> {
+  renderToElement(): Promise<HTMLElement | undefined> {
     throw new Error(`Greenspark - This widget does not support the 'renderToElement' method`)
   }
 }
