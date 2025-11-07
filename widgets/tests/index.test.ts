@@ -13,7 +13,6 @@ const axiosMock = axios as jest.Mocked<typeof axios>
 
 const API_KEY = apiFixtures.default.apiKey as string
 const INTEGRATION_SLUG = apiFixtures.default.integrationSlug as string
-const EMPTY_ORDER = orderFixture.empty as StoreOrder
 const BASIC_ORDER = orderFixture.basic as StoreOrder
 
 describe('GreensparkWidgets', () => {
@@ -49,10 +48,10 @@ describe('GreensparkWidgets', () => {
   test('can create individual widget instances', async () => {
     const widgets = new GreensparkWidgets({ apiKey: API_KEY, integrationSlug: INTEGRATION_SLUG })
     expect(typeof widgets.cart).toEqual('function')
-    const cart = widgets.cart({ color: 'beige', order: EMPTY_ORDER })
+    const cart = widgets.cart({ color: 'beige', order: BASIC_ORDER })
     expect(cart instanceof CartWidget).toBe(true)
 
-    const cartOldest = widgets.cart({ color: 'green', order: EMPTY_ORDER })
+    const cartOldest = widgets.cart({ color: 'green', order: BASIC_ORDER })
     const cartOld = widgets.cart({ color: 'blue', order: BASIC_ORDER })
     const cartNew = widgets.cart({ color: 'black', order: BASIC_ORDER })
     expect(cartOldest).not.toBe(cartOld)

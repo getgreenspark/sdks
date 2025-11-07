@@ -26,12 +26,30 @@ describe('Cart Widget', () => {
     widgets = new GreensparkWidgets({ apiKey: API_KEY, integrationSlug: INTEGRATION_SLUG })
   })
 
-  test('can render a cart widget', async () => {
+  test('should not render a cart widget if the line items array is empty', async () => {
     expect(typeof widgets.cart).toEqual('function')
     const containerSelector = createContainer()
     const cart = widgets.cart({
       color: 'beige',
       order: EMPTY_ORDER,
+      containerSelector: containerSelector,
+    })
+
+    expect(cart instanceof CartWidget).toBe(true)
+
+    const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
+    axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+    await cart.render()
+    expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(undefined)
+  })
+
+
+  test('can render a cart widget', async () => {
+    expect(typeof widgets.cart).toEqual('function')
+    const containerSelector = createContainer()
+    const cart = widgets.cart({
+      color: 'beige',
+      order: BASIC_ORDER,
       containerSelector: containerSelector,
     })
 
