@@ -24,6 +24,7 @@ class CartWidgetCache {
     locale: string,
     integrationContext?: string,
   ): string | null {
+    this.cache.forEach((value, key) => console.log('cache entry:', value, key))
     const key = this.generateCacheKey(params, locale, integrationContext)
     console.log('get cache key:', key)
     const entry = this.cache.get(key)
