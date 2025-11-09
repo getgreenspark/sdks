@@ -11,7 +11,6 @@ interface CacheEntry<T> {
  */
 class CartWidgetCache {
   private static readonly TTL: number = 20_000 as const // 20 seconds in milliseconds
-  private static readonly MAX_ENTRIES: number = 20 as const // Maximum number of cache entries
   private cache: Map<string, CacheEntry<string>> = new Map()
 
   /**
@@ -57,10 +56,7 @@ class CartWidgetCache {
       timestamp: Date.now(),
     })
 
-    // Clean up expired entries periodically (when cache size grows)
-    if (this.cache.size > CartWidgetCache.MAX_ENTRIES) {
-      this.cleanup()
-    }
+    this.cleanup()
   }
 
 
