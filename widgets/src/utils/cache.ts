@@ -39,7 +39,7 @@ class CartWidgetCache {
     }
 
     this.cleanup()
-    
+
     return entry.data
   }
 
