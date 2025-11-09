@@ -38,6 +38,8 @@ class CartWidgetCache {
       return null
     }
 
+    this.cleanup()
+    
     return entry.data
   }
 
