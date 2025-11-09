@@ -1,3 +1,4 @@
+/* eslint-disable */
 import type { CartWidgetBaseParams, OrderProduct } from '@/interfaces'
 
 interface CacheEntry<T> {
@@ -24,7 +25,9 @@ class CartWidgetCache {
     integrationContext?: string,
   ): string | null {
     const key = this.generateCacheKey(params, locale, integrationContext)
+    console.log('get cache key:', key)
     const entry = this.cache.get(key)
+    console.log('get cache entry:', entry)
 
     if (!entry) {
       return null
@@ -33,7 +36,9 @@ class CartWidgetCache {
     const now = Date.now()
     const age = now - entry.timestamp
 
+    console.log('get cache age:', age, CartWidgetCache.TTL)
     if (age > CartWidgetCache.TTL) {
+      console.log('delete:')
       // Entry expired, remove it
       this.cache.delete(key)
       return null
@@ -52,12 +57,14 @@ class CartWidgetCache {
     integrationContext?: string,
   ): void {
     const key = this.generateCacheKey(params, locale, integrationContext)
+    console.log('set cache key:', key, response)
     this.cache.set(key, {
       data: response,
       timestamp: Date.now(),
     })
 
     // Clean up expired entries periodically (when cache size grows)
+    console.log('cache size:', this.cache.size, CartWidgetCache.MAX_ENTRIES)
     if (this.cache.size > CartWidgetCache.MAX_ENTRIES) {
       this.cleanup()
     }
