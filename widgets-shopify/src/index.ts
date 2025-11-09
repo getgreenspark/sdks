@@ -4,7 +4,7 @@ import { type GreensparkCartWidgetKey } from './global.d'
 
 const scriptSrc = document.currentScript?.getAttribute('src')
 // const isDevStore = window.location.hostname.includes('greenspark-development-store')
-const widgetUrl = 'https://cdn.getgreenspark.com/scripts/widgets%402.4.1-3.js'
+const widgetUrl = 'https://cdn.getgreenspark.com/scripts/widgets%402.4.1-4.js'
 const popupHistory: HTMLElement[] = []
 
 const MAX_RETRIES = 5
