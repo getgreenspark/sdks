@@ -59,6 +59,12 @@ class CartWidgetCache {
     this.cleanup()
   }
 
+  /**
+   * Clears all cache entries (useful for testing)
+   */
+  clear(): void {
+    this.cache.clear()
+  }
 
   /**
    * Normalizes lineItems array by sorting by productId to ensure consistent cache keys for identical orders
