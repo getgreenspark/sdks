@@ -1,5 +1,6 @@
 import type { AxiosHeaders, AxiosInstance, AxiosResponse } from 'axios'
 import axios from 'axios'
+import { cartWidgetCache } from '@/utils/cache'
 import type {
   ByPercentageOfRevenueRequestBody,
   ByPercentageOfRevenueWidgetByIdParams,
@@ -52,12 +53,12 @@ export class ConnectionHandler {
   locale: string
 
   constructor({
-    apiKey,
-    integrationSlug,
-    locale = 'en',
-    isShopifyIntegration = false,
-    origin,
-  }: {
+                apiKey,
+                integrationSlug,
+                locale = 'en',
+                isShopifyIntegration = false,
+                origin,
+              }: {
     apiKey?: string
     integrationSlug?: string
     locale: string
@@ -85,68 +86,134 @@ export class ConnectionHandler {
   async fetchCartWidget(
     { version, ...body }: CartWidgetParams,
     headers?: typeof AxiosHeaders,
-  ): Promise<AxiosResponse<string>> {
+  ): Promise<string> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
 
-    return this.api.post<string, AxiosResponse<string>, CartWidgetRequestBody>(
+    // Build the complete request params for cache key
+    const requestParams = version
+      ? Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+      )
+      : Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+      )
+
+    // Include version in cache params
+    const cacheParams = {
+      ...requestParams,
+      version,
+    }
+
+    const integrationContext = this.integrationSlug || this.apiKey || ''
+
+    // Check cache first
+    const cachedResponse = cartWidgetCache.get(cacheParams, this.locale, integrationContext)
+    if (cachedResponse) {
+      return cachedResponse
+    }
+
+    // Cache miss - make API call
+    const response = await this.api.post<string, AxiosResponse<string>, CartWidgetRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/cart-widget`,
-      version
-        ? Object.assign(
-            {},
-            body,
-            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-          )
-        : Object.assign(
-            {},
-            body,
-            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-          ),
+      requestParams,
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
       },
     )
+
+    // Store in cache
+    cartWidgetCache.set(cacheParams, response.data, this.locale, integrationContext)
+
+    return response.data
   }
 
   async fetchCartWidgetById(
     { version, ...body }: CartWidgetByIdParams,
     headers?: typeof AxiosHeaders,
-  ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, CartWidgetByIdRequestBody>(
+  ): Promise<string> {
+    // Build the complete request params for cache key
+    const requestParams = { integrationSlug: this.integrationSlug || '', ...body }
+    const cacheParams = {
+      ...requestParams,
+      version,
+    }
+
+    const integrationContext = this.integrationSlug || this.apiKey || ''
+
+    // Check cache first
+    const cachedResponse = cartWidgetCache.get(cacheParams, this.locale, integrationContext)
+    if (cachedResponse) {
+      return cachedResponse
+    }
+
+    // Cache miss - make API call
+    const response = await this.api.post<string, AxiosResponse<string>, CartWidgetByIdRequestBody>(
       `/${version}/widgets/cart-widget/${body.widgetId}`,
-      { integrationSlug: this.integrationSlug || '', ...body },
+      requestParams,
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
       },
     )
+
+    // Store in cache
+    cartWidgetCache.set(cacheParams, response.data, this.locale, integrationContext)
+
+    return response.data
   }
 
   async fetchCustomerCartContributionWidget(
     { version, ...body }: CustomerCartContributionWidgetParams,
     headers?: typeof AxiosHeaders,
-  ): Promise<AxiosResponse<string>> {
+  ): Promise<string> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
     const payload = isPreview ? { ...body, isCustomerContributionEnabled: true } : body
 
-    return this.api.post<string, AxiosResponse<string>, CustomerCartContributionWidgetRequestBody>(
+    // Build the complete request params for cache key
+    const requestParams = version
+      ? Object.assign(
+        {},
+        payload,
+        this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+      )
+      : Object.assign(
+        {},
+        payload,
+        this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+      )
+
+    const cacheParams = {
+      ...requestParams,
+      version,
+    }
+
+    const integrationContext = this.integrationSlug || this.apiKey || ''
+
+    // Check cache first
+    const cachedResponse = cartWidgetCache.get(cacheParams, this.locale, integrationContext)
+    if (cachedResponse) {
+      return cachedResponse
+    }
+
+    // Cache miss - make API call
+    const response = await this.api.post<string, AxiosResponse<string>, CustomerCartContributionWidgetRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/cart-widget`,
-      version
-        ? Object.assign(
-            {},
-            payload,
-            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-          )
-        : Object.assign(
-            {},
-            payload,
-            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-          ),
+      requestParams,
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
       },
     )
+
+    // Store in cache
+    cartWidgetCache.set(cacheParams, response.data, this.locale, integrationContext)
+
+    return response.data
   }
 
   async fetchSpendLevelWidget(
@@ -158,15 +225,15 @@ export class ConnectionHandler {
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/spend-level-widget`,
       version
         ? Object.assign(
-            {},
-            body,
-            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-          )
+          {},
+          body,
+          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+        )
         : Object.assign(
-            {},
-            body,
-            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-          ),
+          {},
+          body,
+          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+        ),
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
@@ -197,15 +264,15 @@ export class ConnectionHandler {
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/per-order-widget`,
       version
         ? Object.assign(
-            {},
-            body,
-            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-          )
+          {},
+          body,
+          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+        )
         : Object.assign(
-            {},
-            body,
-            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-          ),
+          {},
+          body,
+          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+        ),
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
@@ -259,15 +326,15 @@ export class ConnectionHandler {
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/by-percentage-widget`,
       version
         ? Object.assign(
-            {},
-            body,
-            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-          )
+          {},
+          body,
+          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+        )
         : Object.assign(
-            {},
-            body,
-            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-          ),
+          {},
+          body,
+          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+        ),
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
@@ -298,15 +365,15 @@ export class ConnectionHandler {
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/by-percentage-of-revenue-widget`,
       version
         ? Object.assign(
-            {},
-            body,
-            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-          )
+          {},
+          body,
+          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+        )
         : Object.assign(
-            {},
-            body,
-            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-          ),
+          {},
+          body,
+          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+        ),
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
@@ -337,15 +404,15 @@ export class ConnectionHandler {
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/tiered-spend-level-widget`,
       version
         ? Object.assign(
-            {},
-            body,
-            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-          )
+          {},
+          body,
+          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+        )
         : Object.assign(
-            {},
-            body,
-            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-          ),
+          {},
+          body,
+          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+        ),
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
@@ -376,15 +443,15 @@ export class ConnectionHandler {
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/per-product-widget`,
       version
         ? Object.assign(
-            {},
-            body,
-            this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-          )
+          {},
+          body,
+          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+        )
         : Object.assign(
-            {},
-            body,
-            this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-          ),
+          {},
+          body,
+          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+        ),
       {
         params: { lng: this.locale },
         headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },

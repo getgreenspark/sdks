@@ -5,7 +5,7 @@ import { type GreensparkCartWidgetKey } from './global.d'
 const scriptSrc = document.currentScript?.getAttribute('src')
 const isDevStore = window.location.hostname.includes('greenspark-development-store')
 const widgetUrl = isDevStore
-  ? 'https://cdn.getgreenspark.com/scripts/widgets%402.2.0-2-umd.js'
+  ? 'https://cdn.getgreenspark.com/scripts/widgets%402.5.0.js'
   : 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
 const popupHistory: HTMLElement[] = []
 
@@ -183,7 +183,7 @@ function runGreenspark() {
       return
     }
 
-    const checkboxSelector = "input[name='customerCartContribution']"
+    const checkboxSelector = 'input[name=\'customerCartContribution\']'
     const getCheckbox = () => document.querySelector<HTMLInputElement>(checkboxSelector)
     const prevChecked = getCheckbox() ? getCheckbox()!.checked : undefined
     const cartWidgetWindowKey = `greensparkCartWidget-${widgetId}` as GreensparkCartWidgetKey
@@ -215,7 +215,7 @@ function runGreenspark() {
         window._greensparkCheckboxHandlerBound = true
         document.addEventListener('change', (e) => {
           const checkbox = (e.target as HTMLElement)?.closest<HTMLInputElement>(
-            "input[name='customerCartContribution']",
+            'input[name=\'customerCartContribution\']',
           )
           if (!checkbox) return
           const productId = checkbox.getAttribute('data-greenspark-product-external-id')
@@ -663,7 +663,7 @@ function loadScript(url: string): Promise<void> {
   return new Promise<void>((resolve) => {
     const script = document.createElement('script')
     script.type = 'text/javascript'
-    script.onload = function () {
+    script.onload = function() {
       resolve()
     }
 
@@ -708,10 +708,10 @@ if (!window.GreensparkWidgets) {
   runGreenspark()
 }
 
-;(function (context, fetch) {
+;(function(context, fetch) {
   if (typeof fetch !== 'function') return
 
-  context.fetch = function (...args: [input: URL | RequestInfo, init?: RequestInit | undefined]) {
+  context.fetch = function(...args: [input: URL | RequestInfo, init?: RequestInit | undefined]) {
     const response = fetch.apply(this, args)
 
     response
