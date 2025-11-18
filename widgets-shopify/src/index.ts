@@ -122,9 +122,11 @@ function runGreenspark() {
     integrationSlug: shopUniqueName,
     isShopifyIntegration: true,
   })
+  const isDevStore = shopUniqueName.includes('greenspark-development-store');
+  const greensparkApiUrl = isDevStore ? 'https://dev-api.getmads.com' : 'https://api.getgreenspark.com'
 
   function captureEvent(event: unknown): Promise<Response> {
-    return fetch(`${process.env.API_URL}/v2/events`, {
+    return fetch(`${greensparkApiUrl}/v2/events`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({ integrationSlug: shopUniqueName, scope: 'CUSTOMER_CART_CONTRIBUTION_WIDGET', type: 'ERROR', event }),
@@ -149,16 +151,16 @@ function runGreenspark() {
   }
 
   function addItemToCart(targetProductId: string, quantity = 1): Promise<unknown> {
-    try {
-      return fetchJSON(CART_ENDPOINTS.add, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ items: [{ id: parseInt(targetProductId, 10), quantity }] }),
+    return fetchJSON(CART_ENDPOINTS.add, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ items: [{ id: parseInt(targetProductId, 10), quantity }] }),
+    }).catch(error =>{
+      error.json().then((jsonError: unknown) => {
+        captureEvent(jsonError)
       })
-    } catch (error) {
-      captureEvent(error)
-      throw error
-    }
+      return Promise.reject(error);
+    });
   }
 
   function updateCart(updates: Record<string, number>): Promise<Response> {
