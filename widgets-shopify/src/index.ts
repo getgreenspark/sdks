@@ -313,7 +313,7 @@ function runGreenspark() {
                 })
                 .catch((err) => {
                   console.error('Greenspark Widget - pre-selected add error', err)
-                  // checkbox.checked = present
+                  checkbox.checked = present
                 })
             }
             checkbox.checked = present
