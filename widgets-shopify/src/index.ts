@@ -183,7 +183,7 @@ function runGreenspark() {
       return
     }
 
-    const checkboxSelector = 'input[name=\'customerCartContribution\']'
+    const checkboxSelector = "input[name='customerCartContribution']"
     const getCheckbox = () => document.querySelector<HTMLInputElement>(checkboxSelector)
     const prevChecked = getCheckbox() ? getCheckbox()!.checked : undefined
     const cartWidgetWindowKey = `greensparkCartWidget-${widgetId}` as GreensparkCartWidgetKey
@@ -215,7 +215,7 @@ function runGreenspark() {
         window._greensparkCheckboxHandlerBound = true
         document.addEventListener('change', (e) => {
           const checkbox = (e.target as HTMLElement)?.closest<HTMLInputElement>(
-            'input[name=\'customerCartContribution\']',
+            "input[name='customerCartContribution']",
           )
           if (!checkbox) return
           const productId = checkbox.getAttribute('data-greenspark-product-external-id')
@@ -281,6 +281,14 @@ function runGreenspark() {
         const preSelectedAttr = checkbox.getAttribute('data-greenspark-widget-pre-selected')
         const isCheckboxPreSelected = preSelectedAttr === 'true'
 
+        if (!isPreviewProduct) {
+          if (isCheckboxPreSelected) {
+            clearWidgetPreselectOptOut()
+          } else {
+            setWidgetPreselectOptOut()
+          }
+        }
+
         getCart()
           .then((cart) => {
             const present = cart.items.some((item) => String(item.id) === productId)
@@ -298,6 +306,7 @@ function runGreenspark() {
                 })
                 .catch((err) => {
                   console.error('Greenspark Widget - pre-selected add error', err)
+                  setWidgetPreselectOptOut()
                   checkbox.checked = present
                 })
             }
@@ -663,7 +672,7 @@ function loadScript(url: string): Promise<void> {
   return new Promise<void>((resolve) => {
     const script = document.createElement('script')
     script.type = 'text/javascript'
-    script.onload = function() {
+    script.onload = function () {
       resolve()
     }
 
@@ -708,10 +717,10 @@ if (!window.GreensparkWidgets) {
   runGreenspark()
 }
 
-;(function(context, fetch) {
+;(function (context, fetch) {
   if (typeof fetch !== 'function') return
 
-  context.fetch = function(...args: [input: URL | RequestInfo, init?: RequestInit | undefined]) {
+  context.fetch = function (...args: [input: URL | RequestInfo, init?: RequestInit | undefined]) {
     const response = fetch.apply(this, args)
 
     response
