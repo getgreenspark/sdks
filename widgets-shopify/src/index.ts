@@ -281,14 +281,6 @@ function runGreenspark() {
         const preSelectedAttr = checkbox.getAttribute('data-greenspark-widget-pre-selected')
         const isCheckboxPreSelected = preSelectedAttr === 'true'
 
-        if (!isPreviewProduct) {
-          if (isCheckboxPreSelected) {
-            clearWidgetPreselectOptOut()
-          } else {
-            setWidgetPreselectOptOut()
-          }
-        }
-
         getCart()
           .then((cart) => {
             const present = cart.items.some((item) => String(item.id) === productId)
