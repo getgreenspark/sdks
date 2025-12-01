@@ -28,19 +28,19 @@ export class SpendLevelWidgetById extends Widget implements SpendLevelWidgetById
     containerSelector?: string,
   ): Promise<void> {
     const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
+    if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<SpendLevelWidgetByIdParams>): Promise<string> {
+  async renderToString(options?: Partial<SpendLevelWidgetByIdParams>): Promise<string | undefined> {
     if (options) this.updateDefaults(options)
-    this.validateOptions()
+    if (!this.validateOptions()) return undefined
     const response = await this.api.fetchSpendLevelWidgetById(this.requestBody)
     return response.data
   }
 
-  async renderToElement(options?: Partial<SpendLevelWidgetByIdParams>): Promise<HTMLElement> {
+  async renderToElement(options?: Partial<SpendLevelWidgetByIdParams>): Promise<HTMLElement | undefined> {
     const html = await this.renderToString(options)
-    return this.parseHtml(html)
+    if (html) return this.parseHtml(html)
   }
 
   private updateDefaults({ widgetId, currency, version }: Partial<SpendLevelWidgetByIdParams>) {
@@ -49,8 +49,8 @@ export class SpendLevelWidgetById extends Widget implements SpendLevelWidgetById
     this.version = version ?? this.version
   }
 
-  private validateOptions() {
-    WidgetValidator.for('Spend Level Widget')
+  private validateOptions(): boolean {
+    return WidgetValidator.for('Spend Level Widget')
       .widgetId(this.widgetId)
       .currency(this.currency)
       .validate()

@@ -32,19 +32,19 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
 
   async render(options?: Partial<TopStatsWidgetParams>, containerSelector?: string): Promise<void> {
     const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
+    if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<TopStatsWidgetParams>): Promise<string> {
+  async renderToString(options?: Partial<TopStatsWidgetParams>): Promise<string | undefined> {
     if (options) this.updateDefaults(options)
-    this.validateOptions()
+    if (!this.validateOptions()) return undefined
     const response = await this.api.fetchTopStatsWidget(this.requestBody)
     return response.data
   }
 
-  async renderToElement(options?: Partial<TopStatsWidgetParams>): Promise<HTMLElement> {
+  async renderToElement(options?: Partial<TopStatsWidgetParams>): Promise<HTMLElement | undefined> {
     const html = await this.renderToString(options)
-    return this.parseHtml(html)
+    if (html) return this.parseHtml(html)
   }
 
   private updateDefaults({
@@ -61,8 +61,8 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
     this.version = version ?? this.version
   }
 
-  private validateOptions() {
-    WidgetValidator.for('Top Stats Widget')
+  private validateOptions(): boolean {
+    return WidgetValidator.for('Top Stats Widget')
       .color(this.color)
       .withPopup(this.withPopup)
       .popupTheme(this.popupTheme)

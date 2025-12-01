@@ -30,7 +30,7 @@ export class CartWidgetById extends Widget implements CartWidgetByIdParams {
 
   async renderToString(options?: Partial<CartWidgetByIdParams>): Promise<string | undefined> {
     if (options) this.updateDefaults(options)
-    this.validateOptions()
+    if (!this.validateOptions()) return undefined
     return await this.api.fetchCartWidgetById(this.requestBody)
   }
 
@@ -45,8 +45,8 @@ export class CartWidgetById extends Widget implements CartWidgetByIdParams {
     this.version = version ?? this.version
   }
 
-  private validateOptions() {
-    WidgetValidator.for('Cart Widget')
+  private validateOptions(): boolean {
+    return WidgetValidator.for('Cart Widget')
       .widgetId(this.widgetId)
       .order(this.order)
       .validate()

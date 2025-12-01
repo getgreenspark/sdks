@@ -25,19 +25,19 @@ export class StaticWidget extends Widget implements StaticWidgetParams {
 
   async render(options?: Partial<StaticWidgetParams>, containerSelector?: string): Promise<void> {
     const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
+    if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<StaticWidgetParams>): Promise<string> {
+  async renderToString(options?: Partial<StaticWidgetParams>): Promise<string | undefined> {
     if (options) this.updateDefaults(options)
-    this.validateOptions()
+    if (!this.validateOptions()) return undefined
     const response = await this.api.fetchStaticWidget(this.requestBody)
     return response.data
   }
 
-  async renderToElement(options?: Partial<StaticWidgetParams>): Promise<HTMLElement> {
+  async renderToElement(options?: Partial<StaticWidgetParams>): Promise<HTMLElement | undefined> {
     const html = await this.renderToString(options)
-    return this.parseHtml(html)
+    if (html) return this.parseHtml(html)
   }
 
   private updateDefaults({ color, version, style }: Partial<StaticWidgetParams>) {
@@ -46,8 +46,8 @@ export class StaticWidget extends Widget implements StaticWidgetParams {
     this.style = style ?? this.style
   }
 
-  private validateOptions() {
-    WidgetValidator.for('Static Widget')
+  private validateOptions(): boolean {
+    return WidgetValidator.for('Static Widget')
       .color(this.color)
       .staticStyle(this.style)
       .validate()

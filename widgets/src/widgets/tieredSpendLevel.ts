@@ -42,19 +42,19 @@ export class TieredSpendLevelWidget extends Widget implements TieredSpendLevelWi
     containerSelector?: string,
   ): Promise<void> {
     const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
+    if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<TieredSpendLevelWidgetParams>): Promise<string> {
+  async renderToString(options?: Partial<TieredSpendLevelWidgetParams>): Promise<string | undefined> {
     if (options) this.updateDefaults(options)
-    this.validateOptions()
+    if (!this.validateOptions()) return undefined
     const response = await this.api.fetchTieredSpendLevelWidget(this.requestBody)
     return response.data
   }
 
-  async renderToElement(options?: Partial<TieredSpendLevelWidgetParams>): Promise<HTMLElement> {
+  async renderToElement(options?: Partial<TieredSpendLevelWidgetParams>): Promise<HTMLElement | undefined> {
     const html = await this.renderToString(options)
-    return this.parseHtml(html)
+    if (html) return this.parseHtml(html)
   }
 
   private updateDefaults({
@@ -73,8 +73,8 @@ export class TieredSpendLevelWidget extends Widget implements TieredSpendLevelWi
     this.style = style ?? this.style
   }
 
-  private validateOptions() {
-    WidgetValidator.for('Tiered Spend Level Widget')
+  private validateOptions(): boolean {
+    return WidgetValidator.for('Tiered Spend Level Widget')
       .color(this.color)
       .withPopup(this.withPopup)
       .popupTheme(this.popupTheme)

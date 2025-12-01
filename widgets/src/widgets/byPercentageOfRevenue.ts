@@ -41,21 +41,21 @@ export class ByPercentageOfRevenueWidget
     containerSelector?: string,
   ): Promise<void> {
     const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
+    if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<ByPercentageOfRevenueWidgetParams>): Promise<string> {
+  async renderToString(options?: Partial<ByPercentageOfRevenueWidgetParams>): Promise<string | undefined> {
     if (options) this.updateDefaults(options)
-    this.validateOptions()
+    if (!this.validateOptions()) return undefined
     const response = await this.api.fetchByPercentageOfRevenueWidget(this.requestBody)
     return response.data
   }
 
   async renderToElement(
     options?: Partial<ByPercentageOfRevenueWidgetParams>,
-  ): Promise<HTMLElement> {
+  ): Promise<HTMLElement | undefined> {
     const html = await this.renderToString(options)
-    return this.parseHtml(html)
+    if (html) return this.parseHtml(html)
   }
 
   private updateDefaults({
@@ -72,8 +72,8 @@ export class ByPercentageOfRevenueWidget
     this.version = version ?? this.version
   }
 
-  private validateOptions() {
-    WidgetValidator.for('By Percentage Of Revenue Widget')
+  private validateOptions(): boolean {
+    return WidgetValidator.for('By Percentage Of Revenue Widget')
       .color(this.color)
       .withPopup(this.withPopup)
       .popupTheme(this.popupTheme)

@@ -25,19 +25,19 @@ export class StaticWidgetById extends Widget implements StaticWidgetByIdParams {
     containerSelector?: string,
   ): Promise<void> {
     const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
+    if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<StaticWidgetByIdParams>): Promise<string> {
+  async renderToString(options?: Partial<StaticWidgetByIdParams>): Promise<string | undefined> {
     if (options) this.updateDefaults(options)
-    this.validateOptions()
+    if (!this.validateOptions()) return undefined
     const response = await this.api.fetchStaticWidgetById(this.requestBody)
     return response.data
   }
 
-  async renderToElement(options?: Partial<StaticWidgetByIdParams>): Promise<HTMLElement> {
+  async renderToElement(options?: Partial<StaticWidgetByIdParams>): Promise<HTMLElement | undefined> {
     const html = await this.renderToString(options)
-    return this.parseHtml(html)
+    if (html) return this.parseHtml(html)
   }
 
   private updateDefaults({ widgetId, version }: Partial<StaticWidgetByIdParams>) {
@@ -45,7 +45,7 @@ export class StaticWidgetById extends Widget implements StaticWidgetByIdParams {
     this.version = version ?? this.version
   }
 
-  private validateOptions() {
-    WidgetValidator.for('Static Widget').widgetId(this.widgetId).validate()
+  private validateOptions(): boolean {
+    return WidgetValidator.for('Static Widget').widgetId(this.widgetId).validate()
   }
 }

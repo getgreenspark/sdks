@@ -50,7 +50,7 @@ export class CustomerCartContributionWidget
 
   async renderToString(options?: Partial<CustomerCartContributionWidgetParams>): Promise<string | undefined> {
     if (options) this.updateDefaults(options)
-    this.validateOptions()
+    if (!this.validateOptions()) return undefined
     return await this.api.fetchCustomerCartContributionWidget(this.requestBody)
   }
 
@@ -77,8 +77,8 @@ export class CustomerCartContributionWidget
     this.version = version ?? this.version
   }
 
-  private validateOptions() {
-    WidgetValidator.for('Customer Cart Contribution Widget')
+  private validateOptions(): boolean {
+    return WidgetValidator.for('Customer Cart Contribution Widget')
       .color(this.color)
       .withPopup(this.withPopup)
       .popupTheme(this.popupTheme)

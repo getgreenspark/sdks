@@ -28,19 +28,19 @@ export class TieredSpendLevelWidgetById extends Widget implements TieredSpendLev
     containerSelector?: string,
   ): Promise<void> {
     const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
+    if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<TieredSpendLevelWidgetByIdParams>): Promise<string> {
+  async renderToString(options?: Partial<TieredSpendLevelWidgetByIdParams>): Promise<string | undefined> {
     if (options) this.updateDefaults(options)
-    this.validateOptions()
+    if (!this.validateOptions()) return undefined
     const response = await this.api.fetchTieredSpendLevelWidgetById(this.requestBody)
     return response.data
   }
 
-  async renderToElement(options?: Partial<TieredSpendLevelWidgetByIdParams>): Promise<HTMLElement> {
+  async renderToElement(options?: Partial<TieredSpendLevelWidgetByIdParams>): Promise<HTMLElement | undefined> {
     const html = await this.renderToString(options)
-    return this.parseHtml(html)
+    if (html) return this.parseHtml(html)
   }
 
   private updateDefaults({
@@ -53,8 +53,8 @@ export class TieredSpendLevelWidgetById extends Widget implements TieredSpendLev
     this.version = version ?? this.version
   }
 
-  private validateOptions() {
-    WidgetValidator.for('Tiered Spend Level Widget')
+  private validateOptions(): boolean {
+    return WidgetValidator.for('Tiered Spend Level Widget')
       .widgetId(this.widgetId)
       .currency(this.currency)
       .validate()

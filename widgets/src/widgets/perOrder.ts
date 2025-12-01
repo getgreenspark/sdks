@@ -31,19 +31,19 @@ export class PerOrderWidget extends Widget implements PerOrderWidgetParams {
 
   async render(options?: Partial<PerOrderWidgetParams>, containerSelector?: string): Promise<void> {
     const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
+    if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<PerOrderWidgetParams>): Promise<string> {
+  async renderToString(options?: Partial<PerOrderWidgetParams>): Promise<string | undefined> {
     if (options) this.updateDefaults(options)
-    this.validateOptions()
+    if (!this.validateOptions()) return undefined
     const response = await this.api.fetchPerOrderWidget(this.requestBody)
     return response.data
   }
 
-  async renderToElement(options?: Partial<PerOrderWidgetParams>): Promise<HTMLElement> {
+  async renderToElement(options?: Partial<PerOrderWidgetParams>): Promise<HTMLElement | undefined> {
     const html = await this.renderToString(options)
-    return this.parseHtml(html)
+    if (html) return this.parseHtml(html)
   }
 
   private updateDefaults({
@@ -60,8 +60,8 @@ export class PerOrderWidget extends Widget implements PerOrderWidgetParams {
     this.version = version ?? this.version
   }
 
-  private validateOptions() {
-    WidgetValidator.for('Per Order Widget')
+  private validateOptions(): boolean {
+    return WidgetValidator.for('Per Order Widget')
       .color(this.color)
       .withPopup(this.withPopup)
       .popupTheme(this.popupTheme)
