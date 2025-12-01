@@ -68,7 +68,7 @@ export class ValidationUtils {
       return false
     }
     // ISO 4217 codes are 3 uppercase letters
-    return /^[A-Z]{3}$/.test(currency)
+    return /^[A-Z]{3}$/.test(currency.toUpperCase())
   }
 }
 
@@ -254,14 +254,14 @@ export class WidgetValidator extends ValidationUtils {
     // Validate totalPrice
     if (typeof orderObj.totalPrice !== 'number' || Number.isNaN(orderObj.totalPrice) || orderObj.totalPrice < 0) {
       this.errors.push(
-        `${orderObj.totalPrice} was provided as the order's totalPrice, but this value is not valid. Please provide a valid number to the ${this.widgetName}.`,
+        `The order's totalPrice must be a valid non-negative number for the ${this.widgetName}, but received: ${orderObj.totalPrice}`,
       )
     }
 
     // Validate lineItems
     if (!Array.isArray(orderObj.lineItems)) {
       this.errors.push(
-        `${orderObj.lineItems} was provided as the order's items, but this value is not valid. Please provide a valid array of items to the ${this.widgetName}.`,
+        `The order's lineItems must be a valid array for the ${this.widgetName}, but received: ${typeof orderObj.lineItems}`,
       )
     } else {
       const isValidProduct = (p: OrderProduct): boolean => {
