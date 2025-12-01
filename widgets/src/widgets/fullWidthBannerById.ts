@@ -1,6 +1,7 @@
 import type { WidgetConfig } from '@/widgets/base'
 import { Widget } from '@/widgets/base'
 import type { FullWidthBannerWidgetByIdParams } from '@/interfaces'
+import { WidgetValidator } from '@/utils/widget-validation'
 
 export class FullWidthBannerWidgetById extends Widget implements FullWidthBannerWidgetByIdParams {
   widgetId: string
@@ -29,6 +30,7 @@ export class FullWidthBannerWidgetById extends Widget implements FullWidthBanner
 
   async renderToString(options?: Partial<FullWidthBannerWidgetByIdParams>): Promise<string> {
     if (options) this.updateDefaults(options)
+    this.validateOptions()
     const response = await this.api.fetchFullWidthBannerWidgetById(this.requestBody)
     return response.data
   }
@@ -36,6 +38,10 @@ export class FullWidthBannerWidgetById extends Widget implements FullWidthBanner
   async renderToElement(options?: Partial<FullWidthBannerWidgetByIdParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
     return this.parseHtml(html)
+  }
+
+  private validateOptions() {
+    WidgetValidator.for('Full Width Banner Widget').widgetId(this.widgetId).validate()
   }
 
   private updateDefaults({

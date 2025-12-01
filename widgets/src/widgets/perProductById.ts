@@ -1,6 +1,7 @@
-import { Widget } from '@/widgets/base'
 import type { WidgetConfig } from '@/widgets/base'
+import { Widget } from '@/widgets/base'
 import type { PerProductWidgetByIdParams } from '@/interfaces'
+import { WidgetValidator } from '@/utils/widget-validation'
 
 export class PerProductWidgetById extends Widget implements PerProductWidgetByIdParams {
   widgetId: string
@@ -22,20 +23,6 @@ export class PerProductWidgetById extends Widget implements PerProductWidgetById
     }
   }
 
-  private updateDefaults({ widgetId, productId, version }: Partial<PerProductWidgetByIdParams>) {
-    this.widgetId = widgetId ?? this.widgetId
-    this.productId = productId ?? this.productId
-    this.version = version ?? this.version
-  }
-
-  private validateOptions() {
-    if (!((typeof this.productId === 'string' && this.productId !== '') || !this.productId)) {
-      throw new Error(
-        `Greenspark - "${this.productId}" was selected as the product for the Per Product Widget, but this product ID is not valid. Please use a valid string.`,
-      )
-    }
-  }
-
   async render(
     options?: Partial<PerProductWidgetByIdParams>,
     containerSelector?: string,
@@ -54,5 +41,18 @@ export class PerProductWidgetById extends Widget implements PerProductWidgetById
   async renderToElement(options?: Partial<PerProductWidgetByIdParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
     return this.parseHtml(html)
+  }
+
+  private updateDefaults({ widgetId, productId, version }: Partial<PerProductWidgetByIdParams>) {
+    this.widgetId = widgetId ?? this.widgetId
+    this.productId = productId ?? this.productId
+    this.version = version ?? this.version
+  }
+
+  private validateOptions() {
+    WidgetValidator.for('Per Product Widget')
+      .widgetId(this.widgetId)
+      .productId(this.productId)
+      .validate()
   }
 }

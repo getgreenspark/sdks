@@ -1,6 +1,7 @@
-import { Widget } from '@/widgets/base'
 import type { WidgetConfig } from '@/widgets/base'
+import { Widget } from '@/widgets/base'
 import type { TieredSpendLevelWidgetByIdParams } from '@/interfaces'
+import { WidgetValidator } from '@/utils/widget-validation'
 
 export class TieredSpendLevelWidgetById extends Widget implements TieredSpendLevelWidgetByIdParams {
   widgetId: string
@@ -22,24 +23,6 @@ export class TieredSpendLevelWidgetById extends Widget implements TieredSpendLev
     }
   }
 
-  private updateDefaults({
-    widgetId,
-    currency,
-    version,
-  }: Partial<TieredSpendLevelWidgetByIdParams>) {
-    this.widgetId = widgetId ?? this.widgetId
-    this.currency = currency ?? this.currency
-    this.version = version ?? this.version
-  }
-
-  private validateOptions() {
-    if (!(typeof this.currency === 'string')) {
-      throw new Error(
-        `Greenspark - "${this.currency}" was selected as the currency for the Tiered Spend Level Widget, but this currency is not available. Please use a valid currency code like "USD", "GBP" and "EUR".`,
-      )
-    }
-  }
-
   async render(
     options?: Partial<TieredSpendLevelWidgetByIdParams>,
     containerSelector?: string,
@@ -58,5 +41,22 @@ export class TieredSpendLevelWidgetById extends Widget implements TieredSpendLev
   async renderToElement(options?: Partial<TieredSpendLevelWidgetByIdParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
     return this.parseHtml(html)
+  }
+
+  private updateDefaults({
+                           widgetId,
+                           currency,
+                           version,
+                         }: Partial<TieredSpendLevelWidgetByIdParams>) {
+    this.widgetId = widgetId ?? this.widgetId
+    this.currency = currency ?? this.currency
+    this.version = version ?? this.version
+  }
+
+  private validateOptions() {
+    WidgetValidator.for('Tiered Spend Level Widget')
+      .widgetId(this.widgetId)
+      .currency(this.currency)
+      .validate()
   }
 }

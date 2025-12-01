@@ -1,7 +1,8 @@
-import { Widget } from '@/widgets/base'
-import { WIDGET_COLORS, IMPACT_TYPES } from '@/constants'
 import type { WidgetConfig } from '@/widgets/base'
+import { Widget } from '@/widgets/base'
 import type { PopupTheme, TopStatsWidgetParams, WidgetColor } from '@/interfaces'
+import { WidgetValidator } from '@/utils/widget-validation'
+import type { IMPACT_TYPES } from '@/constants'
 
 export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
   color: WidgetColor
@@ -29,41 +30,6 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
     }
   }
 
-  private updateDefaults({
-    color,
-    impactTypes,
-    withPopup,
-    popupTheme,
-    version,
-  }: Partial<TopStatsWidgetParams>) {
-    this.color = color ?? this.color
-    this.impactTypes = impactTypes ?? this.impactTypes
-    this.withPopup = withPopup ?? this.withPopup
-    this.popupTheme = popupTheme ?? this.popupTheme
-    this.version = version ?? this.version
-  }
-
-  private validateOptions() {
-    if (!WIDGET_COLORS.includes(this.color)) {
-      throw new Error(
-        `Greenspark - "${
-          this.color
-        }" was selected as the color for the Top Stats Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.join(
-          ', ',
-        )}`,
-      )
-    }
-    if (this.impactTypes && this.impactTypes.some((s) => !IMPACT_TYPES.includes(s))) {
-      throw new Error(
-        `Greenspark - "${
-          this.impactTypes
-        }" is not a valid list for the displayed values of the Top Stats Widget. Please use only the available types: ${IMPACT_TYPES.join(
-          ', ',
-        )}`,
-      )
-    }
-  }
-
   async render(options?: Partial<TopStatsWidgetParams>, containerSelector?: string): Promise<void> {
     const node = await this.renderToElement(options)
     this.inject(node, containerSelector)
@@ -79,5 +45,28 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
   async renderToElement(options?: Partial<TopStatsWidgetParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
     return this.parseHtml(html)
+  }
+
+  private updateDefaults({
+                           color,
+                           impactTypes,
+                           withPopup,
+                           popupTheme,
+                           version,
+                         }: Partial<TopStatsWidgetParams>) {
+    this.color = color ?? this.color
+    this.impactTypes = impactTypes ?? this.impactTypes
+    this.withPopup = withPopup ?? this.withPopup
+    this.popupTheme = popupTheme ?? this.popupTheme
+    this.version = version ?? this.version
+  }
+
+  private validateOptions() {
+    WidgetValidator.for('Top Stats Widget')
+      .color(this.color)
+      .withPopup(this.withPopup)
+      .popupTheme(this.popupTheme)
+      .impactTypes(this.impactTypes)
+      .validate()
   }
 }

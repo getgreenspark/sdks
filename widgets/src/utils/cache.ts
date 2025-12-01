@@ -72,7 +72,11 @@ class CartWidgetCache {
    * Normalizes lineItems array by sorting by productId to ensure consistent cache keys for identical orders
    */
   private normalizeLineItems(lineItems: Array<OrderProduct>): Array<OrderProduct> {
-    return [...lineItems].sort((a, b) => a.productId.localeCompare(b.productId))
+    return [...lineItems].sort((a, b) => {
+      const aId = String(a.productId)
+      const bId = String(b.productId)
+      return aId.localeCompare(bId)
+    })
   }
 
   /**

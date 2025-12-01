@@ -1,6 +1,7 @@
 import type { WidgetConfig } from '@/widgets/base'
 import { Widget } from '@/widgets/base'
-import type { CartWidgetByIdParams, OrderProduct, StoreOrder } from '@/interfaces'
+import type { CartWidgetByIdParams, StoreOrder } from '@/interfaces'
+import { WidgetValidator } from '@/utils/widget-validation'
 
 export class CartWidgetById extends Widget implements CartWidgetByIdParams {
   widgetId: string
@@ -29,8 +30,8 @@ export class CartWidgetById extends Widget implements CartWidgetByIdParams {
 
   async renderToString(options?: Partial<CartWidgetByIdParams>): Promise<string | undefined> {
     if (options) this.updateDefaults(options)
-    if (this.validateOptions())
-      return await this.api.fetchCartWidgetById(this.requestBody)
+    this.validateOptions()
+    return await this.api.fetchCartWidgetById(this.requestBody)
   }
 
   async renderToElement(options?: Partial<CartWidgetByIdParams>): Promise<HTMLElement | undefined> {
@@ -44,37 +45,10 @@ export class CartWidgetById extends Widget implements CartWidgetByIdParams {
     this.version = version ?? this.version
   }
 
-  private validateOptions(): boolean {
-    if (!(typeof this.order.currency === 'string')) {
-      throw new Error(
-        `Greenspark - "${this.order.currency}" was selected as the cart currency for the Cart Widget, but this currency is not available. Please use a valid currency code like "USD", "GBP" and "EUR".`,
-      )
-    }
-
-    if (Number.isNaN(Number(this.order.totalPrice)) || this.order.totalPrice < 0) {
-      throw new Error(
-        `Greenspark - ${this.order.totalPrice} was provided as the order's totalPrice, but this value is not a valid. Please provide a valid number to the Cart Widget.`,
-      )
-    }
-
-    if (!Array.isArray(this.order.lineItems)) {
-      throw new Error(
-        `Greenspark - ${this.order.lineItems} was provided as the order's items, but this value is not valid. Please provide a valid array of items to the Cart Widget.`,
-      )
-    }
-
-    const isValidProduct = (p: OrderProduct): boolean => {
-      if (!p.productId || typeof p.productId !== 'string') return false
-      if (Number.isNaN(Number(p.quantity)) || p.quantity < 0) return false
-      return true
-    }
-
-    if (!this.order.lineItems.every(isValidProduct)) {
-      throw new Error(
-        `Greenspark - The values provided to the Cart Widget as 'lineItems' are not valid products with a 'productId'(string) and a 'quantity'(number).`,
-      )
-    }
-
-    return this.order.lineItems?.length !== 0
+  private validateOptions() {
+    WidgetValidator.for('Cart Widget')
+      .widgetId(this.widgetId)
+      .order(this.order)
+      .validate()
   }
 }

@@ -1,6 +1,7 @@
-import { Widget } from '@/widgets/base'
 import type { WidgetConfig } from '@/widgets/base'
+import { Widget } from '@/widgets/base'
 import type { TopStatsWidgetByIdParams } from '@/interfaces'
+import { WidgetValidator } from '@/utils/widget-validation'
 
 export class TopStatsWidgetById extends Widget implements TopStatsWidgetByIdParams {
   widgetId: string
@@ -19,14 +20,6 @@ export class TopStatsWidgetById extends Widget implements TopStatsWidgetByIdPara
     }
   }
 
-  private updateDefaults({
-    widgetId,
-    version,
-  }: Partial<TopStatsWidgetByIdParams>) {
-    this.widgetId = widgetId ?? this.widgetId
-    this.version = version ?? this.version
-  }
-
   async render(options?: Partial<TopStatsWidgetByIdParams>, containerSelector?: string): Promise<void> {
     const node = await this.renderToElement(options)
     this.inject(node, containerSelector)
@@ -34,6 +27,7 @@ export class TopStatsWidgetById extends Widget implements TopStatsWidgetByIdPara
 
   async renderToString(options?: Partial<TopStatsWidgetByIdParams>): Promise<string> {
     if (options) this.updateDefaults(options)
+    this.validateOptions()
     const response = await this.api.fetchTopStatsWidgetById(this.requestBody)
     return response.data
   }
@@ -41,5 +35,17 @@ export class TopStatsWidgetById extends Widget implements TopStatsWidgetByIdPara
   async renderToElement(options?: Partial<TopStatsWidgetByIdParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
     return this.parseHtml(html)
+  }
+
+  private updateDefaults({
+                           widgetId,
+                           version,
+                         }: Partial<TopStatsWidgetByIdParams>) {
+    this.widgetId = widgetId ?? this.widgetId
+    this.version = version ?? this.version
+  }
+
+  private validateOptions() {
+    WidgetValidator.for('Top Stats Widget').widgetId(this.widgetId).validate()
   }
 }

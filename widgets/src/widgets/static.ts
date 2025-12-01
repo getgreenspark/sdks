@@ -1,7 +1,7 @@
-import { Widget } from '@/widgets/base'
-import { WIDGET_COLORS } from '@/constants'
 import type { WidgetConfig } from '@/widgets/base'
+import { Widget } from '@/widgets/base'
 import type { StaticWidgetParams, StaticWidgetStyle, WidgetColor } from '@/interfaces'
+import { WidgetValidator } from '@/utils/widget-validation'
 
 export class StaticWidget extends Widget implements StaticWidgetParams {
   color: WidgetColor
@@ -23,24 +23,6 @@ export class StaticWidget extends Widget implements StaticWidgetParams {
     }
   }
 
-  private updateDefaults({ color, version, style }: Partial<StaticWidgetParams>) {
-    this.color = color ?? this.color
-    this.version = version ?? this.version
-    this.style = style ?? this.style
-  }
-
-  private validateOptions() {
-    if (!WIDGET_COLORS.includes(this.color)) {
-      throw new Error(
-        `Greenspark - "${
-          this.color
-        }" was selected as the color for the Static Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.join(
-          ', ',
-        )}`,
-      )
-    }
-  }
-
   async render(options?: Partial<StaticWidgetParams>, containerSelector?: string): Promise<void> {
     const node = await this.renderToElement(options)
     this.inject(node, containerSelector)
@@ -56,5 +38,18 @@ export class StaticWidget extends Widget implements StaticWidgetParams {
   async renderToElement(options?: Partial<StaticWidgetParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
     return this.parseHtml(html)
+  }
+
+  private updateDefaults({ color, version, style }: Partial<StaticWidgetParams>) {
+    this.color = color ?? this.color
+    this.version = version ?? this.version
+    this.style = style ?? this.style
+  }
+
+  private validateOptions() {
+    WidgetValidator.for('Static Widget')
+      .color(this.color)
+      .staticStyle(this.style)
+      .validate()
   }
 }

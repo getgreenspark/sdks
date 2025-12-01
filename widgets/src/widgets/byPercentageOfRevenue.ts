@@ -1,17 +1,16 @@
-import { Widget } from '@/widgets/base'
-import { WIDGET_COLORS } from '@/constants'
 import type { WidgetConfig } from '@/widgets/base'
+import { Widget } from '@/widgets/base'
 import type {
   ByPercentageOfRevenueWidgetParams,
   PopupTheme,
-  WidgetStyle,
   WidgetColor,
+  WidgetStyle,
 } from '@/interfaces'
+import { WidgetValidator } from '@/utils/widget-validation'
 
 export class ByPercentageOfRevenueWidget
   extends Widget
-  implements ByPercentageOfRevenueWidgetParams
-{
+  implements ByPercentageOfRevenueWidgetParams {
   color: WidgetColor
   withPopup?: boolean
   popupTheme?: PopupTheme
@@ -37,32 +36,6 @@ export class ByPercentageOfRevenueWidget
     }
   }
 
-  private updateDefaults({
-    color,
-    withPopup,
-    popupTheme,
-    style,
-    version,
-  }: Partial<ByPercentageOfRevenueWidgetParams>) {
-    this.color = color ?? this.color
-    this.withPopup = withPopup ?? this.withPopup
-    this.popupTheme = popupTheme ?? this.popupTheme
-    this.style = style ?? this.style
-    this.version = version ?? this.version
-  }
-
-  private validateOptions() {
-    if (!WIDGET_COLORS.includes(this.color)) {
-      throw new Error(
-        `Greenspark - "${
-          this.color
-        }" was selected as the color for the By Percentage Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.join(
-          ', ',
-        )}`,
-      )
-    }
-  }
-
   async render(
     options?: Partial<ByPercentageOfRevenueWidgetParams>,
     containerSelector?: string,
@@ -83,5 +56,28 @@ export class ByPercentageOfRevenueWidget
   ): Promise<HTMLElement> {
     const html = await this.renderToString(options)
     return this.parseHtml(html)
+  }
+
+  private updateDefaults({
+                           color,
+                           withPopup,
+                           popupTheme,
+                           style,
+                           version,
+                         }: Partial<ByPercentageOfRevenueWidgetParams>) {
+    this.color = color ?? this.color
+    this.withPopup = withPopup ?? this.withPopup
+    this.popupTheme = popupTheme ?? this.popupTheme
+    this.style = style ?? this.style
+    this.version = version ?? this.version
+  }
+
+  private validateOptions() {
+    WidgetValidator.for('By Percentage Of Revenue Widget')
+      .color(this.color)
+      .withPopup(this.withPopup)
+      .popupTheme(this.popupTheme)
+      .style(this.style)
+      .validate()
   }
 }

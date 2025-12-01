@@ -1,6 +1,7 @@
-import { Widget } from '@/widgets/base'
 import type { WidgetConfig } from '@/widgets/base'
+import { Widget } from '@/widgets/base'
 import type { PerOrderWidgetByIdParams } from '@/interfaces'
+import { WidgetValidator } from '@/utils/widget-validation'
 
 export class PerOrderWidgetById extends Widget implements PerOrderWidgetByIdParams {
   widgetId: string
@@ -19,11 +20,6 @@ export class PerOrderWidgetById extends Widget implements PerOrderWidgetByIdPara
     }
   }
 
-  private updateDefaults({ widgetId, version }: Partial<PerOrderWidgetByIdParams>) {
-    this.widgetId = widgetId ?? this.widgetId
-    this.version = version ?? this.version
-  }
-
   async render(
     options?: Partial<PerOrderWidgetByIdParams>,
     containerSelector?: string,
@@ -34,6 +30,7 @@ export class PerOrderWidgetById extends Widget implements PerOrderWidgetByIdPara
 
   async renderToString(options?: Partial<PerOrderWidgetByIdParams>): Promise<string> {
     if (options) this.updateDefaults(options)
+    this.validateOptions()
     const response = await this.api.fetchPerOrderWidgetById(this.requestBody)
     return response.data
   }
@@ -41,5 +38,14 @@ export class PerOrderWidgetById extends Widget implements PerOrderWidgetByIdPara
   async renderToElement(options?: Partial<PerOrderWidgetByIdParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
     return this.parseHtml(html)
+  }
+
+  private updateDefaults({ widgetId, version }: Partial<PerOrderWidgetByIdParams>) {
+    this.widgetId = widgetId ?? this.widgetId
+    this.version = version ?? this.version
+  }
+
+  private validateOptions() {
+    WidgetValidator.for('Per Order Widget').widgetId(this.widgetId).validate()
   }
 }

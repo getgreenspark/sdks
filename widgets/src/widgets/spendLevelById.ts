@@ -1,6 +1,7 @@
-import { Widget } from '@/widgets/base'
 import type { WidgetConfig } from '@/widgets/base'
+import { Widget } from '@/widgets/base'
 import type { SpendLevelWidgetByIdParams } from '@/interfaces'
+import { WidgetValidator } from '@/utils/widget-validation'
 
 export class SpendLevelWidgetById extends Widget implements SpendLevelWidgetByIdParams {
   widgetId: string
@@ -22,20 +23,6 @@ export class SpendLevelWidgetById extends Widget implements SpendLevelWidgetById
     }
   }
 
-  private updateDefaults({ widgetId, currency, version }: Partial<SpendLevelWidgetByIdParams>) {
-    this.widgetId = widgetId ?? this.widgetId
-    this.currency = currency ?? this.currency
-    this.version = version ?? this.version
-  }
-
-  private validateOptions() {
-    if (!(typeof this.currency === 'string')) {
-      throw new Error(
-        `Greenspark - "${this.currency}" was selected as the widget's currency for the Spend Level Widget, but this currency is not available. Please use a valid currency code like "USD", "GBP" and "EUR".`,
-      )
-    }
-  }
-
   async render(
     options?: Partial<SpendLevelWidgetByIdParams>,
     containerSelector?: string,
@@ -54,5 +41,18 @@ export class SpendLevelWidgetById extends Widget implements SpendLevelWidgetById
   async renderToElement(options?: Partial<SpendLevelWidgetByIdParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
     return this.parseHtml(html)
+  }
+
+  private updateDefaults({ widgetId, currency, version }: Partial<SpendLevelWidgetByIdParams>) {
+    this.widgetId = widgetId ?? this.widgetId
+    this.currency = currency ?? this.currency
+    this.version = version ?? this.version
+  }
+
+  private validateOptions() {
+    WidgetValidator.for('Spend Level Widget')
+      .widgetId(this.widgetId)
+      .currency(this.currency)
+      .validate()
   }
 }
