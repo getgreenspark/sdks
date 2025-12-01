@@ -116,9 +116,14 @@ export class WidgetValidator extends ValidationUtils {
 
   /**
    * Validates popupTheme enum
+   * API: @IsOptional() @IsString() @IsNotEmpty() @IsIn(WIDGET_POPUP_THEMES)
    */
   popupTheme(popupTheme: unknown): this {
     if (popupTheme !== undefined) {
+      if (!ValidationUtils.isNonEmptyString(popupTheme)) {
+        this.errors.push(`"popupTheme" must be a non-empty string for the ${this.widgetName}.`)
+        return this
+      }
       if (!POPUP_THEMES.includes(popupTheme as PopupTheme)) {
         this.errors.push(
           `"${popupTheme}" was selected as the popup theme for the ${this.widgetName}, but this theme is not available. Please use one of the available themes: ${POPUP_THEMES.join(', ')}`,
@@ -173,12 +178,15 @@ export class WidgetValidator extends ValidationUtils {
 
   /**
    * Validates productId (string or number)
+   * API: @IsOptional() @Validate(IsStringOrNumber) @Type(() => String)
    */
   productId(productId: unknown): this {
-    if (productId !== undefined && !ValidationUtils.isStringOrNumber(productId)) {
-      this.errors.push(
-        `"${productId}" was selected as the product for the ${this.widgetName}, but this product ID is not valid. Please use a valid string or number.`,
-      )
+    if (productId !== undefined && productId !== null && productId !== '') {
+      if (!ValidationUtils.isStringOrNumber(productId)) {
+        this.errors.push(
+          `"${productId}" was selected as the product for the ${this.widgetName}, but this product ID is not valid. Please use a valid string or number.`,
+        )
+      }
     }
     return this
   }
@@ -283,6 +291,7 @@ export class WidgetValidator extends ValidationUtils {
 
   /**
    * Validates full-width banner specific fields
+   * API: GetFullWidthBannerRequestBody & GetFullWidthBannerV2RequestBody
    */
   fullWidthBanner(
     options: unknown,
@@ -294,7 +303,7 @@ export class WidgetValidator extends ValidationUtils {
     buttonBackgroundColor?: unknown,
     buttonTextColor?: unknown,
   ): this {
-    const AVAILABLE_STATISTIC_TYPES = [
+    const FULL_WIDTH_OPTIONS = [
       ...IMPACT_TYPES,
       'monthsEarthPositive',
       'straws',
@@ -302,51 +311,65 @@ export class WidgetValidator extends ValidationUtils {
       'footballPitches',
     ] as const
 
-    if (!Array.isArray(options) || options.length === 0) {
-      this.errors.push(
-        `the "options" value that was provided to the ${this.widgetName} has no elements within the array.`,
-      )
-    } else {
-      options.forEach((option) => {
-        if (!AVAILABLE_STATISTIC_TYPES.includes(option) || typeof option !== 'string') {
-          this.errors.push(
-            `"${option}" was provided as an option for the ${this.widgetName}, but this is not a valid option. Please use values from the following list: ${AVAILABLE_STATISTIC_TYPES.join(', ')}`,
-          )
-        }
-      })
+    // options - Required, array, not empty, each in FULL_WIDTH_OPTIONS
+    // API: @IsDefined() @IsArray() @ArrayNotEmpty() @IsIn(FULL_WIDTH_OPTIONS, {each: true})
+    if (!Array.isArray(options)) {
+      this.errors.push(`"options" is required and must be an array for the ${this.widgetName}.`)
+      return this
     }
 
-    if (imageUrl !== undefined) {
+    if (options.length === 0) {
+      this.errors.push(
+        `"options" array cannot be empty for the ${this.widgetName}. It must contain at least one option.`,
+      )
+      return this
+    }
+
+    options.forEach((option) => {
+      if (typeof option !== 'string' || !FULL_WIDTH_OPTIONS.includes(option as typeof FULL_WIDTH_OPTIONS[number])) {
+        this.errors.push(
+          `"${option}" was provided as an option for the ${this.widgetName}, but this is not a valid option. Please use values from the following list: ${FULL_WIDTH_OPTIONS.join(', ')}`,
+        )
+      }
+    })
+
+    // imageUrl - Optional, string
+    // API: @IsOptional() @IsString()
+    if (imageUrl !== undefined && imageUrl !== null) {
       if (typeof imageUrl !== 'string') {
         this.errors.push(
-          `"${imageUrl}" was set as the background image for the ${this.widgetName}, but this is not a valid value. Please use a valid URL string.`,
-        )
-      } else if (!ValidationUtils.isValidUrl(imageUrl)) {
-        this.errors.push(
-          `"${imageUrl}" is not a valid URL for the ${this.widgetName}. Please provide a valid URL.`,
+          `"${imageUrl}" was set as the background image for the ${this.widgetName}, but this is not a valid value. Please use a valid string.`,
         )
       }
     }
 
-    if (title !== undefined && typeof title === 'string' && title.length > 200) {
-      this.errors.push(`"title" must not exceed 200 characters for the ${this.widgetName}.`)
+    // title - Optional, string
+    // API: @IsOptional() @IsString()
+    if (title !== undefined && title !== null) {
+      if (typeof title !== 'string') {
+        this.errors.push(`"title" must be a string for the ${this.widgetName}.`)
+      }
     }
 
-    if (description !== undefined && typeof description === 'string' && description.length > 200) {
-      this.errors.push(`"description" must not exceed 200 characters for the ${this.widgetName}.`)
+    // description - Optional, string
+    // API: @IsOptional() @IsString()
+    if (description !== undefined && description !== null) {
+      if (typeof description !== 'string') {
+        this.errors.push(`"description" must be a string for the ${this.widgetName}.`)
+      }
     }
 
-    if (callToActionUrl !== undefined) {
+    // callToActionUrl - Optional, string
+    // API: @IsOptional() @IsString()
+    if (callToActionUrl !== undefined && callToActionUrl !== null) {
       if (typeof callToActionUrl !== 'string') {
         this.errors.push(`"callToActionUrl" must be a string for the ${this.widgetName}.`)
-      } else if (!ValidationUtils.isValidUrl(callToActionUrl)) {
-        this.errors.push(
-          `"${callToActionUrl}" is not a valid URL for the ${this.widgetName}. Please provide a valid URL.`,
-        )
       }
     }
 
-    if (textColor !== undefined) {
+    // textColor - Optional, hex color
+    // API: @IsOptional() @IsHexColor()
+    if (textColor !== undefined && textColor !== null) {
       if (typeof textColor !== 'string') {
         this.errors.push(`"textColor" must be a string for the ${this.widgetName}.`)
       } else if (!ValidationUtils.isValidHexColor(textColor)) {
@@ -356,7 +379,9 @@ export class WidgetValidator extends ValidationUtils {
       }
     }
 
-    if (buttonBackgroundColor !== undefined) {
+    // buttonBackgroundColor - Optional, hex color
+    // API: @IsOptional() @IsHexColor()
+    if (buttonBackgroundColor !== undefined && buttonBackgroundColor !== null) {
       if (typeof buttonBackgroundColor !== 'string') {
         this.errors.push(`"buttonBackgroundColor" must be a string for the ${this.widgetName}.`)
       } else if (!ValidationUtils.isValidHexColor(buttonBackgroundColor)) {
@@ -366,7 +391,9 @@ export class WidgetValidator extends ValidationUtils {
       }
     }
 
-    if (buttonTextColor !== undefined) {
+    // buttonTextColor - Optional, hex color
+    // API: @IsOptional() @IsHexColor()
+    if (buttonTextColor !== undefined && buttonTextColor !== null) {
       if (typeof buttonTextColor !== 'string') {
         this.errors.push(`"buttonTextColor" must be a string for the ${this.widgetName}.`)
       } else if (!ValidationUtils.isValidHexColor(buttonTextColor)) {
