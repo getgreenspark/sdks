@@ -1,7 +1,7 @@
-import { Widget } from '@/widgets/base'
-import { WIDGET_COLORS } from '@/constants'
 import type { WidgetConfig } from '@/widgets/base'
-import type { PopupTheme, SpendLevelWidgetParams, WidgetStyle, WidgetColor } from '@/interfaces'
+import { Widget } from '@/widgets/base'
+import type { PopupTheme, SpendLevelWidgetParams, WidgetColor, WidgetStyle } from '@/interfaces'
+import { WidgetValidator } from '@/utils/widget-validation'
 
 export class SpendLevelWidget extends Widget implements SpendLevelWidgetParams {
   color: WidgetColor
@@ -32,14 +32,34 @@ export class SpendLevelWidget extends Widget implements SpendLevelWidgetParams {
     }
   }
 
+  async render(
+    options?: Partial<SpendLevelWidgetParams>,
+    containerSelector?: string,
+  ): Promise<void> {
+    const node = await this.renderToElement(options)
+    if (node) this.inject(node, containerSelector)
+  }
+
+  async renderToString(options?: Partial<SpendLevelWidgetParams>): Promise<string | undefined> {
+    if (options) this.updateDefaults(options)
+    if (!this.validateOptions()) return undefined
+    const response = await this.api.fetchSpendLevelWidget(this.requestBody)
+    return response.data
+  }
+
+  async renderToElement(options?: Partial<SpendLevelWidgetParams>): Promise<HTMLElement | undefined> {
+    const html = await this.renderToString(options)
+    if (html) return this.parseHtml(html)
+  }
+
   private updateDefaults({
-    color,
-    currency,
-    withPopup,
-    popupTheme,
-    style,
-    version,
-  }: Partial<SpendLevelWidgetParams>) {
+                           color,
+                           currency,
+                           withPopup,
+                           popupTheme,
+                           style,
+                           version,
+                         }: Partial<SpendLevelWidgetParams>) {
     this.color = color ?? this.color
     this.currency = currency ?? this.currency
     this.withPopup = withPopup ?? this.withPopup
@@ -48,41 +68,13 @@ export class SpendLevelWidget extends Widget implements SpendLevelWidgetParams {
     this.version = version ?? this.version
   }
 
-  private validateOptions() {
-    if (!WIDGET_COLORS.includes(this.color)) {
-      throw new Error(
-        `Greenspark - "${
-          this.color
-        }" was selected as the color for the Spend Level Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.join(
-          ', ',
-        )}`,
-      )
-    }
-
-    if (!(typeof this.currency === 'string')) {
-      throw new Error(
-        `Greenspark - "${this.currency}" was selected as the widget's currency for the Spend Level Widget, but this currency is not available. Please use a valid currency code like "USD", "GBP" and "EUR".`,
-      )
-    }
-  }
-
-  async render(
-    options?: Partial<SpendLevelWidgetParams>,
-    containerSelector?: string,
-  ): Promise<void> {
-    const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
-  }
-
-  async renderToString(options?: Partial<SpendLevelWidgetParams>): Promise<string> {
-    if (options) this.updateDefaults(options)
-    this.validateOptions()
-    const response = await this.api.fetchSpendLevelWidget(this.requestBody)
-    return response.data
-  }
-
-  async renderToElement(options?: Partial<SpendLevelWidgetParams>): Promise<HTMLElement> {
-    const html = await this.renderToString(options)
-    return this.parseHtml(html)
+  private validateOptions(): boolean {
+    return WidgetValidator.for('Spend Level Widget')
+      .color(this.color)
+      .withPopup(this.withPopup)
+      .popupTheme(this.popupTheme)
+      .style(this.style)
+      .currency(this.currency)
+      .validate()
   }
 }

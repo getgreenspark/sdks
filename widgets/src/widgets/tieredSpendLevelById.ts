@@ -1,6 +1,7 @@
-import { Widget } from '@/widgets/base'
 import type { WidgetConfig } from '@/widgets/base'
+import { Widget } from '@/widgets/base'
 import type { TieredSpendLevelWidgetByIdParams } from '@/interfaces'
+import { WidgetValidator } from '@/utils/widget-validation'
 
 export class TieredSpendLevelWidgetById extends Widget implements TieredSpendLevelWidgetByIdParams {
   widgetId: string
@@ -22,41 +23,40 @@ export class TieredSpendLevelWidgetById extends Widget implements TieredSpendLev
     }
   }
 
-  private updateDefaults({
-    widgetId,
-    currency,
-    version,
-  }: Partial<TieredSpendLevelWidgetByIdParams>) {
-    this.widgetId = widgetId ?? this.widgetId
-    this.currency = currency ?? this.currency
-    this.version = version ?? this.version
-  }
-
-  private validateOptions() {
-    if (!(typeof this.currency === 'string')) {
-      throw new Error(
-        `Greenspark - "${this.currency}" was selected as the currency for the Tiered Spend Level Widget, but this currency is not available. Please use a valid currency code like "USD", "GBP" and "EUR".`,
-      )
-    }
-  }
-
   async render(
     options?: Partial<TieredSpendLevelWidgetByIdParams>,
     containerSelector?: string,
   ): Promise<void> {
     const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
+    if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<TieredSpendLevelWidgetByIdParams>): Promise<string> {
+  async renderToString(options?: Partial<TieredSpendLevelWidgetByIdParams>): Promise<string | undefined> {
     if (options) this.updateDefaults(options)
-    this.validateOptions()
+    if (!this.validateOptions()) return undefined
     const response = await this.api.fetchTieredSpendLevelWidgetById(this.requestBody)
     return response.data
   }
 
-  async renderToElement(options?: Partial<TieredSpendLevelWidgetByIdParams>): Promise<HTMLElement> {
+  async renderToElement(options?: Partial<TieredSpendLevelWidgetByIdParams>): Promise<HTMLElement | undefined> {
     const html = await this.renderToString(options)
-    return this.parseHtml(html)
+    if (html) return this.parseHtml(html)
+  }
+
+  private updateDefaults({
+                           widgetId,
+                           currency,
+                           version,
+                         }: Partial<TieredSpendLevelWidgetByIdParams>) {
+    this.widgetId = widgetId ?? this.widgetId
+    this.currency = currency ?? this.currency
+    this.version = version ?? this.version
+  }
+
+  private validateOptions(): boolean {
+    return WidgetValidator.for('Tiered Spend Level Widget')
+      .widgetId(this.widgetId)
+      .currency(this.currency)
+      .validate()
   }
 }

@@ -1,7 +1,7 @@
-import { Widget } from '@/widgets/base'
-import { WIDGET_COLORS } from '@/constants'
 import type { WidgetConfig } from '@/widgets/base'
+import { Widget } from '@/widgets/base'
 import type { ByPercentageWidgetParams, PopupTheme, WidgetColor, WidgetStyle } from '@/interfaces'
+import { WidgetValidator } from '@/utils/widget-validation'
 
 export class ByPercentageWidget extends Widget implements ByPercentageWidgetParams {
   color: WidgetColor
@@ -29,13 +29,33 @@ export class ByPercentageWidget extends Widget implements ByPercentageWidgetPara
     }
   }
 
+  async render(
+    options?: Partial<ByPercentageWidgetParams>,
+    containerSelector?: string,
+  ): Promise<void> {
+    const node = await this.renderToElement(options)
+    if (node) this.inject(node, containerSelector)
+  }
+
+  async renderToString(options?: Partial<ByPercentageWidgetParams>): Promise<string | undefined> {
+    if (options) this.updateDefaults(options)
+    if (!this.validateOptions()) return undefined
+    const response = await this.api.fetchByPercentageWidget(this.requestBody)
+    return response.data
+  }
+
+  async renderToElement(options?: Partial<ByPercentageWidgetParams>): Promise<HTMLElement | undefined> {
+    const html = await this.renderToString(options)
+    if (html) return this.parseHtml(html)
+  }
+
   private updateDefaults({
-    color,
-    withPopup,
-    popupTheme,
-    style,
-    version,
-  }: Partial<ByPercentageWidgetParams>) {
+                           color,
+                           withPopup,
+                           popupTheme,
+                           style,
+                           version,
+                         }: Partial<ByPercentageWidgetParams>) {
     this.color = color ?? this.color
     this.withPopup = withPopup ?? this.withPopup
     this.popupTheme = popupTheme ?? this.popupTheme
@@ -43,35 +63,12 @@ export class ByPercentageWidget extends Widget implements ByPercentageWidgetPara
     this.version = version ?? this.version
   }
 
-  private validateOptions() {
-    if (!WIDGET_COLORS.includes(this.color)) {
-      throw new Error(
-        `Greenspark - "${
-          this.color
-        }" was selected as the color for the By Percentage Widget, but this color is not available. Please use one of the available colors: ${WIDGET_COLORS.join(
-          ', ',
-        )}`,
-      )
-    }
-  }
-
-  async render(
-    options?: Partial<ByPercentageWidgetParams>,
-    containerSelector?: string,
-  ): Promise<void> {
-    const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
-  }
-
-  async renderToString(options?: Partial<ByPercentageWidgetParams>): Promise<string> {
-    if (options) this.updateDefaults(options)
-    this.validateOptions()
-    const response = await this.api.fetchByPercentageWidget(this.requestBody)
-    return response.data
-  }
-
-  async renderToElement(options?: Partial<ByPercentageWidgetParams>): Promise<HTMLElement> {
-    const html = await this.renderToString(options)
-    return this.parseHtml(html)
+  private validateOptions(): boolean {
+    return WidgetValidator.for('By Percentage Widget')
+      .color(this.color)
+      .withPopup(this.withPopup)
+      .popupTheme(this.popupTheme)
+      .style(this.style)
+      .validate()
   }
 }

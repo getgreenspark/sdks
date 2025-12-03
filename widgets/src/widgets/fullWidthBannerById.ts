@@ -1,6 +1,7 @@
 import type { WidgetConfig } from '@/widgets/base'
 import { Widget } from '@/widgets/base'
 import type { FullWidthBannerWidgetByIdParams } from '@/interfaces'
+import { WidgetValidator } from '@/utils/widget-validation'
 
 export class FullWidthBannerWidgetById extends Widget implements FullWidthBannerWidgetByIdParams {
   widgetId: string
@@ -24,18 +25,23 @@ export class FullWidthBannerWidgetById extends Widget implements FullWidthBanner
     containerSelector?: string,
   ): Promise<void> {
     const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
+    if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<FullWidthBannerWidgetByIdParams>): Promise<string> {
+  async renderToString(options?: Partial<FullWidthBannerWidgetByIdParams>): Promise<string | undefined> {
     if (options) this.updateDefaults(options)
+    if (!this.validateOptions()) return undefined
     const response = await this.api.fetchFullWidthBannerWidgetById(this.requestBody)
     return response.data
   }
 
-  async renderToElement(options?: Partial<FullWidthBannerWidgetByIdParams>): Promise<HTMLElement> {
+  async renderToElement(options?: Partial<FullWidthBannerWidgetByIdParams>): Promise<HTMLElement | undefined> {
     const html = await this.renderToString(options)
-    return this.parseHtml(html)
+    if (html) return this.parseHtml(html)
+  }
+
+  private validateOptions(): boolean {
+    return WidgetValidator.for('Full Width Banner Widget').widgetId(this.widgetId).validate()
   }
 
   private updateDefaults({

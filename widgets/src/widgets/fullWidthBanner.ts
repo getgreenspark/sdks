@@ -1,7 +1,8 @@
-import { Widget } from '@/widgets/base'
-import { AVAILABLE_STATISTIC_TYPES } from '@/constants'
 import type { WidgetConfig } from '@/widgets/base'
+import { Widget } from '@/widgets/base'
 import type { FullWidthBannerWidgetParams } from '@/interfaces'
+import type { AVAILABLE_STATISTIC_TYPES } from '@/constants'
+import { WidgetValidator } from '@/utils/widget-validation'
 
 export class FullWidthBannerWidget extends Widget implements FullWidthBannerWidgetParams {
   options: Array<(typeof AVAILABLE_STATISTIC_TYPES)[number]>
@@ -41,17 +42,37 @@ export class FullWidthBannerWidget extends Widget implements FullWidthBannerWidg
     }
   }
 
+  async render(
+    options?: Partial<FullWidthBannerWidgetParams>,
+    containerSelector?: string,
+  ): Promise<void> {
+    const node = await this.renderToElement(options)
+    if (node) this.inject(node, containerSelector)
+  }
+
+  async renderToString(options?: Partial<FullWidthBannerWidgetParams>): Promise<string | undefined> {
+    if (options) this.updateDefaults(options)
+    if (!this.validateOptions()) return undefined
+    const response = await this.api.fetchFullWidthBannerWidget(this.requestBody)
+    return response.data
+  }
+
+  async renderToElement(options?: Partial<FullWidthBannerWidgetParams>): Promise<HTMLElement | undefined> {
+    const html = await this.renderToString(options)
+    if (html) return this.parseHtml(html)
+  }
+
   private updateDefaults({
-    options,
-    imageUrl,
-    title,
-    description,
-    callToActionUrl,
-    textColor,
-    buttonBackgroundColor,
-    buttonTextColor,
-    version,
-  }: Partial<FullWidthBannerWidgetParams>) {
+                           options,
+                           imageUrl,
+                           title,
+                           description,
+                           callToActionUrl,
+                           textColor,
+                           buttonBackgroundColor,
+                           buttonTextColor,
+                           version,
+                         }: Partial<FullWidthBannerWidgetParams>) {
     this.options = options ?? this.options
     this.imageUrl = imageUrl ?? this.imageUrl
     this.title = title ?? this.title
@@ -63,47 +84,18 @@ export class FullWidthBannerWidget extends Widget implements FullWidthBannerWidg
     this.version = version ?? this.version
   }
 
-  private validateOptions() {
-    if (this.options.length <= 0) {
-      throw new Error(
-        `Greenspark - the "options" value that was provided to the Full Width Banner Widget has no elements within the array.`,
+  private validateOptions(): boolean {
+    return WidgetValidator.for('Full Width Banner Widget')
+      .fullWidthBanner(
+        this.options,
+        this.imageUrl,
+        this.title,
+        this.description,
+        this.callToActionUrl,
+        this.textColor,
+        this.buttonBackgroundColor,
+        this.buttonTextColor,
       )
-    }
-
-    this.options.forEach((option) => {
-      if (!AVAILABLE_STATISTIC_TYPES.includes(option) || typeof option !== 'string') {
-        throw new Error(
-          `Greenspark - "${option}" was provided as an option for the Full Width Banner Widget, but this is not a valid option. Please use values from the following list: ${AVAILABLE_STATISTIC_TYPES.join(
-            ', ',
-          )}`,
-        )
-      }
-    })
-
-    if (this.imageUrl && typeof this.imageUrl !== 'string') {
-      throw new Error(
-        `Greenspark - "${this.imageUrl}" was set has the background image for the Full Width Banner, but this is not a valid value. Please use a valid URL string.`,
-      )
-    }
-  }
-
-  async render(
-    options?: Partial<FullWidthBannerWidgetParams>,
-    containerSelector?: string,
-  ): Promise<void> {
-    const node = await this.renderToElement(options)
-    this.inject(node, containerSelector)
-  }
-
-  async renderToString(options?: Partial<FullWidthBannerWidgetParams>): Promise<string> {
-    if (options) this.updateDefaults(options)
-    this.validateOptions()
-    const response = await this.api.fetchFullWidthBannerWidget(this.requestBody)
-    return response.data
-  }
-
-  async renderToElement(options?: Partial<FullWidthBannerWidgetParams>): Promise<HTMLElement> {
-    const html = await this.renderToString(options)
-    return this.parseHtml(html)
+      .validate()
   }
 }
