@@ -410,7 +410,7 @@ export class WidgetValidator extends ValidationUtils {
   }
 
   /**
-   * Logs errors to console and throw exceptions
+   * Logs errors to console and throws an exception
    */
   validate(): void {
     if (this.errors.length > 0) {
