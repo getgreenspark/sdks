@@ -181,10 +181,13 @@ export class WidgetValidator extends ValidationUtils {
    * API: @IsOptional() @Validate(IsStringOrNumber) @Type(() => String)
    */
   productId(productId: unknown): this {
-    if (productId !== undefined && productId !== null && productId !== '') {
-      if (!ValidationUtils.isStringOrNumber(productId)) {
+    if (productId !== undefined && productId !== null) {
+      if (
+        (typeof productId === 'string' && productId.trim() === '') ||
+        !ValidationUtils.isStringOrNumber(productId)
+      ) {
         this.errors.push(
-          `"${productId}" was selected as the product for the ${this.widgetName}, but this product ID is not valid. Please use a valid string or number.`,
+          `"${productId}" was selected as the product for the ${this.widgetName}, but this product ID is not valid. Please use a non-empty string or a valid number.`,
         )
       }
     }
