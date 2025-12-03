@@ -39,7 +39,7 @@ describe('Cart Widget', () => {
 
     const mockHtml = '<p class="hi"><strong>Hi</strong> there!</p>'
     axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
-    await cart.render()
+    expect(cart.render).rejects.toThrow()
     expect(document.querySelector(containerSelector)?.shadowRoot?.innerHTML).toEqual(undefined)
   })
 

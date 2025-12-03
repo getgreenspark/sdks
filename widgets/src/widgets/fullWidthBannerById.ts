@@ -28,19 +28,19 @@ export class FullWidthBannerWidgetById extends Widget implements FullWidthBanner
     if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<FullWidthBannerWidgetByIdParams>): Promise<string | undefined> {
+  async renderToString(options?: Partial<FullWidthBannerWidgetByIdParams>): Promise<string> {
     if (options) this.updateDefaults(options)
-    if (!this.validateOptions()) return undefined
+    this.validateOptions()
     const response = await this.api.fetchFullWidthBannerWidgetById(this.requestBody)
     return response.data
   }
 
-  async renderToElement(options?: Partial<FullWidthBannerWidgetByIdParams>): Promise<HTMLElement | undefined> {
+  async renderToElement(options?: Partial<FullWidthBannerWidgetByIdParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
-    if (html) return this.parseHtml(html)
+    return this.parseHtml(html)
   }
 
-  private validateOptions(): boolean {
+  private validateOptions() {
     return WidgetValidator.for('Full Width Banner Widget').widgetId(this.widgetId).validate()
   }
 

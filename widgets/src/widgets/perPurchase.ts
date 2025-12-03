@@ -45,18 +45,18 @@ export class PerPurchaseWidget extends Widget implements PerPurchaseWidgetParams
 
   async renderToString(
     options?: Partial<PerPurchaseWidgetParams> & Required<WidgetParams>,
-  ): Promise<string | undefined> {
+  ): Promise<string> {
     if (options) this.updateDefaults(options)
-    if (!this.validateOptions()) return undefined
+    this.validateOptions()
     const response = await this.api.fetchPerPurchaseWidget(this.requestBody)
     return response.data
   }
 
   async renderToElement(
     options?: Partial<PerPurchaseWidgetParams> & Required<WidgetParams>,
-  ): Promise<HTMLElement | undefined> {
+  ): Promise<HTMLElement> {
     const html = await this.renderToString(options)
-    if (html) return this.parseHtml(html)
+    return this.parseHtml(html)
   }
 
   private updateDefaults({
@@ -73,7 +73,7 @@ export class PerPurchaseWidget extends Widget implements PerPurchaseWidgetParams
     this.version = version ?? this.version
   }
 
-  private validateOptions(): boolean {
+  private validateOptions() {
     return WidgetValidator.for('Per Purchase Widget')
       .color(this.color)
       .withPopup(this.withPopup)

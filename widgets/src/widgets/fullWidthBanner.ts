@@ -50,16 +50,16 @@ export class FullWidthBannerWidget extends Widget implements FullWidthBannerWidg
     if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<FullWidthBannerWidgetParams>): Promise<string | undefined> {
+  async renderToString(options?: Partial<FullWidthBannerWidgetParams>): Promise<string> {
     if (options) this.updateDefaults(options)
-    if (!this.validateOptions()) return undefined
+    this.validateOptions()
     const response = await this.api.fetchFullWidthBannerWidget(this.requestBody)
     return response.data
   }
 
-  async renderToElement(options?: Partial<FullWidthBannerWidgetParams>): Promise<HTMLElement | undefined> {
+  async renderToElement(options?: Partial<FullWidthBannerWidgetParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
-    if (html) return this.parseHtml(html)
+    return this.parseHtml(html)
   }
 
   private updateDefaults({
@@ -84,7 +84,7 @@ export class FullWidthBannerWidget extends Widget implements FullWidthBannerWidg
     this.version = version ?? this.version
   }
 
-  private validateOptions(): boolean {
+  private validateOptions() {
     return WidgetValidator.for('Full Width Banner Widget')
       .fullWidthBanner(
         this.options,

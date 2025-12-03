@@ -28,16 +28,16 @@ export class StaticWidgetById extends Widget implements StaticWidgetByIdParams {
     if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<StaticWidgetByIdParams>): Promise<string | undefined> {
+  async renderToString(options?: Partial<StaticWidgetByIdParams>): Promise<string> {
     if (options) this.updateDefaults(options)
-    if (!this.validateOptions()) return undefined
+    this.validateOptions()
     const response = await this.api.fetchStaticWidgetById(this.requestBody)
     return response.data
   }
 
-  async renderToElement(options?: Partial<StaticWidgetByIdParams>): Promise<HTMLElement | undefined> {
+  async renderToElement(options?: Partial<StaticWidgetByIdParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
-    if (html) return this.parseHtml(html)
+    return this.parseHtml(html)
   }
 
   private updateDefaults({ widgetId, version }: Partial<StaticWidgetByIdParams>) {
@@ -45,7 +45,7 @@ export class StaticWidgetById extends Widget implements StaticWidgetByIdParams {
     this.version = version ?? this.version
   }
 
-  private validateOptions(): boolean {
+  private validateOptions() {
     return WidgetValidator.for('Static Widget').widgetId(this.widgetId).validate()
   }
 }

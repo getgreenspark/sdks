@@ -28,16 +28,16 @@ export class PerOrderWidgetById extends Widget implements PerOrderWidgetByIdPara
     if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<PerOrderWidgetByIdParams>): Promise<string | undefined> {
+  async renderToString(options?: Partial<PerOrderWidgetByIdParams>): Promise<string> {
     if (options) this.updateDefaults(options)
-    if (!this.validateOptions()) return undefined
+    this.validateOptions()
     const response = await this.api.fetchPerOrderWidgetById(this.requestBody)
     return response.data
   }
 
-  async renderToElement(options?: Partial<PerOrderWidgetByIdParams>): Promise<HTMLElement | undefined> {
+  async renderToElement(options?: Partial<PerOrderWidgetByIdParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
-    if (html) return this.parseHtml(html)
+    return this.parseHtml(html)
   }
 
   private updateDefaults({ widgetId, version }: Partial<PerOrderWidgetByIdParams>) {
@@ -45,7 +45,7 @@ export class PerOrderWidgetById extends Widget implements PerOrderWidgetByIdPara
     this.version = version ?? this.version
   }
 
-  private validateOptions(): boolean {
+  private validateOptions() {
     return WidgetValidator.for('Per Order Widget').widgetId(this.widgetId).validate()
   }
 }

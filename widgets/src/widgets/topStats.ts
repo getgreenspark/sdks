@@ -35,16 +35,16 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
     if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<TopStatsWidgetParams>): Promise<string | undefined> {
+  async renderToString(options?: Partial<TopStatsWidgetParams>): Promise<string> {
     if (options) this.updateDefaults(options)
-    if (!this.validateOptions()) return undefined
+    this.validateOptions()
     const response = await this.api.fetchTopStatsWidget(this.requestBody)
     return response.data
   }
 
-  async renderToElement(options?: Partial<TopStatsWidgetParams>): Promise<HTMLElement | undefined> {
+  async renderToElement(options?: Partial<TopStatsWidgetParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
-    if (html) return this.parseHtml(html)
+    return this.parseHtml(html)
   }
 
   private updateDefaults({
@@ -61,7 +61,7 @@ export class TopStatsWidget extends Widget implements TopStatsWidgetParams {
     this.version = version ?? this.version
   }
 
-  private validateOptions(): boolean {
+  private validateOptions() {
     return WidgetValidator.for('Top Stats Widget')
       .color(this.color)
       .withPopup(this.withPopup)
