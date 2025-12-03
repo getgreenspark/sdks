@@ -31,16 +31,16 @@ export class SpendLevelWidgetById extends Widget implements SpendLevelWidgetById
     if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<SpendLevelWidgetByIdParams>): Promise<string | undefined> {
+  async renderToString(options?: Partial<SpendLevelWidgetByIdParams>): Promise<string> {
     if (options) this.updateDefaults(options)
-    if (!this.validateOptions()) return undefined
+    this.validateOptions()
     const response = await this.api.fetchSpendLevelWidgetById(this.requestBody)
     return response.data
   }
 
-  async renderToElement(options?: Partial<SpendLevelWidgetByIdParams>): Promise<HTMLElement | undefined> {
+  async renderToElement(options?: Partial<SpendLevelWidgetByIdParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
-    if (html) return this.parseHtml(html)
+    return this.parseHtml(html)
   }
 
   private updateDefaults({ widgetId, currency, version }: Partial<SpendLevelWidgetByIdParams>) {
@@ -49,7 +49,7 @@ export class SpendLevelWidgetById extends Widget implements SpendLevelWidgetById
     this.version = version ?? this.version
   }
 
-  private validateOptions(): boolean {
+  private validateOptions() {
     return WidgetValidator.for('Spend Level Widget')
       .widgetId(this.widgetId)
       .currency(this.currency)

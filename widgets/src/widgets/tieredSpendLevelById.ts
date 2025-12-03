@@ -31,16 +31,16 @@ export class TieredSpendLevelWidgetById extends Widget implements TieredSpendLev
     if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<TieredSpendLevelWidgetByIdParams>): Promise<string | undefined> {
+  async renderToString(options?: Partial<TieredSpendLevelWidgetByIdParams>): Promise<string> {
     if (options) this.updateDefaults(options)
-    if (!this.validateOptions()) return undefined
+    this.validateOptions()
     const response = await this.api.fetchTieredSpendLevelWidgetById(this.requestBody)
     return response.data
   }
 
-  async renderToElement(options?: Partial<TieredSpendLevelWidgetByIdParams>): Promise<HTMLElement | undefined> {
+  async renderToElement(options?: Partial<TieredSpendLevelWidgetByIdParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
-    if (html) return this.parseHtml(html)
+    return this.parseHtml(html)
   }
 
   private updateDefaults({
@@ -53,7 +53,7 @@ export class TieredSpendLevelWidgetById extends Widget implements TieredSpendLev
     this.version = version ?? this.version
   }
 
-  private validateOptions(): boolean {
+  private validateOptions() {
     return WidgetValidator.for('Tiered Spend Level Widget')
       .widgetId(this.widgetId)
       .currency(this.currency)

@@ -40,16 +40,16 @@ export class SpendLevelWidget extends Widget implements SpendLevelWidgetParams {
     if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<SpendLevelWidgetParams>): Promise<string | undefined> {
+  async renderToString(options?: Partial<SpendLevelWidgetParams>): Promise<string> {
     if (options) this.updateDefaults(options)
-    if (!this.validateOptions()) return undefined
+    this.validateOptions()
     const response = await this.api.fetchSpendLevelWidget(this.requestBody)
     return response.data
   }
 
-  async renderToElement(options?: Partial<SpendLevelWidgetParams>): Promise<HTMLElement | undefined> {
+  async renderToElement(options?: Partial<SpendLevelWidgetParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
-    if (html) return this.parseHtml(html)
+    return this.parseHtml(html)
   }
 
   private updateDefaults({
@@ -68,7 +68,7 @@ export class SpendLevelWidget extends Widget implements SpendLevelWidgetParams {
     this.version = version ?? this.version
   }
 
-  private validateOptions(): boolean {
+  private validateOptions() {
     return WidgetValidator.for('Spend Level Widget')
       .color(this.color)
       .withPopup(this.withPopup)

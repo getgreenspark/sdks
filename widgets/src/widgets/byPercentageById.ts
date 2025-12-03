@@ -28,16 +28,16 @@ export class ByPercentageWidgetById extends Widget implements ByPercentageWidget
     if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<ByPercentageWidgetByIdParams>): Promise<string | undefined> {
+  async renderToString(options?: Partial<ByPercentageWidgetByIdParams>): Promise<string> {
     if (options) this.updateDefaults(options)
-    if (!this.validateOptions()) return undefined
+    this.validateOptions()
     const response = await this.api.fetchByPercentageWidgetById(this.requestBody)
     return response.data
   }
 
-  async renderToElement(options?: Partial<ByPercentageWidgetByIdParams>): Promise<HTMLElement | undefined> {
+  async renderToElement(options?: Partial<ByPercentageWidgetByIdParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
-    if (html) return this.parseHtml(html)
+    return this.parseHtml(html)
   }
 
   private updateDefaults({ widgetId, version }: Partial<ByPercentageWidgetByIdParams>) {
@@ -45,7 +45,7 @@ export class ByPercentageWidgetById extends Widget implements ByPercentageWidget
     this.version = version ?? this.version
   }
 
-  private validateOptions(): boolean {
+  private validateOptions() {
     return WidgetValidator.for('By Percentage Widget').widgetId(this.widgetId).validate()
   }
 }

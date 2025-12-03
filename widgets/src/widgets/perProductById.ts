@@ -31,16 +31,16 @@ export class PerProductWidgetById extends Widget implements PerProductWidgetById
     if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<PerProductWidgetByIdParams>): Promise<string | undefined> {
+  async renderToString(options?: Partial<PerProductWidgetByIdParams>): Promise<string> {
     if (options) this.updateDefaults(options)
-    if (!this.validateOptions()) return undefined
+    this.validateOptions()
     const response = await this.api.fetchPerProductWidgetById(this.requestBody)
     return response.data
   }
 
-  async renderToElement(options?: Partial<PerProductWidgetByIdParams>): Promise<HTMLElement | undefined> {
+  async renderToElement(options?: Partial<PerProductWidgetByIdParams>): Promise<HTMLElement> {
     const html = await this.renderToString(options)
-    if (html) return this.parseHtml(html)
+    return this.parseHtml(html)
   }
 
   private updateDefaults({ widgetId, productId, version }: Partial<PerProductWidgetByIdParams>) {
@@ -49,7 +49,7 @@ export class PerProductWidgetById extends Widget implements PerProductWidgetById
     this.version = version ?? this.version
   }
 
-  private validateOptions(): boolean {
+  private validateOptions() {
     return WidgetValidator.for('Per Product Widget')
       .widgetId(this.widgetId)
       .productId(this.productId)

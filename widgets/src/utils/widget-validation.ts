@@ -410,14 +410,12 @@ export class WidgetValidator extends ValidationUtils {
   }
 
   /**
-   * Logs errors to console and returns false if validation failed, otherwise returns true
-   * Does not throw exceptions - allows widgets to skip API calls silently
+   * Logs errors to console and throws an exception
    */
-  validate(): boolean {
+  validate(): void {
     if (this.errors.length > 0) {
-      console.error(`Greenspark - ${this.widgetName} validation failed:`, this.errors.join(' '))
-      return false
+      console.error(`Greenspark - ${this.widgetName} validation failed: ${this.errors.join(' ')}`)
+      throw Error(`Greenspark - ${this.widgetName} validation failed: ${this.errors.join(' ')}`)
     }
-    return true
   }
 }

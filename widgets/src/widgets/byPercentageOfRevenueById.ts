@@ -30,18 +30,18 @@ export class ByPercentageOfRevenueWidgetById
     if (node) this.inject(node, containerSelector)
   }
 
-  async renderToString(options?: Partial<ByPercentageOfRevenueWidgetByIdParams>): Promise<string | undefined> {
+  async renderToString(options?: Partial<ByPercentageOfRevenueWidgetByIdParams>): Promise<string> {
     if (options) this.updateDefaults(options)
-    if (!this.validateOptions()) return undefined
+    this.validateOptions()
     const response = await this.api.fetchByPercentageOfRevenueWidgetById(this.requestBody)
     return response.data
   }
 
   async renderToElement(
     options?: Partial<ByPercentageOfRevenueWidgetByIdParams>,
-  ): Promise<HTMLElement | undefined> {
+  ): Promise<HTMLElement> {
     const html = await this.renderToString(options)
-    if (html) return this.parseHtml(html)
+    return this.parseHtml(html)
   }
 
   private updateDefaults({ widgetId, version }: Partial<ByPercentageOfRevenueWidgetByIdParams>) {
@@ -49,7 +49,7 @@ export class ByPercentageOfRevenueWidgetById
     this.version = version ?? this.version
   }
 
-  private validateOptions(): boolean {
+  private validateOptions() {
     return WidgetValidator.for('By Percentage Of Revenue Widget').widgetId(this.widgetId).validate()
   }
 }

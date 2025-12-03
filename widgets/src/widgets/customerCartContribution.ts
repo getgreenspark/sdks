@@ -50,7 +50,8 @@ export class CustomerCartContributionWidget
 
   async renderToString(options?: Partial<CustomerCartContributionWidgetParams>): Promise<string | undefined> {
     if (options) this.updateDefaults(options)
-    if (!this.validateOptions()) return undefined
+    if (this.order.lineItems?.length === 0) return
+    this.validateOptions()
     return await this.api.fetchCustomerCartContributionWidget(this.requestBody)
   }
 
@@ -77,7 +78,7 @@ export class CustomerCartContributionWidget
     this.version = version ?? this.version
   }
 
-  private validateOptions(): boolean {
+  private validateOptions() {
     return WidgetValidator.for('Customer Cart Contribution Widget')
       .color(this.color)
       .withPopup(this.withPopup)
