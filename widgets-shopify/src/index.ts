@@ -296,6 +296,10 @@ function runGreenspark() {
         const preSelectedAttr = checkbox.getAttribute('data-greenspark-widget-pre-selected')
         const isCheckboxPreSelected = preSelectedAttr === 'true'
 
+        if (!window._greensparkPreselectAddInProgress) window._greensparkPreselectAddInProgress = {}
+        const preselectAddInProgressByProductId = window._greensparkPreselectAddInProgress
+        if (preselectAddInProgressByProductId[productId]) return
+
         getCart()
           .then((cart) => {
             const present = cart.items.some((item) => String(item.id) === productId)
@@ -306,6 +310,7 @@ function runGreenspark() {
               !isWidgetPreselectOptedOut() &&
               !Number.isNaN(parseInt(productId, 10))
             ) {
+              preselectAddInProgressByProductId[productId] = true
               return addItemToCart(productId, 1)
                 .then(() => {
                   checkbox.checked = true
@@ -315,6 +320,9 @@ function runGreenspark() {
                   console.error('Greenspark Widget - pre-selected add error', err)
                   setWidgetPreselectOptOut()
                   checkbox.checked = present
+                })
+                .finally(() => {
+                  preselectAddInProgressByProductId[productId] = undefined
                 })
             }
             checkbox.checked = present
