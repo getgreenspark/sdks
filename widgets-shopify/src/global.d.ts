@@ -13,6 +13,7 @@ declare global {
     _greensparkCheckboxHandlerBound?: boolean
     _greensparkRemoveHandlerBound?: boolean
     _greensparkPreselectOptOut?: boolean
+    _greensparkPreselectAddInProgress?: Record<string, boolean | undefined>
   }
 }
 

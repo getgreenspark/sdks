@@ -288,7 +288,8 @@ function runGreenspark() {
       const initCheckboxState = () => {
         const checkbox = getCheckbox()
         if (!checkbox) return
-        const productId = checkbox.getAttribute('data-greenspark-product-external-id')
+        const rawProductId = checkbox.getAttribute('data-greenspark-product-external-id')
+        const productId = rawProductId?.trim()
         if (!productId) return
         const PREVIEW_EXTERNAL_ID = 'PREVIEW_EXTERNAL_ID'
         const isPreviewProduct = productId === PREVIEW_EXTERNAL_ID
@@ -296,31 +297,52 @@ function runGreenspark() {
         const preSelectedAttr = checkbox.getAttribute('data-greenspark-widget-pre-selected')
         const isCheckboxPreSelected = preSelectedAttr === 'true'
 
+        const shouldAttemptPreselectAdd =
+          isCheckboxPreSelected &&
+          !isPreviewProduct &&
+          !isWidgetPreselectOptedOut() &&
+          !Number.isNaN(parseInt(productId, 10))
+
+        if (!shouldAttemptPreselectAdd) {
+          getCart()
+            .then((cart) => {
+              checkbox.checked = cart.items.some((item) => String(item.id) === productId)
+            })
+            .catch((err) => {
+              console.error('Greenspark Widget - getCart error', err)
+            })
+          return
+        }
+
+        if (!window._greensparkPreselectAddInProgress) window._greensparkPreselectAddInProgress = {}
+        const preselectAddInProgressByProductId = window._greensparkPreselectAddInProgress
+        if (preselectAddInProgressByProductId[productId]) return
+        preselectAddInProgressByProductId[productId] = true
+
         getCart()
           .then((cart) => {
             const present = cart.items.some((item) => String(item.id) === productId)
-            if (
-              isCheckboxPreSelected &&
-              !present &&
-              !isPreviewProduct &&
-              !isWidgetPreselectOptedOut() &&
-              !Number.isNaN(parseInt(productId, 10))
-            ) {
-              return addItemToCart(productId, 1)
-                .then(() => {
-                  checkbox.checked = true
-                  refreshCartDrawer()
-                })
-                .catch((err) => {
-                  console.error('Greenspark Widget - pre-selected add error', err)
-                  setWidgetPreselectOptOut()
-                  checkbox.checked = present
-                })
+            if (present) {
+              checkbox.checked = true
+              return
             }
-            checkbox.checked = present
+
+            return addItemToCart(productId, 1)
+              .then(() => {
+                checkbox.checked = true
+                refreshCartDrawer()
+              })
+              .catch((err) => {
+                console.error('Greenspark Widget - pre-selected add error', err)
+                setWidgetPreselectOptOut()
+                checkbox.checked = false
+              })
           })
           .catch((err) => {
             console.error('Greenspark Widget - getCart error', err)
+          })
+          .finally(() => {
+            preselectAddInProgressByProductId[productId] = undefined
           })
       }
 
