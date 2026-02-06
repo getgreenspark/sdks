@@ -1,9 +1,12 @@
+import { log } from './debug'
 import type { BigCommerceCart, BigCommerceConfig } from './interfaces'
 
 export function getCartIdFromCookie(): string | null {
   if (typeof document === 'undefined') return null
   const match = document.cookie.match(/(?:^|;\s*)bc_cartId=([^;]*)/)
-  return match ? decodeURIComponent(match[1]) : null
+  const cartId = match ? decodeURIComponent(match[1]) : null
+  log('cart: getCartIdFromCookie() =>', cartId ?? '(none)')
+  return cartId
 }
 
 export function setCartIdCookie(cartId: string): void {
@@ -36,23 +39,30 @@ export function createCartApi(cfg: BigCommerceConfig, baseUrl: string, currency:
 
   function getCart(): Promise<BigCommerceCart> {
     const cartId = cfg.cartId ?? getCartIdFromCookie()
-    if (!cartId)
+    if (!cartId) {
+      log('cart: getCart() – no cartId, returning empty cart')
       return Promise.resolve({ items: [], currency: currency || 'USD', total_price: 0 })
+    }
     const url = `${baseUrl}/api/storefront/carts/${cartId}`
+    log('cart: getCart() fetching', url)
     return fetchJSON<{
       id: string
       lineItems?: { productId: number; quantity: number }[]
       currency?: string
       cartAmount?: number
-    }>(url).then((data) => ({
-      items: (data.lineItems ?? []).map((item) => ({
-        productId: String(item.productId),
-        quantity: item.quantity,
-        id: undefined,
-      })),
-      currency: data.currency ?? currency ?? 'USD',
-      total_price: data.cartAmount ?? 0,
-    }))
+    }>(url).then((data) => {
+      const cart = {
+        items: (data.lineItems ?? []).map((item) => ({
+          productId: String(item.productId),
+          quantity: item.quantity,
+          id: undefined,
+        })),
+        currency: data.currency ?? currency ?? 'USD',
+        total_price: data.cartAmount ?? 0,
+      }
+      log('cart: getCart() response', cart.items.length, 'items')
+      return cart
+    })
   }
 
   function addItemToCart(targetProductId: string, quantity = 1): Promise<unknown> {

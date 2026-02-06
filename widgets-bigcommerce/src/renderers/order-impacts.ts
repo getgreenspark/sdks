@@ -1,3 +1,4 @@
+import { log, err } from '../debug'
 import type { GreensparkCartWidgetKey } from '../global.d'
 import type { RunContext } from './context'
 
@@ -8,8 +9,12 @@ function getCheckbox(): HTMLInputElement | null {
 }
 
 export function renderOrderImpacts(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  log('render: renderOrderImpacts', { widgetId, containerSelector })
   const targetEl = document.getElementById(widgetId)
-  if (!targetEl || !document.querySelector(containerSelector)) return
+  if (!targetEl || !document.querySelector(containerSelector)) {
+    log('render: renderOrderImpacts – no target or container, skipping', { hasTarget: !!targetEl, hasContainer: !!document.querySelector(containerSelector) })
+    return
+  }
 
   const { cartApi, parseCart, getWidgetContainer, movePopupToBody, greenspark, useShadowDom, version, refreshCartUI } = ctx
   const { getCart, addItemToCart, updateCart } = cartApi
@@ -29,7 +34,7 @@ export function renderOrderImpacts(ctx: RunContext, widgetId: string, containerS
           const matching = cart.items.some((item) => String(item.productId) === pid)
           checkbox.checked = matching
         })
-        .catch((err) => console.error('Greenspark Widget (BigCommerce) - Error checking cart:', err))
+        .catch((e) => err('render: order-impacts Error checking cart:', e))
     }
 
     const bindCheckbox = () => {
@@ -47,7 +52,7 @@ export function renderOrderImpacts(ctx: RunContext, widgetId: string, containerS
               if (cart.items.some((item) => String(item.productId) === pid)) return
               return addItemToCart(pid, 1).then(() => refreshCartUI())
             })
-            .catch((err) => console.error('Greenspark Widget (BigCommerce) - add error', err))
+            .catch((e) => err('render: order-impacts add error', e))
         } else {
           setWidgetPreselectOptOut()
           getCart()
@@ -55,7 +60,7 @@ export function renderOrderImpacts(ctx: RunContext, widgetId: string, containerS
               if (!cart.items.some((item) => String(item.productId) === pid)) return
               return updateCart({ [pid]: 0 }).then(() => refreshCartUI())
             })
-            .catch((err) => console.error('Greenspark Widget (BigCommerce) - remove error', err))
+            .catch((e) => err('render: order-impacts remove error', e))
         }
       })
     }
@@ -88,7 +93,7 @@ export function renderOrderImpacts(ctx: RunContext, widgetId: string, containerS
           .then((cart) => {
             checkbox.checked = cart.items.some((item) => String(item.productId) === pid)
           })
-          .catch((err) => console.error('Greenspark Widget (BigCommerce) - getCart error', err))
+          .catch((e) => err('render: order-impacts getCart error', e))
         return
       }
       getCart()
@@ -102,8 +107,8 @@ export function renderOrderImpacts(ctx: RunContext, widgetId: string, containerS
             refreshCartUI()
           })
         })
-        .catch((err) => {
-          console.error('Greenspark Widget (BigCommerce) - preselect error', err)
+        .catch((e) => {
+          err('render: order-impacts preselect error', e)
           setWidgetPreselectOptOut()
           checkbox.checked = false
         })
@@ -131,7 +136,7 @@ export function renderOrderImpacts(ctx: RunContext, widgetId: string, containerS
             }
           })
           .then(ensureHandlers)
-          .catch((e: unknown) => console.error('Greenspark Widget (BigCommerce) - ', e))
+          .catch((e: unknown) => err('render: order-impacts render error', e))
       })
     return
   }
@@ -154,7 +159,7 @@ export function renderOrderImpacts(ctx: RunContext, widgetId: string, containerS
         .render({ order }, sel)
         .then(() => movePopupToBody(widgetId))
         .then(ensureHandlers)
-        .catch((e: Error) => console.error('Greenspark Widget (BigCommerce) - ', e))
+        .catch((e: Error) => err('render: order-impacts widget render error', e))
     })
-    .catch((e: unknown) => console.error('Greenspark Widget (BigCommerce) - Error fetching cart:', e))
+    .catch((e: unknown) => err('render: order-impacts Error fetching cart:', e))
 }

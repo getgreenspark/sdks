@@ -1,6 +1,7 @@
 import { getConfig, getGreensparkApiUrl, getScriptSrc, parseCart } from './config'
 import { createCartApi } from './cart'
 import { getWidgetContainer, movePopupToBody } from './dom'
+import { log, warn, err } from './debug'
 import { EnumToWidgetTypeMap } from './interfaces'
 import type { WidgetVariant } from './renderers/context'
 import { renderWidget } from './renderers'
@@ -10,6 +11,7 @@ let retryCount = 0
 
 function injectWidgetStyles(): void {
   if (document.getElementById('greenspark-widget-style')) return
+  log('run: injecting widget styles')
   const style = document.createElement('style')
   style.id = 'greenspark-widget-style'
   style.textContent = `
@@ -24,28 +26,35 @@ function injectWidgetStyles(): void {
 }
 
 export function runGreenspark(): void {
+  log('run: runGreenspark() called')
   const scriptSrc = getScriptSrc()
-  if (!scriptSrc && typeof document === 'undefined') return
+  if (!scriptSrc && typeof document === 'undefined') {
+    log('run: exiting (no scriptSrc and no document)')
+    return
+  }
   if (document.readyState === 'loading') {
+    log('run: document still loading, re-scheduling runGreenspark on DOMContentLoaded')
     document.addEventListener('DOMContentLoaded', runGreenspark, { once: true })
     return
   }
 
   const config = getConfig()
   if (!config?.integrationSlug) {
-    console.warn('Greenspark Widget (BigCommerce) - Missing GreensparkBigCommerceConfig.integrationSlug')
+    warn('run: missing GreensparkBigCommerceConfig.integrationSlug – widget will not run')
     return
   }
   const cfg = config
 
   if (!window.GreensparkWidgets) {
     if (retryCount++ >= MAX_RETRIES) {
-      console.error('Greenspark Widget (BigCommerce) - Failed to load after max retries')
+      err('run: GreensparkWidgets not available after', MAX_RETRIES, 'retries – check core script load')
       return
     }
+    log('run: GreensparkWidgets not on window yet, retry', retryCount, 'in 50ms')
     setTimeout(runGreenspark, 50)
     return
   }
+  log('run: GreensparkWidgets available, retryCount reset')
   retryCount = 0
 
   const useShadowDom = false
@@ -56,6 +65,15 @@ export function runGreenspark(): void {
   const integrationSlug = cfg.integrationSlug
   const baseUrl = cfg.storefrontApiBase ?? (typeof window !== 'undefined' ? window.location.origin : '')
   const greensparkApiUrl = getGreensparkApiUrl(integrationSlug)
+
+  log('run: context', {
+    integrationSlug,
+    currency,
+    productId: productId || '(none)',
+    locale,
+    baseUrl,
+    greensparkApiUrl,
+  })
 
   const greenspark = new window.GreensparkWidgets({ locale, integrationSlug })
   const cartApi = createCartApi(cfg, baseUrl, currency, greensparkApiUrl)
@@ -78,19 +96,36 @@ export function runGreenspark(): void {
   injectWidgetStyles()
 
   const targets = document.querySelectorAll('.greenspark-widget-target')
-  targets.forEach((target) => {
-    target.querySelectorAll('.greenspark-widget-instance').forEach((el) => el.remove())
+  log('run: found', targets.length, '.greenspark-widget-target element(s)')
+
+  if (targets.length === 0) {
+    warn('run: no .greenspark-widget-target in DOM – ensure template outputs a div with class greenspark-widget-target and id = base64(widgetType|widgetId)')
+  }
+
+  targets.forEach((target, index) => {
+    const el = target as HTMLElement
+    const rawId = el.id
+    log('run: target', index + 1, 'id=', rawId, 'data-attrs=', {
+      'data-integration-slug': el.getAttribute('data-integration-slug'),
+      'data-currency': el.getAttribute('data-currency'),
+    })
+    el.querySelectorAll('.greenspark-widget-instance').forEach((e) => e.remove())
     let type: string
     try {
-      ;[type] = atob((target as HTMLElement).id).split('|')
-    } catch {
-      console.error('Greenspark Widget (BigCommerce) - Invalid widget ID encoding:', (target as HTMLElement).id)
+      ;[type] = atob(rawId).split('|')
+      log('run: target', index + 1, 'decoded type=', type, 'EnumToWidgetTypeMap[type]=', EnumToWidgetTypeMap[type])
+    } catch (e) {
+      err('run: invalid widget id (not base64 type|widgetId):', rawId, e)
       return
     }
     const variant = EnumToWidgetTypeMap[type] as WidgetVariant | undefined
-    if (!variant) return
-    const widgetId = (target as HTMLElement).id
+    if (!variant) {
+      warn('run: unknown widget type', type, '– known types: 0–9 (see EnumToWidgetTypeMap)')
+      return
+    }
+    const widgetId = rawId
     const containerSelector = getWidgetContainer(widgetId)
+    log('run: rendering widget variant=', variant, 'widgetId=', widgetId, 'containerSelector=', containerSelector)
     renderWidget(ctx, variant, widgetId, containerSelector)
   })
 }

@@ -76,6 +76,130 @@ Example for a single widget:
 ></div>
 ```
 
+### Example: Static widget (StaticWidget)
+
+Static widget type is **`8`**. `base64EncodedId` = `btoa('8|' + widgetId)` (e.g. in Node: `Buffer.from('8|' + widgetId).toString('base64')`).
+
+**Exact cURL (Open API proxy)** — replace `BASE_URL`, `STORE_HASH`, and `ACCESS_TOKEN`, then run:
+
+```bash
+curl -X POST "${BASE_URL}/v1/integrations/bigcommerce/widget-templates" \
+  -H "Content-Type: application/json" \
+  -d '{
+  "storeHash": "STORE_HASH",
+  "accessToken": "ACCESS_TOKEN",
+  "name": "Greenspark Static Widget",
+  "schema": [
+    {"type":"text","name":"integrationSlug","label":"Integration","default":""},
+    {"type":"text","name":"widgetId","label":"Widget ID","default":""},
+    {"type":"select","name":"color","label":"Color","default":"green","options":[{"value":"beige","label":"Beige"},{"value":"green","label":"Green"},{"value":"blue","label":"Blue"},{"value":"white","label":"White"},{"value":"black","label":"Black"},{"value":"grey","label":"Grey"},{"value":"transparent","label":"Transparent"}]},
+    {"type":"select","name":"style","label":"Style","default":"default","options":[{"value":"default","label":"Default"},{"value":"simplified","label":"Simplified"},{"value":"rounded","label":"Rounded"}]},
+    {"type":"text","name":"base64EncodedId","label":"Target ID (internal)","default":""},
+    {"type":"text","name":"currency","label":"Currency","default":"USD"},
+    {"type":"text","name":"locale","label":"Locale","default":"en"}
+  ],
+  "template": "<script>window.GreensparkBigCommerceConfig={integrationSlug:\"{{integrationSlug}}\",currency:\"{{currency}}\",locale:\"{{locale}}\"};</script>\n<script src=\"https://cdn.getgreenspark.com/scripts/widgets-bigcommerce@latest.js\" async></script>\n<div class=\"greenspark-widget-target\" id=\"{{base64EncodedId}}\" data-integration-slug=\"{{integrationSlug}}\" data-color=\"{{color}}\" data-currency=\"{{currency}}\"></div>"
+}'
+```
+
+Example with a real base URL (no env vars):
+
+```bash
+curl -X POST "https://api.getgreenspark.com/v1/integrations/bigcommerce/widget-templates" \
+  -H "Content-Type: application/json" \
+  -d '{"storeHash":"YOUR_STORE_HASH","accessToken":"YOUR_ACCESS_TOKEN","name":"Greenspark Static Widget","schema":[{"type":"text","name":"integrationSlug","label":"Integration","default":""},{"type":"text","name":"widgetId","label":"Widget ID","default":""},{"type":"select","name":"color","label":"Color","default":"green","options":[{"value":"beige","label":"Beige"},{"value":"green","label":"Green"},{"value":"blue","label":"Blue"},{"value":"white","label":"White"},{"value":"black","label":"Black"},{"value":"grey","label":"Grey"},{"value":"transparent","label":"Transparent"}]},{"type":"select","name":"style","label":"Style","default":"default","options":[{"value":"default","label":"Default"},{"value":"simplified","label":"Simplified"},{"value":"rounded","label":"Rounded"}]},{"type":"text","name":"base64EncodedId","label":"Target ID (internal)","default":""},{"type":"text","name":"currency","label":"Currency","default":"USD"},{"type":"text","name":"locale","label":"Locale","default":"en"}],"template":"<script>window.GreensparkBigCommerceConfig={integrationSlug:\"{{integrationSlug}}\",currency:\"{{currency}}\",locale:\"{{locale}}\"};</script>\n<script src=\"https://cdn.getgreenspark.com/scripts/widgets-bigcommerce@latest.js\" async></script>\n<div class=\"greenspark-widget-target\" id=\"{{base64EncodedId}}\" data-integration-slug=\"{{integrationSlug}}\" data-color=\"{{color}}\" data-currency=\"{{currency}}\"></div>"}'
+```
+
+**1. Create widget template** — `POST /v3/content/widget-templates` (or your Open API proxy).
+
+```json
+{
+  "name": "Greenspark Static Widget",
+  "schema": [
+    {
+      "type": "text",
+      "name": "integrationSlug",
+      "label": "Integration",
+      "default": ""
+    },
+    {
+      "type": "text",
+      "name": "widgetId",
+      "label": "Widget ID",
+      "default": ""
+    },
+    {
+      "type": "select",
+      "name": "color",
+      "label": "Color",
+      "default": "green",
+      "options": [
+        { "value": "beige", "label": "Beige" },
+        { "value": "green", "label": "Green" },
+        { "value": "blue", "label": "Blue" },
+        { "value": "white", "label": "White" },
+        { "value": "black", "label": "Black" },
+        { "value": "grey", "label": "Grey" },
+        { "value": "transparent", "label": "Transparent" }
+      ]
+    },
+    {
+      "type": "select",
+      "name": "style",
+      "label": "Style",
+      "default": "default",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "simplified", "label": "Simplified" },
+        { "value": "rounded", "label": "Rounded" }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "base64EncodedId",
+      "label": "Target ID (internal)",
+      "default": ""
+    },
+    {
+      "type": "text",
+      "name": "currency",
+      "label": "Currency",
+      "default": "USD"
+    },
+    {
+      "type": "text",
+      "name": "locale",
+      "label": "Locale",
+      "default": "en"
+    }
+  ],
+  "template": "<script>window.GreensparkBigCommerceConfig={integrationSlug:'{{integrationSlug}}',currency:'{{currency}}',locale:'{{locale}}'};</script>\n<script src=\"https://cdn.getgreenspark.com/scripts/widgets-bigcommerce@latest.js\" async></script>\n<div class=\"greenspark-widget-target\" id=\"{{base64EncodedId}}\" data-integration-slug=\"{{integrationSlug}}\" data-color=\"{{color}}\" data-currency=\"{{currency}}\"></div>"
+}
+```
+
+**2. Create placement** — `POST /v3/content/placements` (or your Open API proxy).
+
+Use the `uuid` from step 1. Set `widget_configuration` to the values the template expects (must include `base64EncodedId` = `btoa('8|' + widgetId)`).
+
+```json
+{
+  "widget_template_uuid": "<uuid-from-step-1>",
+  "template_file": "pages/home",
+  "status": "active",
+  "widget_configuration": {
+    "integrationSlug": "your_store_hash_or_id",
+    "widgetId": "your_greenspark_widget_id",
+    "base64EncodedId": "OHx5b3VyX2dyZWVuc3Bhcmtfd2lkZ2V0X2lk",
+    "color": "green",
+    "style": "default",
+    "currency": "USD",
+    "locale": "en"
+  }
+}
+```
+
+`base64EncodedId` must be the base64 encoding of `8|{widgetId}` (e.g. for `widgetId` `"abc123"` use `Buffer.from('8|abc123').toString('base64')` → `OHxhYmMxMjM=`). The storefront script uses this to match the target to the static widget type and fetch the correct config.
+
 ## Cart (Stencil vs Storefront API)
 
 - **Cookie:** The script looks for `bc_cartId` to get the current cart id for the Storefront API.

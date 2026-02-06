@@ -1,12 +1,17 @@
+import { log, err } from '../debug'
 import type { RunContext, WidgetVariant } from './context'
 import { renderOrderImpacts } from './order-impacts'
 
 function renderWithPopup(ctx: RunContext, widgetId: string, _containerSelector: string, render: () => Promise<unknown>): void {
+  log('render: renderWithPopup start widgetId=', widgetId)
   render()
-    .then(() => ctx.movePopupToBody(widgetId))
+    .then(() => {
+      log('render: renderWithPopup success, moving popup for', widgetId)
+      ctx.movePopupToBody(widgetId)
+    })
     .catch((e: unknown) => {
       if ((e as { response?: unknown }).response === undefined) {
-        console.error('Greenspark Widget (BigCommerce) - ', e)
+        err('render: renderWithPopup failed', widgetId, e)
       }
     })
 }
@@ -75,6 +80,7 @@ export function renderBanner(ctx: RunContext, widgetId: string, containerSelecto
 }
 
 export function renderWidget(ctx: RunContext, variant: WidgetVariant, widgetId: string, containerSelector: string): void {
+  log('render: renderWidget', { variant, widgetId, containerSelector })
   const fns = {
     orderImpacts: () => renderOrderImpacts(ctx, widgetId, containerSelector),
     offsetPerOrder: () => renderOffsetPerOrder(ctx, widgetId, containerSelector),
