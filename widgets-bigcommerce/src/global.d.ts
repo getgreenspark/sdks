@@ -7,8 +7,8 @@ export type GreensparkCartWidgetKey = `greensparkCartWidget-${string}`
 declare global {
   interface Window extends Partial<Record<GreensparkCartWidgetKey, CartWidgetById>> {
     GreensparkWidgets: typeof GreensparkWidgets
-    /** Set by app or widget template before script runs. */
-    GreensparkBigCommerceConfig?: BigCommerceConfig
+    /** Optional. Set by app/theme for custom domains or overrides; not required when store uses store-XXX.mybigcommerce.com. */
+    GreensparkBigCommerceConfig?: Partial<BigCommerceConfig>
     GreensparkWidgets?: typeof GreensparkWidgets
     _greensparkCheckboxHandlerBound?: boolean
     _greensparkRemoveHandlerBound?: boolean

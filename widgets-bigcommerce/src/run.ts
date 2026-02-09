@@ -1,10 +1,10 @@
-import { getConfig, getGreensparkApiUrl, getScriptSrc, parseCart } from './config'
-import { createCartApi } from './cart'
-import { getWidgetContainer, movePopupToBody } from './dom'
-import { log, warn, err } from './debug'
-import { EnumToWidgetTypeMap } from './interfaces'
-import type { WidgetVariant } from './renderers/context'
-import { renderWidget } from './renderers'
+import {getConfig, getGreensparkApiUrl, getScriptSrc, parseCart} from './config'
+import {createCartApi} from './cart'
+import {getWidgetContainer, movePopupToBody} from './dom'
+import {err, log, warn} from './debug'
+import {EnumToWidgetTypeMap} from './interfaces'
+import type {WidgetVariant} from './renderers/context'
+import {renderWidget} from './renderers'
 
 const MAX_RETRIES = 5
 let retryCount = 0
@@ -34,7 +34,7 @@ export function runGreenspark(): void {
   }
   if (document.readyState === 'loading') {
     log('run: document still loading, re-scheduling runGreenspark on DOMContentLoaded')
-    document.addEventListener('DOMContentLoaded', runGreenspark, { once: true })
+    document.addEventListener('DOMContentLoaded', runGreenspark, {once: true})
     return
   }
 
@@ -75,7 +75,11 @@ export function runGreenspark(): void {
     greensparkApiUrl,
   })
 
-  const greenspark = new window.GreensparkWidgets({ locale, integrationSlug })
+  const greenspark = new window.GreensparkWidgets({
+    locale,
+    integrationSlug,
+    isShopifyIntegration: true
+  })
   const cartApi = createCartApi(cfg, baseUrl, currency, greensparkApiUrl)
 
   const refreshCartUI = () => runGreenspark()

@@ -23,38 +23,61 @@ export function getGreensparkApiUrl(integrationSlug: string): string {
   return url
 }
 
+/**
+ * Try to detect current product id from page (PDP). Used for per-product widgets.
+ */
+function getProductIdFromPage(): string | undefined {
+  if (typeof document === 'undefined') return undefined
+  const el = document.querySelector('[data-product-id]') as HTMLElement | null
+  const id = el?.getAttribute?.('data-product-id')
+  if (id) return id
+  const meta = document.querySelector('meta[property="product:id"]') as HTMLMetaElement | null
+  if (meta?.content) return meta.content
+  return undefined
+}
+
+/**
+ * Build store context. The merchant only places the script and a div with id; no params on the page.
+ * - integrationSlug: must be set by the app via window.GreensparkBigCommerceConfig (BigCommerce does not expose store hash on the storefront; the app injects it from OAuth/install context, e.g. via theme script or app block).
+ * - currency, locale, productId: from page/meta or defaults; optional override via window
+ * - cartId: from bc_cartId cookie only
+ * - storefrontApiBase: window.location.origin or override
+ */
 export function getConfig(): BigCommerceConfig | null {
   if (typeof window === 'undefined') {
     log('config: getConfig() => null (no window)')
     return null
   }
-  const c = window.GreensparkBigCommerceConfig
-  if (c?.integrationSlug) {
-    log('config: getConfig() => from window.GreensparkBigCommerceConfig', {
-      integrationSlug: c.integrationSlug,
-      currency: c.currency,
-      locale: c.locale,
-      productId: c.productId,
-    })
-    return c
-  }
-  const script = document.currentScript as HTMLScriptElement | null
-  const integrationSlug =
-    script?.getAttribute('data-integration-slug') ??
-    document.querySelector('.greenspark-widget-target')?.getAttribute('data-integration-slug')
+  const override = window.GreensparkBigCommerceConfig
+
+  const integrationSlug = override?.integrationSlug ?? null
   if (!integrationSlug) {
-    warn('config: getConfig() => null (no integrationSlug from script or .greenspark-widget-target)')
+    warn(
+      'config: getConfig() => null (integrationSlug required). The app must set window.GreensparkBigCommerceConfig.integrationSlug (e.g. store hash from OAuth) before the widget script runs—e.g. via theme script or app embed.',
+    )
     return null
   }
-  const config = {
+
+  const currency =
+    override?.currency ??
+    (document.querySelector('meta[property="product:price:currency"]') as HTMLMetaElement | null)
+      ?.content ??
+    'USD'
+  const locale =
+    (override?.locale ?? document.documentElement.lang?.slice(0, 2) ?? 'en') as string
+  const productId = override?.productId ?? getProductIdFromPage()
+  const storefrontApiBase = override?.storefrontApiBase ?? window.location.origin
+  const cartId = override?.cartId ?? undefined
+
+  const config: BigCommerceConfig = {
     integrationSlug,
-    productId: script?.getAttribute('data-product-id') ?? undefined,
-    currency: script?.getAttribute('data-currency') ?? undefined,
-    locale: (script?.getAttribute('data-locale') ?? 'en') as 'en',
-    cartId: script?.getAttribute('data-cart-id') ?? undefined,
-    storefrontApiBase: script?.getAttribute('data-storefront-api-base') ?? undefined,
+    currency,
+    locale,
+    storefrontApiBase,
+    ...(productId && { productId }),
+    ...(cartId && { cartId }),
   }
-  log('config: getConfig() => from data attributes', config)
+  log('config: getConfig() => discovered + overrides', config)
   return config
 }
 
