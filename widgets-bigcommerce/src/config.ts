@@ -6,8 +6,8 @@ const isDevStore =
   (window.location?.hostname?.includes('greenspark-development-store') ?? false)
 
 export const widgetUrl = isDevStore
-  ? 'https://cdn.getgreenspark.com/scripts/widgets%402.6.1-1.js'
-  : 'https://cdn.getgreenspark.com/scripts/widgets%402.6.1-1.js'
+  ? 'https://cdn.getgreenspark.com/scripts/widgets%402.6.1-2.js'
+  : 'https://cdn.getgreenspark.com/scripts/widgets%402.6.1-2.js'
 
 export function getScriptSrc(): string | undefined {
   if (typeof document === 'undefined') return undefined
