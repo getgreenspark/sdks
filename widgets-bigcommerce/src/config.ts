@@ -1,5 +1,5 @@
-import { log, warn } from './debug'
-import type { BigCommerceCart, BigCommerceConfig } from './interfaces'
+import {log, warn} from './debug'
+import type {BigCommerceCart, BigCommerceConfig} from './interfaces'
 
 const isDevStore =
   typeof window !== 'undefined' &&
@@ -17,7 +17,7 @@ export function getScriptSrc(): string | undefined {
 }
 
 export function getGreensparkApiUrl(integrationSlug: string): string {
-  const dev = integrationSlug.includes('greenspark-development-store')
+  const dev = true //integrationSlug.includes('greenspark-development-store')
   const url = dev ? 'https://dev-api.getmads.com' : 'https://api.getgreenspark.com'
   log('config: getGreensparkApiUrl(', integrationSlug, ') =>', url)
   return url
@@ -74,8 +74,8 @@ export function getConfig(): BigCommerceConfig | null {
     currency,
     locale,
     storefrontApiBase,
-    ...(productId && { productId }),
-    ...(cartId && { cartId }),
+    ...(productId && {productId}),
+    ...(cartId && {cartId}),
   }
   log('config: getConfig() => discovered + overrides', config)
   return config
