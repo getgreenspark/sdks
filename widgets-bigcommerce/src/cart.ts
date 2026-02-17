@@ -1,5 +1,5 @@
-import { log } from './debug'
-import type { BigCommerceCart, BigCommerceConfig } from './interfaces'
+import {log} from './debug'
+import type {BigCommerceCart, BigCommerceConfig} from './interfaces'
 
 export function getCartIdFromCookie(): string | null {
   if (typeof document === 'undefined') return null
@@ -22,12 +22,12 @@ export function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
 }
 
 export function createCartApi(cfg: BigCommerceConfig, baseUrl: string, currency: string, greensparkApiUrl: string) {
-  const { integrationSlug } = cfg
+  const {integrationSlug} = cfg
 
   function captureEvent(event: unknown): Promise<Response> {
     return fetch(`${greensparkApiUrl}/v2/events`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      headers: {'Content-Type': 'application/json', Accept: 'application/json'},
       body: JSON.stringify({
         integrationSlug,
         scope: 'CUSTOMER_CART_CONTRIBUTION_WIDGET',
@@ -38,12 +38,7 @@ export function createCartApi(cfg: BigCommerceConfig, baseUrl: string, currency:
   }
 
   function getCart(): Promise<BigCommerceCart> {
-    const cartId = cfg.cartId ?? getCartIdFromCookie()
-    if (!cartId) {
-      log('cart: getCart() – no cartId, returning empty cart')
-      return Promise.resolve({ items: [], currency: currency || 'USD', total_price: 0 })
-    }
-    const url = `${baseUrl}/api/storefront/carts/${cartId}`
+    const url = `${baseUrl}/api/storefront/carts`
     log('cart: getCart() fetching', url)
     return fetchJSON<{
       id: string
@@ -60,7 +55,7 @@ export function createCartApi(cfg: BigCommerceConfig, baseUrl: string, currency:
         currency: data.currency ?? currency ?? 'USD',
         total_price: data.cartAmount ?? 0,
       }
-      log('cart: getCart() response', cart.items.length, 'items')
+      log('cart: getCart() response', data, cart.items.length, 'items')
       return cart
     })
   }
@@ -70,8 +65,8 @@ export function createCartApi(cfg: BigCommerceConfig, baseUrl: string, currency:
     if (!cartId) {
       return fetch(`${baseUrl}/api/storefront/carts`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lineItems: [{ productId: Number(targetProductId), quantity }] }),
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({lineItems: [{productId: Number(targetProductId), quantity}]}),
       })
         .then((r) => r.json())
         .then((cart: { id?: string }) => {
@@ -79,16 +74,18 @@ export function createCartApi(cfg: BigCommerceConfig, baseUrl: string, currency:
           return cart
         })
         .catch((err) => {
-          captureEvent(err).catch(() => {})
+          captureEvent(err).catch(() => {
+          })
           return Promise.reject(err)
         })
     }
     return fetch(`${baseUrl}/api/storefront/carts/${cartId}/items`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify([{ productId: Number(targetProductId), quantity }]),
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify([{productId: Number(targetProductId), quantity}]),
     }).catch((err) => {
-      captureEvent(err).catch(() => {})
+      captureEvent(err).catch(() => {
+      })
       return Promise.reject(err)
     })
   }
@@ -100,19 +97,19 @@ export function createCartApi(cfg: BigCommerceConfig, baseUrl: string, currency:
       const lineItems = cart.items
         .map((item) => {
           const qty = updates[item.productId]
-          if (qty !== undefined) return { ...item, quantity: qty }
+          if (qty !== undefined) return {...item, quantity: qty}
           return item
         })
         .filter((item) => item.quantity > 0)
       return fetch(`${baseUrl}/api/storefront/carts/${cartId}/items`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(
-          lineItems.map((i) => ({ productId: Number(i.productId), quantity: i.quantity })),
+          lineItems.map((i) => ({productId: Number(i.productId), quantity: i.quantity})),
         ),
       })
     })
   }
 
-  return { getCart, addItemToCart, updateCart }
+  return {getCart, addItemToCart, updateCart}
 }
