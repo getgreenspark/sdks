@@ -18,8 +18,72 @@ export interface BigCommerceConfig {
   cartId?: string
 }
 
+// --- BigCommerce REST Storefront API types (https://developer.bigcommerce.com/docs/rest-storefront/carts) ---
+
+/** Cart currency object in Storefront API responses. */
+export interface StorefrontCartCurrency {
+  code?: string
+  [key: string]: unknown
+}
+
+/** Single line item in Storefront API (physical/digital item with productId). */
+export interface StorefrontCartLineItem {
+  id?: string
+  productId?: number
+  quantity: number
+  [key: string]: unknown
+}
+
+/** Cart response lineItems is an object with physicalItems, digitalItems, etc. */
+export interface StorefrontCartLineItems {
+  physicalItems?: StorefrontCartLineItem[]
+  digitalItems?: StorefrontCartLineItem[]
+  giftCertificates?: unknown[]
+  customItems?: StorefrontCartLineItem[]
+  [key: string]: unknown
+}
+
+/** Cart object returned by GET /carts and POST /carts (and related endpoints). */
+export interface StorefrontCartResponse {
+  id: string
+  customerId?: number
+  email?: string
+  currency?: StorefrontCartCurrency
+  isTaxIncluded?: boolean
+  baseAmount?: number
+  discountAmount?: number
+  cartAmount?: number
+  coupons?: unknown[]
+  discounts?: unknown[]
+  lineItems?: StorefrontCartLineItems
+  createdTime?: string
+  updatedTime?: string
+  locale?: string
+  version?: number
+}
+
+/** Request body for POST /carts (create cart). */
+export interface StorefrontCreateCartRequest {
+  lineItems: StorefrontAddCartLineItem[]
+  locale?: string
+}
+
+/** Request body for POST /carts/{cartId}/items (add line items). */
+export interface StorefrontAddCartLineItemsRequest {
+  lineItems: StorefrontAddCartLineItem[]
+  version?: number
+}
+
+/** Line item shape when adding to cart (productId + quantity required). */
+export interface StorefrontAddCartLineItem {
+  productId: number
+  quantity: number
+  optionSelections?: unknown[]
+  giftWrapping?: unknown
+}
+
 /**
- * Cart item shape from BigCommerce Storefront API or Stencil cart.
+ * Normalized cart item shape we use internally (from Storefront API or Stencil).
  */
 export interface BigCommerceCartLineItem {
   productId: string
@@ -28,7 +92,7 @@ export interface BigCommerceCartLineItem {
 }
 
 /**
- * Cart shape we pass to GreensparkWidgets (same as Shopify adapter).
+ * Normalized cart shape we pass to GreensparkWidgets (same as Shopify adapter).
  */
 export interface BigCommerceCart {
   items: BigCommerceCartLineItem[]

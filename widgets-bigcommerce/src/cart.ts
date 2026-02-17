@@ -1,5 +1,11 @@
 import {log} from './debug'
-import type {BigCommerceCart, BigCommerceConfig} from './interfaces'
+import type {
+  BigCommerceCart,
+  BigCommerceConfig,
+  StorefrontAddCartLineItemsRequest,
+  StorefrontCartResponse,
+  StorefrontCreateCartRequest,
+} from './interfaces'
 
 export function getCartIdFromCookie(): string | null {
   if (typeof document === 'undefined') return null
@@ -37,39 +43,58 @@ export function createCartApi(cfg: BigCommerceConfig, baseUrl: string, currency:
     })
   }
 
+  /** Flatten Storefront API lineItems (physicalItems, digitalItems, customItems) into a single array. */
+  function flattenLineItems(
+    lineItems: StorefrontCartResponse['lineItems'],
+  ): { productId: string; quantity: number; id?: string }[] {
+    if (!lineItems) return []
+    const physical = lineItems.physicalItems ?? []
+    const digital = lineItems.digitalItems ?? []
+    const custom = lineItems.customItems ?? []
+    const map = (item: { productId?: number; quantity: number; id?: string }) => ({
+      productId: String(item.productId ?? ''),
+      quantity: item.quantity,
+      id: item.id,
+    })
+    return [...physical.map(map), ...digital.map(map), ...custom.map(map)]
+  }
+
   async function getCart(): Promise<BigCommerceCart> {
     const url = `${baseUrl}/api/storefront/carts`
     log('cart: getCart() fetching', url)
-    return fetchJSON<{
-      id: string
-      lineItems?: { productId: number; quantity: number }[]
-      currency?: string
-      cartAmount?: number
-    }>(url).then((data) => {
-      const cart = {
-        items: (data.lineItems ?? []).map((item) => ({
-          productId: String(item.productId),
-          quantity: item.quantity,
-          id: undefined,
-        })),
-        currency: data.currency ?? currency ?? 'USD',
-        total_price: data.cartAmount ?? 0,
-      }
-      log('cart: getCart() response', data, cart.items.length, 'items')
-      return cart
-    })
+    const carts = await fetchJSON<StorefrontCartResponse[]>(url)
+    const data = Array.isArray(carts)
+      ? carts.length > 0
+        ? carts.find((c) => c.id === (cfg.cartId ?? getCartIdFromCookie())) ?? carts[0]
+        : ({} as StorefrontCartResponse)
+      : (carts as unknown as StorefrontCartResponse)
+    const items = flattenLineItems(data.lineItems)
+    const currencyCode =
+      typeof data.currency === 'object' && data.currency !== null && 'code' in data.currency
+        ? (data.currency as { code?: string }).code
+        : undefined
+    const cart: BigCommerceCart = {
+      items,
+      currency: currencyCode ?? currency ?? 'USD',
+      total_price: data.cartAmount ?? 0,
+    }
+    log('cart: getCart() response', data.id ?? '(no id)', cart.items.length, 'items')
+    return cart
   }
 
   function addItemToCart(targetProductId: string, quantity = 1): Promise<unknown> {
     const cartId = cfg.cartId ?? getCartIdFromCookie()
     if (!cartId) {
+      const body: StorefrontCreateCartRequest = {
+        lineItems: [{productId: Number(targetProductId), quantity}],
+      }
       return fetch(`${baseUrl}/api/storefront/carts`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({lineItems: [{productId: Number(targetProductId), quantity}]}),
+        body: JSON.stringify(body),
       })
         .then((r) => r.json())
-        .then((cart: { id?: string }) => {
+        .then((cart: StorefrontCartResponse) => {
           if (cart.id) setCartIdCookie(cart.id)
           return cart
         })
@@ -79,10 +104,13 @@ export function createCartApi(cfg: BigCommerceConfig, baseUrl: string, currency:
           return Promise.reject(err)
         })
     }
+    const body: StorefrontAddCartLineItemsRequest = {
+      lineItems: [{productId: Number(targetProductId), quantity}],
+    }
     return fetch(`${baseUrl}/api/storefront/carts/${cartId}/items`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify([{productId: Number(targetProductId), quantity}]),
+      body: JSON.stringify(body),
     }).catch((err) => {
       captureEvent(err).catch(() => {
       })
@@ -90,6 +118,11 @@ export function createCartApi(cfg: BigCommerceConfig, baseUrl: string, currency:
     })
   }
 
+  /**
+   * Update cart quantities. Note: Storefront API updates line items via PUT /carts/{cartId}/items/{itemId}
+   * (one item per request). This implementation sends a single PUT to /items; if the store rejects it,
+   * consider iterating with PUT per itemId.
+   */
   function updateCart(updates: Record<string, number>): Promise<Response> {
     const cartId = cfg.cartId ?? getCartIdFromCookie()
     if (!cartId) return Promise.reject(new Error('No cart id'))
