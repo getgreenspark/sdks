@@ -37,9 +37,20 @@ function getProductIdFromPage(): string | undefined {
 }
 
 /**
- * Build store context. The merchant only places the script and a div with id; no params on the page.
- * - integrationSlug: must be set by the app via window.GreensparkBigCommerceConfig (BigCommerce does not expose store hash on the storefront; the app injects it from OAuth/install context, e.g. via theme script or app block).
- * - currency, locale, productId: from page/meta or defaults; optional override via window
+ * Discover integrationSlug from the first widget target (data-integration-slug).
+ * Div-only setup: no window config required.
+ */
+function getIntegrationSlugFromTarget(): string | null {
+  if (typeof document === 'undefined') return null
+  const first = document.querySelector('.greenspark-widget-target') as HTMLElement | null
+  const slug = first?.getAttribute?.('data-integration-slug')?.trim()
+  return slug || null
+}
+
+/**
+ * Build store context from the page and widget target div(s).
+ * - integrationSlug: from first .greenspark-widget-target[data-integration-slug] (required).
+ * - currency, locale, productId: from page/meta or defaults; optional override via window.GreensparkBigCommerceConfig.
  * - cartId: from bc_cartId cookie only
  * - storefrontApiBase: window.location.origin or override
  */
@@ -50,10 +61,10 @@ export function getConfig(): BigCommerceConfig | null {
   }
   const override = window.GreensparkBigCommerceConfig
 
-  const integrationSlug = override?.integrationSlug ?? null
+  const integrationSlug = getIntegrationSlugFromTarget()
   if (!integrationSlug) {
     warn(
-      'config: getConfig() => null (integrationSlug required). The app must set window.GreensparkBigCommerceConfig.integrationSlug (e.g. store hash from OAuth) before the widget script runs—e.g. via theme script or app embed.',
+      'config: getConfig() => null (integrationSlug required). Add data-integration-slug on a .greenspark-widget-target div.',
     )
     return null
   }

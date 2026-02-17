@@ -1,10 +1,10 @@
 /**
- * Config injected by the app or widget template (script tag / data attributes).
- * Set window.GreensparkBigCommerceConfig before the script runs, or the script
- * reads from data attributes on the script tag / root widget container.
+ * Config discovered from the page and widget target div(s).
+ * integrationSlug comes from .greenspark-widget-target[data-integration-slug].
+ * Optional overrides (currency, locale, etc.) via window.GreensparkBigCommerceConfig.
  */
 export interface BigCommerceConfig {
-  /** Store identifier used as integrationSlug (e.g. store hash from OAuth). */
+  /** Store identifier (from data-integration-slug on the widget target div). */
   integrationSlug: string
   /** Current product id on PDP (for per-product widgets). */
   productId?: string

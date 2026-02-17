@@ -37,7 +37,7 @@ export function createCartApi(cfg: BigCommerceConfig, baseUrl: string, currency:
     })
   }
 
-  function getCart(): Promise<BigCommerceCart> {
+  async function getCart(): Promise<BigCommerceCart> {
     const url = `${baseUrl}/api/storefront/carts`
     log('cart: getCart() fetching', url)
     return fetchJSON<{

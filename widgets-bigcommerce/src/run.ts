@@ -40,7 +40,7 @@ export function runGreenspark(): void {
 
   const config = getConfig()
   if (!config?.integrationSlug) {
-    warn('run: missing GreensparkBigCommerceConfig.integrationSlug – widget will not run')
+    warn('run: missing integrationSlug – add data-integration-slug on a .greenspark-widget-target div')
     return
   }
   const cfg = config

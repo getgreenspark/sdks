@@ -1,6 +1,6 @@
 # @getgreenspark/widgets-bigcommerce
 
-BigCommerce storefront adapter for the Greenspark Widget SDK. Loads the core widgets script and initializes widgets using **store context discovered automatically** from the storefront (like the Shopify adapter). The merchant only adds one script tag and one div with an id—no config or params from the Page Builder.
+BigCommerce storefront adapter for the Greenspark Widget SDK. Loads the core widgets script and initializes widgets using **store context discovered automatically** from the storefront (like the Shopify adapter). The merchant adds one script tag and one div with `data-integration-slug` and `id`—no window config required.
 
 ## Installation
 
@@ -10,37 +10,28 @@ Publish to your CDN (e.g. `cdn.getgreenspark.com/scripts/widgets-bigcommerce@lat
 
 The merchant (or Page Builder) adds **only**:
 
-1. **In the header:** the script tag (no config block, no data attributes):
+1. **In the header:** the script tag:
 
 ```html
 <script src="https://cdn.getgreenspark.com/scripts/widgets-bigcommerce@latest.js" async></script>
 ```
 
-2. **Where the widget should appear:** a single div with `class="greenspark-widget-target"` and `id` set to the widget’s hashed id (contains widget type + editor settings):
+2. **Where the widget should appear:** a div with `class="greenspark-widget-target"`, `data-integration-slug` (your integration/store identifier), and `id` set to the widget’s hashed id (base64 of `widgetType|widgetId`):
 
 ```html
 <div
   class="greenspark-widget-target"
+  data-integration-slug="YOUR_INTEGRATION_SLUG"
   id="MHxncmVlbnNwYXJrLXdpZGdldC1pZHwxMjM0"
 ></div>
 ```
 
-**No** `integrationSlug` or other params are passed via the script or the div. The client discovers currency, locale, cart, and product from the store. BigCommerce does **not** expose the store hash on the storefront (unlike Shopify’s `window.Shopify.shop`), so the **app** must provide it:
+The client discovers everything from the page and this div (no window config required):
 
-- **integrationSlug (required):** Set by **your app** via `window.GreensparkBigCommerceConfig.integrationSlug` before the widget script runs. The app knows the store hash from OAuth/install; inject it with a theme script, app block, or script tag your app serves (so it works on any domain, including custom domains).
+- **integrationSlug (required):** from `data-integration-slug` on the div.
 - **Currency / locale:** from page meta or `<html lang>`; default `USD` / `en`.
 - **Product id:** from `[data-product-id]` or `meta[property="product:id"]` on the page when on a PDP.
 - **Cart:** from the `bc_cartId` cookie and Storefront API.
-
-Example: app injects store hash, then the merchant’s script runs:
-
-```html
-<!-- Injected by your app (theme script / app block) -->
-<script>
-  window.GreensparkBigCommerceConfig = { integrationSlug: 'STORE_HASH_FROM_OAUTH' };
-</script>
-<script src="https://cdn.getgreenspark.com/scripts/widgets-bigcommerce@latest.js" async></script>
-```
 
 ## Content API–based placement (region drag-and-drop)
 
@@ -49,7 +40,7 @@ This package is **storefront-only**: it does not call the BigCommerce Content AP
 1. **Creating a widget template** via BigCommerce `POST /v3/content/widget-templates` (name, schema, template HTML).
 2. **Creating a placement** via `POST /v3/content/placements` (widget_template_uuid, template_file = region name, widget_configuration, status).
 
-The **template** HTML must follow the widget template contract below. The client discovers store context (integration slug, currency, cart, etc.) from the storefront; the template must **not** pass config or params via the script or the div.
+The **template** HTML must follow the widget template contract below. The client discovers store context from the div’s `data-integration-slug` and the page (currency, cart, etc.).
 
 Open API exposes proxy endpoints (you must have `storeHash` and `accessToken` from OAuth):
 
@@ -57,11 +48,11 @@ Open API exposes proxy endpoints (you must have `storeHash` and `accessToken` fr
 - `POST /v1/integrations/bigcommerce/placements` — body: `{ storeHash, accessToken, widget_template_uuid, widget_configuration, template_file, status }` → returns `{ uuid }`.
 - `GET /v1/integrations/bigcommerce/widget-script-url` — returns the script URL to use in the template.
 
-Example template string (Handlebars): only the script and a div with `id="{{base64EncodedId}}"`. No config script, no data attributes.
+Example template string (Handlebars): the script and a div with `data-integration-slug`, `id="{{base64EncodedId}}"`.
 
 ```html
 <script src="https://cdn.getgreenspark.com/scripts/widgets-bigcommerce@latest.js" async></script>
-<div class="greenspark-widget-target" id="{{base64EncodedId}}"></div>
+<div class="greenspark-widget-target" data-integration-slug="{{integrationSlug}}" id="{{base64EncodedId}}"></div>
 ```
 
 `template_file` is the theme region (e.g. `pages/home`, `below_content--global`). Use [Regions](https://developer.bigcommerce.com/docs/rest-content/widgets/regions) or theme files to see available regions. `status` is typically `"active"`. The placement’s `widget_configuration` must include `base64EncodedId` (and any schema fields your template uses).
@@ -73,14 +64,15 @@ Widget templates should output:
 1. A script tag loading `https://cdn.getgreenspark.com/scripts/widgets-bigcommerce@latest.js`.
 2. One or more elements with:
    - `class="greenspark-widget-target"`
+   - `data-integration-slug` = your integration/store identifier (required)
    - `id` = the widget’s hashed id (base64 of `widgetType + '|' + widgetId`; `widgetType` is one of `'0'`…`'9'` — see `EnumToWidgetTypeMap` in `src/interfaces/index.ts`).
 
-Do **not** output a config script or `data-integration-slug` / other params on the div. The client derives integration slug, currency, locale, cart, and product id from the store.
+The client reads integration slug from the div and derives currency, locale, cart, and product id from the page.
 
 Example for a single widget:
 
 ```html
-<div class="greenspark-widget-target" id="{{base64EncodedId}}"></div>
+<div class="greenspark-widget-target" data-integration-slug="{{integrationSlug}}" id="{{base64EncodedId}}"></div>
 ```
 
 ### Example: Static widget (StaticWidget)
