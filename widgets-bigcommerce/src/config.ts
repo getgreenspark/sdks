@@ -1,26 +1,17 @@
-import {log, warn} from './debug'
-import type {BigCommerceCart, BigCommerceConfig} from './interfaces'
+import { log, warn } from './debug'
+import type { BigCommerceConfig } from './interfaces'
 
-const isDevStore =
-  typeof window !== 'undefined' &&
-  (window.location?.hostname?.includes('greenspark-development-store') ?? false)
+const IS_DEV_STORE = true as const
 
-export const widgetUrl = isDevStore
+export const widgetUrl = IS_DEV_STORE
   ? 'https://cdn.getgreenspark.com/scripts/widgets%402.6.1-2.js'
-  : 'https://cdn.getgreenspark.com/scripts/widgets%402.6.1-2.js'
+  : 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
 
 export function getScriptSrc(): string | undefined {
   if (typeof document === 'undefined') return undefined
   const src = (document.currentScript as HTMLScriptElement | null)?.getAttribute('src') ?? undefined
   log('config: getScriptSrc() =>', src ?? '(none)')
   return src
-}
-
-export function getGreensparkApiUrl(integrationSlug: string): string {
-  const dev = true //integrationSlug.includes('greenspark-development-store')
-  const url = dev ? 'https://dev-api.getmads.com' : 'https://api.getgreenspark.com'
-  log('config: getGreensparkApiUrl(', integrationSlug, ') =>', url)
-  return url
 }
 
 /**
@@ -50,17 +41,13 @@ function getIntegrationSlugFromTarget(): string | null {
 /**
  * Build store context from the page and widget target div(s).
  * - integrationSlug: from first .greenspark-widget-target[data-integration-slug] (required).
- * - currency, locale, productId: from page/meta or defaults; optional override via window.GreensparkBigCommerceConfig.
- * - cartId: from bc_cartId cookie only
- * - storefrontApiBase: window.location.origin or override
+ * - currency, locale, productId: from page/meta or defaults
  */
 export function getConfig(): BigCommerceConfig | null {
   if (typeof window === 'undefined') {
     log('config: getConfig() => null (no window)')
     return null
   }
-  const override = window.GreensparkBigCommerceConfig
-
   const integrationSlug = getIntegrationSlugFromTarget()
   if (!integrationSlug) {
     warn(
@@ -70,36 +57,19 @@ export function getConfig(): BigCommerceConfig | null {
   }
 
   const currency =
-    override?.currency ??
     (document.querySelector('meta[property="product:price:currency"]') as HTMLMetaElement | null)
       ?.content ??
     'USD'
   const locale =
-    (override?.locale ?? document.documentElement.lang?.slice(0, 2) ?? 'en') as string
-  const productId = override?.productId ?? getProductIdFromPage()
-  const storefrontApiBase = override?.storefrontApiBase ?? window.location.origin
-  const cartId = override?.cartId ?? undefined
+    (document.documentElement.lang?.slice(0, 2) ?? 'en') as string
+  const productId = getProductIdFromPage()
 
   const config: BigCommerceConfig = {
     integrationSlug,
     currency,
     locale,
-    storefrontApiBase,
-    ...(productId && {productId}),
-    ...(cartId && {cartId}),
+    ...(productId && { productId }),
   }
   log('config: getConfig() => discovered + overrides', config)
   return config
-}
-
-export function parseCart(cart: BigCommerceCart) {
-  const lineItems = cart.items.map((item) => ({
-    productId: String(item.productId),
-    quantity: item.quantity,
-  }))
-  return {
-    lineItems,
-    currency: cart.currency,
-    totalPrice: cart.total_price,
-  }
 }

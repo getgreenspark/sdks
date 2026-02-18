@@ -1,4 +1,4 @@
-import { log, err } from './debug'
+import { err, log } from './debug'
 import { setup } from './script-loader'
 import { runGreenspark } from './run'
 

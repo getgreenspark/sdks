@@ -1,22 +1,18 @@
-import type { BigCommerceCart } from '../interfaces'
+import type { CartOrderPayload } from '../interfaces'
 
 export interface CartApi {
-  getCart: () => Promise<BigCommerceCart>
-  addItemToCart: (productId: string, quantity?: number) => Promise<unknown>
-  updateCart: (updates: Record<string, number>) => Promise<Response>
+  getCart: () => Promise<CartOrderPayload>
 }
 
 export interface RunContext {
   greenspark: InstanceType<Window['GreensparkWidgets']>
   cartApi: CartApi
-  parseCart: (cart: BigCommerceCart) => { lineItems: { productId: string; quantity: number }[]; currency: string; totalPrice: number }
   getWidgetContainer: (widgetId: string) => string
   movePopupToBody: (widgetId: string) => void
   productId: string
   currency: string
   useShadowDom: boolean
   version: 'v2'
-  refreshCartUI: () => void
 }
 
 export type WidgetVariant =

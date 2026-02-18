@@ -1,28 +1,16 @@
-/**
- * Config discovered from the page and widget target div(s).
- * integrationSlug comes from .greenspark-widget-target[data-integration-slug].
- * Optional overrides (currency, locale, etc.) via window.GreensparkBigCommerceConfig.
- */
 export interface BigCommerceConfig {
   /** Store identifier (from data-integration-slug on the widget target div). */
   integrationSlug: string
-  /** Current product id on PDP (for per-product widgets). */
   productId?: string
-  /** Store currency code (e.g. USD). */
   currency?: string
-  /** Locale (e.g. en). */
   locale?: string
-  /** Base URL for Storefront API (e.g. store’s origin). Omitted if using same-origin. */
-  storefrontApiBase?: string
-  /** Cart id for Storefront API (cookie or from Stencil). Optional if cart is read from Stencil global. */
-  cartId?: string
 }
 
-// --- BigCommerce REST Storefront API types (https://developer.bigcommerce.com/docs/rest-storefront/carts) ---
 
 /** Cart currency object in Storefront API responses. */
 export interface StorefrontCartCurrency {
   code?: string
+
   [key: string]: unknown
 }
 
@@ -31,6 +19,7 @@ export interface StorefrontCartLineItem {
   id?: string
   productId?: number
   quantity: number
+
   [key: string]: unknown
 }
 
@@ -40,10 +29,13 @@ export interface StorefrontCartLineItems {
   digitalItems?: StorefrontCartLineItem[]
   giftCertificates?: unknown[]
   customItems?: StorefrontCartLineItem[]
+
   [key: string]: unknown
 }
 
-/** Cart object returned by GET /carts and POST /carts (and related endpoints). */
+/** Cart object returned by GET /carts and POST /carts (and related endpoints).
+ * BigCommerce REST Storefront API types (https://developer.bigcommerce.com/docs/rest-storefront/carts)
+ * */
 export interface StorefrontCartResponse {
   id: string
   customerId?: number
@@ -62,42 +54,11 @@ export interface StorefrontCartResponse {
   version?: number
 }
 
-/** Request body for POST /carts (create cart). */
-export interface StorefrontCreateCartRequest {
-  lineItems: StorefrontAddCartLineItem[]
-  locale?: string
-}
 
-/** Request body for POST /carts/{cartId}/items (add line items). */
-export interface StorefrontAddCartLineItemsRequest {
-  lineItems: StorefrontAddCartLineItem[]
-  version?: number
-}
-
-/** Line item shape when adding to cart (productId + quantity required). */
-export interface StorefrontAddCartLineItem {
-  productId: number
-  quantity: number
-  optionSelections?: unknown[]
-  giftWrapping?: unknown
-}
-
-/**
- * Normalized cart item shape we use internally (from Storefront API or Stencil).
- */
-export interface BigCommerceCartLineItem {
-  productId: string
-  quantity: number
-  id?: string
-}
-
-/**
- * Normalized cart shape we pass to GreensparkWidgets (same as Shopify adapter).
- */
-export interface BigCommerceCart {
-  items: BigCommerceCartLineItem[]
+export interface CartOrderPayload {
+  lineItems: { productId: string; quantity: number }[]
   currency: string
-  total_price: number
+  totalPrice: number
 }
 
 type WIDGET_VARIANTS =

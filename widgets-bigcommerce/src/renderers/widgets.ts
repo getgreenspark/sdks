@@ -1,13 +1,14 @@
 import { log, err } from '../debug'
 import type { RunContext, WidgetVariant } from './context'
-import { renderOrderImpacts } from './order-impacts'
+import { movePopupToBody } from '../dom'
+import type { GreensparkCartWidgetKey } from '../global'
 
-function renderWithPopup(ctx: RunContext, widgetId: string, _containerSelector: string, render: () => Promise<unknown>): void {
+function renderWithPopup(widgetId: string, _containerSelector: string, render: () => Promise<unknown>): void {
   log('render: renderWithPopup start widgetId=', widgetId)
   render()
     .then(() => {
       log('render: renderWithPopup success, moving popup for', widgetId)
-      ctx.movePopupToBody(widgetId)
+      movePopupToBody(widgetId)
     })
     .catch((e: unknown) => {
       if ((e as { response?: unknown }).response === undefined) {
@@ -18,70 +19,143 @@ function renderWithPopup(ctx: RunContext, widgetId: string, _containerSelector: 
 
 export function renderOffsetPerOrder(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const { greenspark, useShadowDom, version } = ctx
-  renderWithPopup(ctx, widgetId, containerSelector, () =>
+  renderWithPopup(widgetId, containerSelector, () =>
     greenspark.perOrderById({ widgetId, containerSelector, useShadowDom, version }).render(),
   )
 }
 
 export function renderOffsetByProduct(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const { greenspark, productId, useShadowDom, version } = ctx
-  renderWithPopup(ctx, widgetId, containerSelector, () =>
-    greenspark.perProductById({ widgetId, productId, containerSelector, useShadowDom, version }).render(),
+  renderWithPopup(widgetId, containerSelector, () =>
+    greenspark.perProductById({
+      widgetId,
+      productId,
+      containerSelector,
+      useShadowDom,
+      version,
+    }).render(),
   )
 }
 
 export function renderOffsetBySpend(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const { greenspark, currency, useShadowDom, version } = ctx
-  renderWithPopup(ctx, widgetId, containerSelector, () =>
-    greenspark.spendLevelById({ widgetId, currency, containerSelector, useShadowDom, version }).render(),
+  renderWithPopup(widgetId, containerSelector, () =>
+    greenspark.spendLevelById({
+      widgetId,
+      currency,
+      containerSelector,
+      useShadowDom,
+      version,
+    }).render(),
   )
 }
 
 export function renderOffsetByStoreRevenue(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const { greenspark, currency, useShadowDom, version } = ctx
-  renderWithPopup(ctx, widgetId, containerSelector, () =>
-    greenspark.tieredSpendLevelById({ widgetId, currency, containerSelector, useShadowDom, version }).render(),
+  renderWithPopup(widgetId, containerSelector, () =>
+    greenspark.tieredSpendLevelById({
+      widgetId,
+      currency,
+      containerSelector,
+      useShadowDom,
+      version,
+    }).render(),
   )
 }
 
 export function renderByPercentage(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const { greenspark, useShadowDom, version } = ctx
-  renderWithPopup(ctx, widgetId, containerSelector, () =>
+  renderWithPopup(widgetId, containerSelector, () =>
     greenspark.byPercentageById({ widgetId, containerSelector, useShadowDom, version }).render(),
   )
 }
 
 export function renderByPercentageOfRevenue(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const { greenspark, useShadowDom, version } = ctx
-  renderWithPopup(ctx, widgetId, containerSelector, () =>
-    greenspark.byPercentageOfRevenueById({ widgetId, containerSelector, useShadowDom, version }).render(),
+  renderWithPopup(widgetId, containerSelector, () =>
+    greenspark.byPercentageOfRevenueById({
+      widgetId,
+      containerSelector,
+      useShadowDom,
+      version,
+    }).render(),
   )
 }
 
 export function renderStats(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const { greenspark, useShadowDom, version } = ctx
-  renderWithPopup(ctx, widgetId, containerSelector, () =>
+  renderWithPopup(widgetId, containerSelector, () =>
     greenspark.topStatsById({ widgetId, containerSelector, useShadowDom, version }).render(),
   )
 }
 
 export function renderStatic(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const { greenspark, useShadowDom, version } = ctx
-  renderWithPopup(ctx, widgetId, containerSelector, () =>
+  renderWithPopup(widgetId, containerSelector, () =>
     greenspark.staticById({ widgetId, containerSelector, useShadowDom, version }).render(),
   )
 }
 
 export function renderBanner(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const { greenspark, useShadowDom, version } = ctx
-  renderWithPopup(ctx, widgetId, containerSelector, () =>
+  renderWithPopup(widgetId, containerSelector, () =>
     greenspark.fullWidthBannerById({ widgetId, containerSelector, useShadowDom, version }).render(),
   )
 }
 
+export function renderOrderImpacts(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  log('render: renderOrderImpacts', { widgetId, containerSelector })
+  const targetEl = document.getElementById(widgetId)
+  if (!targetEl || !document.querySelector(containerSelector)) {
+    log('render: renderOrderImpacts – no target or container, skipping', {
+      hasTarget: !!targetEl,
+      hasContainer: !!document.querySelector(containerSelector),
+    })
+    return
+  }
+
+  const { cartApi, getWidgetContainer, movePopupToBody, greenspark, useShadowDom, version } = ctx
+  const { getCart } = cartApi
+  const cartWidgetWindowKey = `greensparkCartWidget-${widgetId}` as GreensparkCartWidgetKey
+
+  if (window[cartWidgetWindowKey]) {
+    getCart()
+      .then((order) => {
+        if (order.lineItems.length <= 0) return
+        const sel = getWidgetContainer(widgetId)
+        if (!document.querySelector(sel)) return
+        return window[cartWidgetWindowKey]!
+          .render({ order }, sel)
+          .then(() => movePopupToBody(widgetId))
+          .catch((e: unknown) => err('render: order-impacts render error', e))
+      })
+    return
+  }
+
+  getCart()
+    .then((order) => {
+      if (order.lineItems.length === 0) return
+      const sel = getWidgetContainer(widgetId)
+      if (!document.querySelector(sel)) return
+      const widget = greenspark.cartById({
+          widgetId,
+          containerSelector: sel,
+          useShadowDom,
+          order,
+          version,
+        })
+      ;(window as unknown as Record<string, unknown>)[cartWidgetWindowKey] = widget
+      return widget
+        .render({ order }, sel)
+        .then(() => movePopupToBody(widgetId))
+        .catch((e: Error) => err('render: order-impacts widget render error', e))
+    })
+    .catch((e: unknown) => err('render: order-impacts Error fetching cart:', e))
+}
+
 export function renderWidget(ctx: RunContext, variant: WidgetVariant, widgetId: string, containerSelector: string): void {
   log('render: renderWidget', { variant, widgetId, containerSelector })
-  const fns = {
+  const fns: Record<WidgetVariant, (...args: unknown[]) => void> = {
     orderImpacts: () => renderOrderImpacts(ctx, widgetId, containerSelector),
     offsetPerOrder: () => renderOffsetPerOrder(ctx, widgetId, containerSelector),
     offsetByProduct: () => renderOffsetByProduct(ctx, widgetId, containerSelector),
