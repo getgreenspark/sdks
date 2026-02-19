@@ -26,6 +26,14 @@ export function getActiveCurrencyCode(): string {
 }
 
 /**
+ * Resolve current page locale from document (e.g. <html lang="...">). Dynamic, not from widget div config.
+ */
+export function getLocale(): string {
+  if (typeof document === 'undefined') return 'en'
+  return document.documentElement.getAttribute('lang') || 'en'
+}
+
+/**
  * Try to detect current product id from page (PDP). Used for per-product widgets.
  */
 function getProductIdFromPage(): string | undefined {
@@ -50,9 +58,7 @@ function getIntegrationSlugFromTarget(): string | null {
 }
 
 /**
- * Build store context from the page and widget target div(s).
- * - integrationSlug: from first .greenspark-widget-target[data-integration-slug] (required).
- * - locale, productId: from page or defaults
+ * Build config from the widget target div(s). Only integrationSlug from div; locale/productId are dynamic (see getLocale, getProductIdFromPage).
  */
 export function getConfig(): BigCommerceConfig | null {
   if (typeof window === 'undefined') {
@@ -67,13 +73,10 @@ export function getConfig(): BigCommerceConfig | null {
     return null
   }
 
-  const locale =
-    (document.documentElement.lang?.slice(0, 2) ?? 'en') as string
   const productId = getProductIdFromPage()
 
   const config: BigCommerceConfig = {
     integrationSlug,
-    locale,
     ...(productId && { productId }),
   }
   log('config: getConfig() => discovered + overrides', config)

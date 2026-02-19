@@ -1,4 +1,4 @@
-import { getActiveCurrencyCode, getConfig, getScriptSrc } from './config'
+import { getActiveCurrencyCode, getConfig, getLocale, getScriptSrc } from './config'
 import { createCartApi } from './cart'
 import { getWidgetContainer, movePopupToBody } from './dom'
 import { err, log, warn } from './debug'
@@ -60,7 +60,7 @@ export function runGreenspark(): void {
   const useShadowDom = false
   const version = 'v2' as const
   const productId = cfg.productId ?? ''
-  const locale = (cfg.locale ?? 'en') as 'en'
+  const locale = getLocale()
   const integrationSlug = cfg.integrationSlug
   const baseUrl = window.location.origin
 
