@@ -1,15 +1,11 @@
-import { log, err } from '../debug'
+import { err } from '../debug'
 import type { RunContext, WidgetVariant } from './context'
 import { movePopupToBody } from '../dom'
 import type { GreensparkCartWidgetKey } from '../global'
 
 function renderWithPopup(widgetId: string, _containerSelector: string, render: () => Promise<unknown>): void {
-  log('render: renderWithPopup start widgetId=', widgetId)
   render()
-    .then(() => {
-      log('render: renderWithPopup success, moving popup for', widgetId)
-      movePopupToBody(widgetId)
-    })
+    .then(() => movePopupToBody(widgetId))
     .catch((e: unknown) => {
       if ((e as { response?: unknown }).response === undefined) {
         err('render: renderWithPopup failed', widgetId, e)
@@ -104,15 +100,8 @@ export function renderBanner(ctx: RunContext, widgetId: string, containerSelecto
 }
 
 export function renderOrderImpacts(ctx: RunContext, widgetId: string, containerSelector: string): void {
-  log('render: renderOrderImpacts', { widgetId, containerSelector })
   const targetEl = document.getElementById(widgetId)
-  if (!targetEl || !document.querySelector(containerSelector)) {
-    log('render: renderOrderImpacts – no target or container, skipping', {
-      hasTarget: !!targetEl,
-      hasContainer: !!document.querySelector(containerSelector),
-    })
-    return
-  }
+  if (!targetEl || !document.querySelector(containerSelector)) return
 
   const { cartApi, getWidgetContainer, movePopupToBody, greenspark, useShadowDom, version } = ctx
   const { getCart } = cartApi
@@ -154,7 +143,6 @@ export function renderOrderImpacts(ctx: RunContext, widgetId: string, containerS
 }
 
 export function renderWidget(ctx: RunContext, variant: WidgetVariant, widgetId: string, containerSelector: string): void {
-  log('render: renderWidget', { variant, widgetId, containerSelector })
   const fns: Record<WidgetVariant, (...args: unknown[]) => void> = {
     orderImpacts: () => renderOrderImpacts(ctx, widgetId, containerSelector),
     offsetPerOrder: () => renderOffsetPerOrder(ctx, widgetId, containerSelector),

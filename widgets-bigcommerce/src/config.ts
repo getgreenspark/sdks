@@ -1,4 +1,4 @@
-import { log, warn } from './debug'
+import { err } from './debug'
 import type { BigCommerceConfig } from './interfaces'
 
 const IS_DEV_STORE = true as const
@@ -10,7 +10,6 @@ export const widgetUrl = IS_DEV_STORE
 export function getScriptSrc(): string | undefined {
   if (typeof document === 'undefined') return undefined
   const src = (document.currentScript as HTMLScriptElement | null)?.getAttribute('src') ?? undefined
-  log('config: getScriptSrc() =>', src ?? '(none)')
   return src
 }
 
@@ -60,19 +59,12 @@ function getIntegrationSlugFromTarget(): string | null {
  * Build config from the widget target div(s). Only integrationSlug from div; locale/productId are dynamic (see getLocale, getProductIdFromPage).
  */
 export function getConfig(): BigCommerceConfig | null {
-  if (typeof window === 'undefined') {
-    log('config: getConfig() => null (no window)')
-    return null
-  }
+  if (typeof window === 'undefined') return null
   const integrationSlug = getIntegrationSlugFromTarget()
   if (!integrationSlug) {
-    warn(
-      'config: getConfig() => null (integrationSlug required). Add data-integration-slug on a .greenspark-widget-target div.',
-    )
+    err('config: getConfig() => null (integrationSlug required). Add data-integration-slug on a .greenspark-widget-target div.')
     return null
   }
 
-  const config: BigCommerceConfig = { integrationSlug }
-  log('config: getConfig() => discovered + overrides', config)
-  return config
+  return { integrationSlug }
 }

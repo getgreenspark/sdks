@@ -1,4 +1,3 @@
-import { log } from './debug'
 import type { CartOrderPayload, StorefrontCartResponse } from './interfaces'
 
 export async function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
@@ -24,7 +23,6 @@ export function createCartApi(baseUrl: string) {
 
   async function getCart(): Promise<CartOrderPayload> {
     const url = `${baseUrl}/api/storefront/carts`
-    log('cart: getCart() fetching', url)
     const carts = await fetchJSON<StorefrontCartResponse[]>(url)
     const data = Array.isArray(carts)
       ? carts.length > 0
@@ -38,7 +36,6 @@ export function createCartApi(baseUrl: string) {
       currency: hasCartWithCurrency ? (data.currency!.code ?? '') : '',
       totalPrice: data?.cartAmount ?? 0,
     }
-    log('cart: getCart() response', data.id ?? '(no cart)', order.lineItems.length, 'items')
     return order
   }
 
