@@ -55,7 +55,22 @@ export interface CartOrderPayload {
   totalPrice: number
 }
 
-type WIDGET_VARIANTS =
+export interface CartApi {
+  getCart: () => Promise<CartOrderPayload>
+}
+
+export interface RunContext {
+  greenspark: InstanceType<Window['GreensparkWidgets']>
+  cartApi: CartApi
+  getWidgetContainer: (widgetId: string) => string
+  movePopupToBody: (widgetId: string) => void
+  productId: string
+  currency: string
+  useShadowDom: boolean
+  version: 'v2'
+}
+
+export type WidgetVariant =
   | 'orderImpacts'
   | 'offsetPerOrder'
   | 'offsetByProduct'
@@ -67,7 +82,7 @@ type WIDGET_VARIANTS =
   | 'static'
   | 'banner'
 
-export const EnumToWidgetTypeMap: Record<string, WIDGET_VARIANTS> = {
+export const EnumToWidgetTypeMap: Record<string, WidgetVariant> = {
   '0': 'orderImpacts',
   '1': 'offsetPerOrder',
   '2': 'offsetByProduct',

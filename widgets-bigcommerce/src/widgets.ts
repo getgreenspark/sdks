@@ -1,7 +1,7 @@
-import { err } from '../debug'
-import type { RunContext, WidgetVariant } from './context'
-import { movePopupToBody } from '../dom'
-import type { GreensparkCartWidgetKey } from '../global'
+import { err } from './debug'
+import type { RunContext, WidgetVariant } from './interfaces'
+import { movePopupToBody } from './dom'
+import type { GreensparkCartWidgetKey } from './global'
 
 function renderWithPopup(widgetId: string, _containerSelector: string, render: () => Promise<unknown>): void {
   render()

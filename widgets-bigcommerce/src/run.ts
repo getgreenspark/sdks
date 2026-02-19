@@ -2,9 +2,8 @@ import { getActiveCurrencyCode, getConfig, getLocale, getProductIdFromPage, getS
 import { createCartApi } from './cart'
 import { getWidgetContainer, movePopupToBody } from './dom'
 import { err } from './debug'
-import { EnumToWidgetTypeMap } from './interfaces'
-import type { WidgetVariant } from './renderers'
-import { renderWidget } from './renderers'
+import { EnumToWidgetTypeMap, type WidgetVariant } from './interfaces'
+import { renderWidget } from './widgets'
 
 const MAX_RETRIES = 5
 let retryCount = 0
