@@ -1,7 +1,7 @@
 import { err } from './debug'
 import type { BigCommerceConfig } from './interfaces'
 
-const IS_DEV_STORE = true as const
+const IS_DEV_STORE = true as const // TODO: update on release
 
 export const widgetUrl = IS_DEV_STORE
   ? 'https://cdn.getgreenspark.com/scripts/widgets%402.6.1-2.js'
@@ -9,14 +9,9 @@ export const widgetUrl = IS_DEV_STORE
 
 export function getScriptSrc(): string | undefined {
   if (typeof document === 'undefined') return undefined
-  const src = (document.currentScript as HTMLScriptElement | null)?.getAttribute('src') ?? undefined
-  return src
+  return (document.currentScript as HTMLScriptElement | null)?.getAttribute('src') ?? undefined
 }
 
-/**
- * Resolve active store currency from the page (e.g. [data-currency-code] on body or currency selector).
- * Use as fallback when cart is empty or cart API fails. Not from widget div config.
- */
 export function getActiveCurrencyCode(): string {
   if (typeof document === 'undefined') return 'USD'
   const el = document.querySelector('[data-currency-code]')
@@ -24,17 +19,11 @@ export function getActiveCurrencyCode(): string {
   return code && /^[A-Z]{3}$/.test(code) ? code : 'USD'
 }
 
-/**
- * Resolve current page locale from document (e.g. <html lang="...">). Dynamic, not from widget div config.
- */
 export function getLocale(): string {
   if (typeof document === 'undefined') return 'en'
   return document.documentElement.getAttribute('lang') || 'en'
 }
 
-/**
- * Detect current product id from PDP add-to-cart form. Dynamic, not from widget div config.
- */
 export function getProductIdFromPage(): string {
   if (typeof document === 'undefined') return ''
   const pdpProductId =
@@ -44,10 +33,6 @@ export function getProductIdFromPage(): string {
   return pdpProductId ?? ''
 }
 
-/**
- * Discover integrationSlug from the first widget target (data-integration-slug).
- * Div-only setup: no window config required.
- */
 function getIntegrationSlugFromTarget(): string | null {
   if (typeof document === 'undefined') return null
   const first = document.querySelector('.greenspark-widget-target') as HTMLElement | null
@@ -55,9 +40,6 @@ function getIntegrationSlugFromTarget(): string | null {
   return slug || null
 }
 
-/**
- * Build config from the widget target div(s). Only integrationSlug from div; locale/productId are dynamic (see getLocale, getProductIdFromPage).
- */
 export function getConfig(): BigCommerceConfig | null {
   if (typeof window === 'undefined') return null
   const integrationSlug = getIntegrationSlugFromTarget()

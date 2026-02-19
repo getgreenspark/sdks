@@ -31,12 +31,11 @@ export function createCartApi(baseUrl: string) {
       : (carts as unknown as StorefrontCartResponse)
     const lineItems = toLineItems(data.lineItems)
     const hasCartWithCurrency = data?.currency?.code != null
-    const order: CartOrderPayload = {
+    return {
       lineItems,
       currency: hasCartWithCurrency ? (data.currency!.code ?? '') : '',
       totalPrice: data?.cartAmount ?? 0,
     }
-    return order
   }
 
   return { getCart }

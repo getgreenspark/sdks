@@ -2,7 +2,6 @@ export interface BigCommerceConfig {
   integrationSlug: string
 }
 
-
 /** Cart currency object in Storefront API responses. */
 export interface StorefrontCartCurrency {
   code: string

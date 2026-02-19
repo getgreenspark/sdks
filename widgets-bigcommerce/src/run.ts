@@ -1,4 +1,10 @@
-import { getActiveCurrencyCode, getConfig, getLocale, getProductIdFromPage, getScriptSrc } from './config'
+import {
+  getActiveCurrencyCode,
+  getConfig,
+  getLocale,
+  getProductIdFromPage,
+  getScriptSrc,
+} from './config'
 import { createCartApi } from './cart'
 import { getWidgetContainer, movePopupToBody } from './dom'
 import { err } from './debug'
@@ -78,7 +84,7 @@ export function runGreenspark(): void {
     if (targets.length === 0) {
       err('run: no .greenspark-widget-target in DOM – ensure template outputs a div with class greenspark-widget-target and id = base64(widgetType|widgetId)')
     }
-    targets.forEach((target, index) => {
+    targets.forEach((target) => {
       const el = target as HTMLElement
       const rawId = el.id
       el.querySelectorAll('.greenspark-widget-instance').forEach((e) => e.remove())
