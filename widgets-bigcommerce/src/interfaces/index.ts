@@ -1,7 +1,6 @@
 export interface BigCommerceConfig {
   /** Store identifier (from data-integration-slug on the widget target div). */
   integrationSlug: string
-  productId?: string
 }
 
 

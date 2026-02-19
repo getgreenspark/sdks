@@ -34,16 +34,15 @@ export function getLocale(): string {
 }
 
 /**
- * Try to detect current product id from page (PDP). Used for per-product widgets.
+ * Detect current product id from PDP add-to-cart form. Dynamic, not from widget div config.
  */
-function getProductIdFromPage(): string | undefined {
-  if (typeof document === 'undefined') return undefined
-  const el = document.querySelector('[data-product-id]') as HTMLElement | null
-  const id = el?.getAttribute?.('data-product-id')
-  if (id) return id
-  const meta = document.querySelector('meta[property="product:id"]') as HTMLMetaElement | null
-  if (meta?.content) return meta.content
-  return undefined
+export function getProductIdFromPage(): string {
+  if (typeof document === 'undefined') return ''
+  const pdpProductId =
+    (document.querySelector('.productView form[action*="cart.php"] input[name="product_id"]') as HTMLInputElement | null)
+      ?.value ||
+    (document.querySelector('form[action*="cart.php"] input[name="product_id"]') as HTMLInputElement | null)?.value
+  return pdpProductId ?? ''
 }
 
 /**
@@ -73,12 +72,7 @@ export function getConfig(): BigCommerceConfig | null {
     return null
   }
 
-  const productId = getProductIdFromPage()
-
-  const config: BigCommerceConfig = {
-    integrationSlug,
-    ...(productId && { productId }),
-  }
+  const config: BigCommerceConfig = { integrationSlug }
   log('config: getConfig() => discovered + overrides', config)
   return config
 }
