@@ -2,16 +2,14 @@ export interface BigCommerceConfig {
   /** Store identifier (from data-integration-slug on the widget target div). */
   integrationSlug: string
   productId?: string
-  currency?: string
   locale?: string
 }
 
 
 /** Cart currency object in Storefront API responses. */
 export interface StorefrontCartCurrency {
-  code?: string
-
-  [key: string]: unknown
+  code: string
+  symbol: string
 }
 
 /** Single line item in Storefront API (physical/digital item with productId). */
@@ -29,18 +27,17 @@ export interface StorefrontCartLineItems {
   digitalItems?: StorefrontCartLineItem[]
   giftCertificates?: unknown[]
   customItems?: StorefrontCartLineItem[]
-
-  [key: string]: unknown
 }
 
 /** Cart object returned by GET /carts and POST /carts (and related endpoints).
- * BigCommerce REST Storefront API types (https://developer.bigcommerce.com/docs/rest-storefront/carts)
- * */
+ * @see https://developer.bigcommerce.com/docs/rest-storefront/carts#get-a-cart
+ * Currency is always present on the Cart per API docs ("This will always be the same between cart and checkout").
+ */
 export interface StorefrontCartResponse {
   id: string
   customerId?: number
   email?: string
-  currency?: StorefrontCartCurrency
+  currency: StorefrontCartCurrency
   isTaxIncluded?: boolean
   baseAmount?: number
   discountAmount?: number

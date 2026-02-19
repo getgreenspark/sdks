@@ -8,7 +8,7 @@ export async function fetchJSON<T>(url: string, options?: RequestInit): Promise<
   })
 }
 
-export function createCartApi(baseUrl: string, currency: string) {
+export function createCartApi(baseUrl: string) {
   /** Flatten Storefront API lineItems into widget payload lineItems. */
   function toLineItems(lineItems: StorefrontCartResponse['lineItems']): CartOrderPayload['lineItems'] {
     if (!lineItems) return []
@@ -32,16 +32,13 @@ export function createCartApi(baseUrl: string, currency: string) {
         : ({} as StorefrontCartResponse)
       : (carts as unknown as StorefrontCartResponse)
     const lineItems = toLineItems(data.lineItems)
-    const currencyCode =
-      typeof data.currency === 'object' && data.currency !== null && 'code' in data.currency
-        ? (data.currency as { code?: string }).code
-        : undefined
+    const hasCartWithCurrency = data?.currency?.code != null
     const order: CartOrderPayload = {
       lineItems,
-      currency: currencyCode ?? currency ?? 'USD',
-      totalPrice: data.cartAmount ?? 0,
+      currency: hasCartWithCurrency ? (data.currency!.code ?? '') : '',
+      totalPrice: data?.cartAmount ?? 0,
     }
-    log('cart: getCart() response', data.id ?? '(no id)', order.lineItems.length, 'items')
+    log('cart: getCart() response', data.id ?? '(no cart)', order.lineItems.length, 'items')
     return order
   }
 

@@ -1,4 +1,4 @@
-import { getConfig, getScriptSrc } from './config'
+import { getActiveCurrencyCode, getConfig, getScriptSrc } from './config'
 import { createCartApi } from './cart'
 import { getWidgetContainer, movePopupToBody } from './dom'
 import { err, log, warn } from './debug'
@@ -59,7 +59,6 @@ export function runGreenspark(): void {
 
   const useShadowDom = false
   const version = 'v2' as const
-  const currency = cfg.currency ?? 'USD'
   const productId = cfg.productId ?? ''
   const locale = (cfg.locale ?? 'en') as 'en'
   const integrationSlug = cfg.integrationSlug
@@ -67,7 +66,6 @@ export function runGreenspark(): void {
 
   log('run: context', {
     integrationSlug,
-    currency,
     productId: productId || '(none)',
     locale,
     baseUrl,
@@ -78,52 +76,55 @@ export function runGreenspark(): void {
     integrationSlug,
     isShopifyIntegration: true,
   })
-  const cartApi = createCartApi(baseUrl, currency)
+  const cartApi = createCartApi(baseUrl)
 
-  const ctx = {
-    greenspark,
-    cartApi,
-    getWidgetContainer,
-    movePopupToBody,
-    productId,
-    currency,
-    useShadowDom,
-    version,
-  }
-
-  injectWidgetStyles()
-
-  const targets = document.querySelectorAll('.greenspark-widget-target')
-  log('run: found', targets.length, '.greenspark-widget-target element(s)')
-
-  if (targets.length === 0) {
-    warn('run: no .greenspark-widget-target in DOM – ensure template outputs a div with class greenspark-widget-target and id = base64(widgetType|widgetId)')
-  }
-
-  targets.forEach((target, index) => {
-    const el = target as HTMLElement
-    const rawId = el.id
-    log('run: target', index + 1, 'id=', rawId, 'data-attrs=', {
-      'data-integration-slug': el.getAttribute('data-integration-slug'),
-      'data-currency': el.getAttribute('data-currency'),
+  function runWithContext(currency: string) {
+    const ctx = {
+      greenspark,
+      cartApi,
+      getWidgetContainer,
+      movePopupToBody,
+      productId,
+      currency,
+      useShadowDom,
+      version,
+    }
+    injectWidgetStyles()
+    const targets = document.querySelectorAll('.greenspark-widget-target')
+    log('run: found', targets.length, '.greenspark-widget-target element(s)')
+    if (targets.length === 0) {
+      warn('run: no .greenspark-widget-target in DOM – ensure template outputs a div with class greenspark-widget-target and id = base64(widgetType|widgetId)')
+    }
+    targets.forEach((target, index) => {
+      const el = target as HTMLElement
+      const rawId = el.id
+      log('run: target', index + 1, 'id=', rawId, 'data-attrs=', {
+        'data-integration-slug': el.getAttribute('data-integration-slug'),
+        'data-currency': el.getAttribute('data-currency'),
+      })
+      el.querySelectorAll('.greenspark-widget-instance').forEach((e) => e.remove())
+      let type: string
+      try {
+        ;[type] = atob(rawId).split('|')
+        log('run: target', index + 1, 'decoded type=', type, 'EnumToWidgetTypeMap[type]=', EnumToWidgetTypeMap[type])
+      } catch (e) {
+        err('run: invalid widget id (not base64 type|widgetId):', rawId, e)
+        return
+      }
+      const variant = EnumToWidgetTypeMap[type] as WidgetVariant | undefined
+      if (!variant) {
+        warn('run: unknown widget type', type, '– known types: 0–9 (see EnumToWidgetTypeMap)')
+        return
+      }
+      const widgetId = rawId
+      const containerSelector = getWidgetContainer(widgetId)
+      log('run: rendering widget variant=', variant, 'widgetId=', widgetId, 'containerSelector=', containerSelector)
+      renderWidget(ctx, variant, widgetId, containerSelector)
     })
-    el.querySelectorAll('.greenspark-widget-instance').forEach((e) => e.remove())
-    let type: string
-    try {
-      ;[type] = atob(rawId).split('|')
-      log('run: target', index + 1, 'decoded type=', type, 'EnumToWidgetTypeMap[type]=', EnumToWidgetTypeMap[type])
-    } catch (e) {
-      err('run: invalid widget id (not base64 type|widgetId):', rawId, e)
-      return
-    }
-    const variant = EnumToWidgetTypeMap[type] as WidgetVariant | undefined
-    if (!variant) {
-      warn('run: unknown widget type', type, '– known types: 0–9 (see EnumToWidgetTypeMap)')
-      return
-    }
-    const widgetId = rawId
-    const containerSelector = getWidgetContainer(widgetId)
-    log('run: rendering widget variant=', variant, 'widgetId=', widgetId, 'containerSelector=', containerSelector)
-    renderWidget(ctx, variant, widgetId, containerSelector)
+  }
+
+  cartApi.getCart().then((order) => runWithContext(order.currency || getActiveCurrencyCode())).catch((e) => {
+    err('run: getCart failed, using getActiveCurrencyCode() for currency', e)
+    runWithContext(getActiveCurrencyCode())
   })
 }
