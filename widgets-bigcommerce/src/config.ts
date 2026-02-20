@@ -1,10 +1,10 @@
-import { err } from './debug'
-import type { BigCommerceConfig } from './interfaces'
+import {err} from './debug'
+import type {BigCommerceConfig} from './interfaces'
 
 const IS_DEV_STORE = true as const // TODO: update on release
 
 export const widgetUrl = IS_DEV_STORE
-  ? 'https://cdn.getgreenspark.com/scripts/widgets%402.6.1-2.js'
+  ? 'https://cdn.getgreenspark.com/scripts/widgets%402.6.1-3.js'
   : 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
 
 export function getScriptSrc(): string | undefined {
@@ -48,5 +48,5 @@ export function getConfig(): BigCommerceConfig | null {
     return null
   }
 
-  return { integrationSlug }
+  return {integrationSlug}
 }
