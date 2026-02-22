@@ -5,11 +5,11 @@ import {
   getProductIdFromPage,
   getScriptSrc,
 } from './config'
-import { createCartApi } from './cart'
-import { getWidgetContainer, movePopupToBody } from './dom'
-import { err } from './debug'
-import { EnumToWidgetTypeMap, type WidgetVariant } from './interfaces'
-import { renderWidget } from './widgets'
+import {createCartApi} from './cart'
+import {getWidgetContainer, movePopupToBody} from './dom'
+import {err} from './debug'
+import {EnumToWidgetTypeMap, type WidgetVariant} from './interfaces'
+import {renderWidget} from './widgets'
 
 const MAX_RETRIES = 5
 let retryCount = 0
@@ -33,7 +33,7 @@ export function runGreenspark(): void {
   const scriptSrc = getScriptSrc()
   if (!scriptSrc && typeof document === 'undefined') return
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', runGreenspark, { once: true })
+    document.addEventListener('DOMContentLoaded', runGreenspark, {once: true})
     return
   }
 
@@ -127,7 +127,9 @@ function interceptCartMutations(onCartChange: () => void): void {
     const method = (init?.method ?? 'GET').toUpperCase()
     const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url
     if (MUTATING_METHODS.has(method) && CART_API_PATTERN.test(url)) {
-      result.then((res) => { if (res.ok) onCartChange() })
+      result.then((res) => {
+        if (res.ok) onCartChange()
+      })
     }
     return result
   }
@@ -135,15 +137,24 @@ function interceptCartMutations(onCartChange: () => void): void {
   const XHR = XMLHttpRequest.prototype
   const originalOpen = XHR.open
   const originalSend = XHR.send
-  XHR.open = function (this: XMLHttpRequest & { _gsMethod?: string; _gsUrl?: string }, method: string, url: string, ...rest: unknown[]) {
+  XHR.open = function (this: XMLHttpRequest & {
+    _gsMethod?: string;
+    _gsUrl?: string
+  }, method: string, url: string | URL, async?: boolean, username?: string | null, password?: string | null) {
     this._gsMethod = method.toUpperCase()
-    this._gsUrl = url
-    return (originalOpen as Function).call(this, method, url, ...rest)
+    this._gsUrl = typeof url === 'string' ? url : url.href
+    originalOpen.call(this, method, url, async ?? true, username ?? null, password ?? null)
   }
-  XHR.send = function (this: XMLHttpRequest & { _gsMethod?: string; _gsUrl?: string }, ...args: unknown[]) {
+  XHR.send = function (this: XMLHttpRequest & {
+    _gsMethod?: string;
+    _gsUrl?: string
+  }, body?: Document | XMLHttpRequestBodyInit | null) {
     if (this._gsMethod && MUTATING_METHODS.has(this._gsMethod) && this._gsUrl && CART_API_PATTERN.test(this._gsUrl)) {
-      this.addEventListener('load', () => { if (this.status >= 200 && this.status < 300) onCartChange() })
+      this.addEventListener('load', () => {
+        if (this.status >= 200 && this.status < 300) onCartChange()
+      })
     }
-    return (originalSend as Function).apply(this, args)
+    originalSend.call(this, body)
   }
 }
+
