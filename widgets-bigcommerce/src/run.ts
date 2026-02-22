@@ -127,7 +127,8 @@ export function runGreenspark(): void {
   })
 }
 
-const CART_API_PATTERN = /\/api\/storefront\/carts/
+/** Matches REST Storefront carts API and BigCommerce remote cart (e.g. /remote/v1/cart/update). */
+const CART_API_PATTERN = /\/(api\/storefront\/carts|remote\/v1\/cart\/)/
 const MUTATING_METHODS = new Set(['POST', 'PUT', 'DELETE'])
 
 function interceptCartMutations(onCartChange: () => void): void {
