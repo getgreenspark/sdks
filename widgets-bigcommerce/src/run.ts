@@ -106,8 +106,44 @@ export function runGreenspark(): void {
     })
   }
 
-  cartApi.getCart().then((order) => runWithContext(order.currency || getActiveCurrencyCode())).catch((e) => {
-    err('run: getCart failed, using getActiveCurrencyCode() for currency', e)
-    runWithContext(getActiveCurrencyCode())
-  })
+  function renderFromCart() {
+    cartApi.getCart().then((order) => runWithContext(order.currency || getActiveCurrencyCode())).catch((e) => {
+      err('run: getCart failed, using getActiveCurrencyCode() for currency', e)
+      runWithContext(getActiveCurrencyCode())
+    })
+  }
+
+  renderFromCart()
+  interceptCartMutations(() => renderFromCart())
+}
+
+const CART_API_PATTERN = /\/api\/storefront\/carts/
+const MUTATING_METHODS = new Set(['POST', 'PUT', 'DELETE'])
+
+function interceptCartMutations(onCartChange: () => void): void {
+  const originalFetch = window.fetch
+  window.fetch = function (input: RequestInfo | URL, init?: RequestInit) {
+    const result = originalFetch.call(this, input, init)
+    const method = (init?.method ?? 'GET').toUpperCase()
+    const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url
+    if (MUTATING_METHODS.has(method) && CART_API_PATTERN.test(url)) {
+      result.then((res) => { if (res.ok) onCartChange() })
+    }
+    return result
+  }
+
+  const XHR = XMLHttpRequest.prototype
+  const originalOpen = XHR.open
+  const originalSend = XHR.send
+  XHR.open = function (this: XMLHttpRequest & { _gsMethod?: string; _gsUrl?: string }, method: string, url: string, ...rest: unknown[]) {
+    this._gsMethod = method.toUpperCase()
+    this._gsUrl = url
+    return (originalOpen as Function).call(this, method, url, ...rest)
+  }
+  XHR.send = function (this: XMLHttpRequest & { _gsMethod?: string; _gsUrl?: string }, ...args: unknown[]) {
+    if (this._gsMethod && MUTATING_METHODS.has(this._gsMethod) && this._gsUrl && CART_API_PATTERN.test(this._gsUrl)) {
+      this.addEventListener('load', () => { if (this.status >= 200 && this.status < 300) onCartChange() })
+    }
+    return (originalSend as Function).apply(this, args)
+  }
 }

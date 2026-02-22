@@ -34,7 +34,7 @@ export function createCartApi(baseUrl: string) {
     return {
       lineItems,
       currency: hasCartWithCurrency ? (data.currency!.code ?? '') : '',
-      totalPrice: data?.cartAmount ?? 0,
+      totalPrice: Math.round((data?.cartAmount ?? 0) * 100),
     }
   }
 
