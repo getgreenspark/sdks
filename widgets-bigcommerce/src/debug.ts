@@ -1,7 +1,7 @@
 const PREFIX = '[Greenspark BC]'
 
 export function log(...args: unknown[]): void {
-  // @ts-ignore
+  // @typescript-eslint/ban-ts-comment
   console.log(PREFIX, ...args)
 }
 
