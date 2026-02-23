@@ -1,7 +1,7 @@
 import {err} from './debug'
 import type {BigCommerceConfig} from './interfaces'
 
-const IS_DEV_STORE = true as const // TODO: update on release
+const IS_DEV_STORE = false as const
 
 export const widgetUrl = IS_DEV_STORE
   ? 'https://cdn.getgreenspark.com/scripts/widgets%402.6.1-3.js'
