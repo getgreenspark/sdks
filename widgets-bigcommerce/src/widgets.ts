@@ -1,0 +1,159 @@
+import { err } from './debug'
+import type { RunContext, WidgetVariant } from './interfaces'
+import { movePopupToBody } from './dom'
+import type { GreensparkCartWidgetKey } from './global'
+
+function renderWithPopup(widgetId: string, _containerSelector: string, render: () => Promise<unknown>): void {
+  render()
+    .then(() => movePopupToBody(widgetId))
+    .catch((e: unknown) => {
+      if ((e as { response?: unknown }).response === undefined) {
+        err('render: renderWithPopup failed', widgetId, e)
+      }
+    })
+}
+
+export function renderOffsetPerOrder(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  const { greenspark, useShadowDom, version } = ctx
+  renderWithPopup(widgetId, containerSelector, () =>
+    greenspark.perOrderById({ widgetId, containerSelector, useShadowDom, version }).render(),
+  )
+}
+
+export function renderOffsetByProduct(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  const { greenspark, productId, useShadowDom, version } = ctx
+  renderWithPopup(widgetId, containerSelector, () =>
+    greenspark.perProductById({
+      widgetId,
+      productId,
+      containerSelector,
+      useShadowDom,
+      version,
+    }).render(),
+  )
+}
+
+export function renderOffsetBySpend(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  const { greenspark, currency, useShadowDom, version } = ctx
+  renderWithPopup(widgetId, containerSelector, () =>
+    greenspark.spendLevelById({
+      widgetId,
+      currency,
+      containerSelector,
+      useShadowDom,
+      version,
+    }).render(),
+  )
+}
+
+export function renderOffsetByStoreRevenue(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  const { greenspark, currency, useShadowDom, version } = ctx
+  renderWithPopup(widgetId, containerSelector, () =>
+    greenspark.tieredSpendLevelById({
+      widgetId,
+      currency,
+      containerSelector,
+      useShadowDom,
+      version,
+    }).render(),
+  )
+}
+
+export function renderByPercentage(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  const { greenspark, useShadowDom, version } = ctx
+  renderWithPopup(widgetId, containerSelector, () =>
+    greenspark.byPercentageById({ widgetId, containerSelector, useShadowDom, version }).render(),
+  )
+}
+
+export function renderByPercentageOfRevenue(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  const { greenspark, useShadowDom, version } = ctx
+  renderWithPopup(widgetId, containerSelector, () =>
+    greenspark.byPercentageOfRevenueById({
+      widgetId,
+      containerSelector,
+      useShadowDom,
+      version,
+    }).render(),
+  )
+}
+
+export function renderStats(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  const { greenspark, useShadowDom, version } = ctx
+  renderWithPopup(widgetId, containerSelector, () =>
+    greenspark.topStatsById({ widgetId, containerSelector, useShadowDom, version }).render(),
+  )
+}
+
+export function renderStatic(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  const { greenspark, useShadowDom, version } = ctx
+  renderWithPopup(widgetId, containerSelector, () =>
+    greenspark.staticById({ widgetId, containerSelector, useShadowDom, version }).render(),
+  )
+}
+
+export function renderBanner(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  const { greenspark, useShadowDom, version } = ctx
+  renderWithPopup(widgetId, containerSelector, () =>
+    greenspark.fullWidthBannerById({ widgetId, containerSelector, useShadowDom, version }).render(),
+  )
+}
+
+export function renderOrderImpacts(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  const targetEl = document.getElementById(widgetId)
+  if (!targetEl || !document.querySelector(containerSelector)) return
+
+  const { cartApi, getWidgetContainer, movePopupToBody, greenspark, useShadowDom, version } = ctx
+  const { getCart } = cartApi
+  const cartWidgetWindowKey = `greensparkCartWidget-${widgetId}` as GreensparkCartWidgetKey
+
+  if (window[cartWidgetWindowKey]) {
+    getCart()
+      .then((order) => {
+        if (order.lineItems.length <= 0) return
+        const sel = getWidgetContainer(widgetId)
+        if (!document.querySelector(sel)) return
+        return window[cartWidgetWindowKey]!
+          .render({ order }, sel)
+          .then(() => movePopupToBody(widgetId))
+          .catch((e: unknown) => err('render: order-impacts render error', e))
+      })
+    return
+  }
+
+  getCart()
+    .then((order) => {
+      if (order.lineItems.length === 0) return
+      const sel = getWidgetContainer(widgetId)
+      if (!document.querySelector(sel)) return
+      const widget = greenspark.cartById({
+          widgetId,
+          containerSelector: sel,
+          useShadowDom,
+          order,
+          version,
+        })
+      ;(window as unknown as Record<string, unknown>)[cartWidgetWindowKey] = widget
+      return widget
+        .render({ order }, sel)
+        .then(() => movePopupToBody(widgetId))
+        .catch((e: Error) => err('render: order-impacts widget render error', e))
+    })
+    .catch((e: unknown) => err('render: order-impacts Error fetching cart:', e))
+}
+
+export function renderWidget(ctx: RunContext, variant: WidgetVariant, widgetId: string, containerSelector: string): void {
+  const fns: Record<WidgetVariant, (...args: unknown[]) => void> = {
+    orderImpacts: () => renderOrderImpacts(ctx, widgetId, containerSelector),
+    offsetPerOrder: () => renderOffsetPerOrder(ctx, widgetId, containerSelector),
+    offsetByProduct: () => renderOffsetByProduct(ctx, widgetId, containerSelector),
+    offsetBySpend: () => renderOffsetBySpend(ctx, widgetId, containerSelector),
+    offsetByStoreRevenue: () => renderOffsetByStoreRevenue(ctx, widgetId, containerSelector),
+    byPercentage: () => renderByPercentage(ctx, widgetId, containerSelector),
+    byPercentageOfRevenue: () => renderByPercentageOfRevenue(ctx, widgetId, containerSelector),
+    stats: () => renderStats(ctx, widgetId, containerSelector),
+    static: () => renderStatic(ctx, widgetId, containerSelector),
+    banner: () => renderBanner(ctx, widgetId, containerSelector),
+  }
+  fns[variant]()
+}

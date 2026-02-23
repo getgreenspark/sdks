@@ -15,17 +15,12 @@ export default tseslint.config(eslint.configs.recommended, ...tseslint.configs.r
         '@typescript-eslint/ban-ts-comment': 'error',
         '@typescript-eslint/consistent-type-imports': 'error',
         'no-console': [
-            'error',
+            'warn',
             {
                 allow: ['error', 'warn'],
             },
         ],
         'max-len': 'off',
         semi: 'off',
-    },
-    settings: {
-        'import/resolver': {
-            typescript: {},
-        },
     },
 })
