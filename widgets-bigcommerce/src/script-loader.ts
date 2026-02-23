@@ -1,6 +1,9 @@
 import { err } from './debug'
 import { widgetUrl } from './config'
 
+const MAX_SCRIPT_RETRIES = 5
+let scriptRetryCount = 0
+
 export function loadScript(url: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const script = document.createElement('script')
@@ -30,8 +33,14 @@ export async function setup(): Promise<void> {
   }
   try {
     await loadScript(widgetUrl)
+    scriptRetryCount = 0
     window.dispatchEvent(new Event('greenspark-bigcommerce-setup'))
   } catch (error) {
+    if (scriptRetryCount >= MAX_SCRIPT_RETRIES) {
+      err('script-loader: gave up after', MAX_SCRIPT_RETRIES, 'retries', error)
+      return
+    }
+    scriptRetryCount += 1
     err('script-loader: Failed to load script, will retry in 1s', error)
     setTimeout(() => setup(), 1000)
   }

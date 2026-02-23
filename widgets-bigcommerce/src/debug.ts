@@ -1,7 +1,7 @@
 const PREFIX = '[Greenspark BC]'
 
+/** Dev-only debug logging; allowed by ESLint for troubleshooting. */
 export function log(...args: unknown[]): void {
-  // @typescript-eslint/ban-ts-comment
   console.log(PREFIX, ...args)
 }
 
