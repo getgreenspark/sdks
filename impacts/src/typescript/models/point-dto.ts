@@ -14,19 +14,19 @@
 /**
  * 
  * @export
- * @interface Metadata
+ * @interface PointDto
  */
-export interface Metadata {
+export interface PointDto {
     /**
-     * Minimum 1, maximum 40 characters.
+     * Specifies the type of GeoJSON object.
      * @type {string}
-     * @memberof Metadata
+     * @memberof PointDto
      */
-    key: string;
+    type: string;
     /**
-     * Minimum 1, maximum 100 characters.
-     * @type {string}
-     * @memberof Metadata
+     * Coordinates of Point geometry object. https://tools.ietf.org/html/rfc7946#section-3.1.2
+     * @type {Array<string>}
+     * @memberof PointDto
      */
-    value: string;
+    coordinates: Array<string>;
 }

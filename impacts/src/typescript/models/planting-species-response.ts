@@ -14,19 +14,19 @@
 /**
  * 
  * @export
- * @interface Metadata
+ * @interface PlantingSpeciesResponse
  */
-export interface Metadata {
+export interface PlantingSpeciesResponse {
     /**
-     * Minimum 1, maximum 40 characters.
+     * Species common name.
      * @type {string}
-     * @memberof Metadata
+     * @memberof PlantingSpeciesResponse
      */
-    key: string;
+    name: string;
     /**
-     * Minimum 1, maximum 100 characters.
-     * @type {string}
-     * @memberof Metadata
+     * Amount planted for this species.
+     * @type {number}
+     * @memberof PlantingSpeciesResponse
      */
-    value: string;
+    amountPlanted: number;
 }

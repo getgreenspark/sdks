@@ -14,19 +14,7 @@
 /**
  * 
  * @export
- * @interface Metadata
+ * @interface SurvivabilityMetric
  */
-export interface Metadata {
-    /**
-     * Minimum 1, maximum 40 characters.
-     * @type {string}
-     * @memberof Metadata
-     */
-    key: string;
-    /**
-     * Minimum 1, maximum 100 characters.
-     * @type {string}
-     * @memberof Metadata
-     */
-    value: string;
+export interface SurvivabilityMetric {
 }
