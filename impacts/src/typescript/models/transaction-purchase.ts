@@ -11,7 +11,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { TransactionPurchaseMetadata } from './transaction-purchase-metadata';
+import { PlantingSessionResponse } from './planting-session-response';
+import { PlasticCollectionResponse } from './plastic-collection-response';
 /**
  * 
  * @export
@@ -68,10 +69,10 @@ export interface TransactionPurchase {
     periodEndDate: string;
     /**
      * The evidences of a purchase.
-     * @type {TransactionPurchaseMetadata}
+     * @type {Array<PlantingSessionResponse | PlasticCollectionResponse>}
      * @memberof TransactionPurchase
      */
-    evidences: TransactionPurchaseMetadata;
+    evidences: Array<PlantingSessionResponse | PlasticCollectionResponse>;
 }
 
 /**

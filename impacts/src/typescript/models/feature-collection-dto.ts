@@ -11,22 +11,23 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { FeatureDto } from './feature-dto';
 /**
  * 
  * @export
- * @interface Metadata
+ * @interface FeatureCollectionDto
  */
-export interface Metadata {
+export interface FeatureCollectionDto {
     /**
-     * Minimum 1, maximum 40 characters.
-     * @type {string}
-     * @memberof Metadata
+     * A collection of feature objects. https://tools.ietf.org/html/rfc7946#section-3.3
+     * @type {Array<FeatureDto>}
+     * @memberof FeatureCollectionDto
      */
-    key: string;
+    features: Array<FeatureDto>;
     /**
-     * Minimum 1, maximum 100 characters.
+     * Specifies the type of GeoJSON object.
      * @type {string}
-     * @memberof Metadata
+     * @memberof FeatureCollectionDto
      */
-    value: string;
+    type: string;
 }

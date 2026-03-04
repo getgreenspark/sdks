@@ -14,19 +14,13 @@
 /**
  * 
  * @export
- * @interface Metadata
+ * @interface PlantingSessionBlockchainResponse
  */
-export interface Metadata {
+export interface PlantingSessionBlockchainResponse {
     /**
-     * Minimum 1, maximum 40 characters.
+     * Arweave URL, if available.
      * @type {string}
-     * @memberof Metadata
+     * @memberof PlantingSessionBlockchainResponse
      */
-    key: string;
-    /**
-     * Minimum 1, maximum 100 characters.
-     * @type {string}
-     * @memberof Metadata
-     */
-    value: string;
+    arweaveUrl?: string | null;
 }
