@@ -18,21 +18,9 @@
  */
 export interface PlantingSessionBlockchainResponse {
     /**
-     * Blockchain transaction id.
-     * @type {string}
-     * @memberof PlantingSessionBlockchainResponse
-     */
-    transactionId?: string | null;
-    /**
      * Arweave URL, if available.
      * @type {string}
      * @memberof PlantingSessionBlockchainResponse
      */
     arweaveUrl?: string | null;
-    /**
-     * IPFS URL, if available.
-     * @type {string}
-     * @memberof PlantingSessionBlockchainResponse
-     */
-    ipfsUrl?: string | null;
 }
