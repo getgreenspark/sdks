@@ -17,4 +17,34 @@
  * @interface SurvivabilityMetric
  */
 export interface SurvivabilityMetric {
+    /**
+     * Metric name.
+     * @type {string}
+     * @memberof SurvivabilityMetric
+     */
+    name: string;
+    /**
+     * Metric value.
+     * @type {number}
+     * @memberof SurvivabilityMetric
+     */
+    value: number;
+    /**
+     * Unit for the metric value.
+     * @type {string}
+     * @memberof SurvivabilityMetric
+     */
+    unit: string;
+    /**
+     * ISO timestamp when the metric was last updated.
+     * @type {string}
+     * @memberof SurvivabilityMetric
+     */
+    updatedAt: string;
+    /**
+     * Metric type/category.
+     * @type {string}
+     * @memberof SurvivabilityMetric
+     */
+    type: string;
 }
