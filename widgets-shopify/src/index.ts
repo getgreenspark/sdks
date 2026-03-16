@@ -13,6 +13,7 @@ const MAX_RETRIES = 5
 const SELECTORS = {
   cartDrawerForm: '#CartDrawer-Form',
   cartDrawer: '#CartDrawer',
+  cartDrawerSection: '[data-section-type="cart-drawer"]',
   miniCartForm: '#mini-cart-form',
   miniCart: '#mini-cart',
   mainCartItems: '#main-cart-items',
@@ -31,7 +32,12 @@ function setupCartDrawerObserver() {
   if (cartDrawerObserverInitialized) return
 
   const drawerEl = document.querySelector(
-    [SELECTORS.cartDrawerElement, SELECTORS.cartDrawer, SELECTORS.miniCart].join(', '),
+    [
+      SELECTORS.cartDrawerElement,
+      SELECTORS.cartDrawer,
+      SELECTORS.cartDrawerSection,
+      SELECTORS.miniCart,
+    ].join(', '),
   )
   if (!drawerEl) {
     if (cartDrawerRetryCount++ >= MAX_RETRIES) {
