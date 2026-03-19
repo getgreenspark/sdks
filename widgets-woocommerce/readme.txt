@@ -1,4 +1,4 @@
-=== Greenspark for WooCommerce ===
+=== Greenspark widgets for Woocommerce ===
 Contributors: greenspark
 Tags: sustainability, carbon offset, eco, impact, widgets
 Requires at least: 6.0
@@ -14,7 +14,7 @@ Display Greenspark sustainability impact widgets on your WooCommerce store. Show
 
 == Description ==
 
-Greenspark for WooCommerce lets you display sustainability impact widgets anywhere in your store. Widgets are fully managed through the Greenspark dashboard and placed in your store using simple HTML embed codes.
+Greenspark widgets for Woocommerce lets you display sustainability impact widgets anywhere in your store. Widgets are fully managed through the Greenspark dashboard and placed in your store using simple HTML embed codes.
 
 **Requirements**
 

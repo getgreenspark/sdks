@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Greenspark for WooCommerce
+ * Plugin Name: Greenspark widgets for Woocommerce
  * Plugin URI:  https://getgreenspark.com
  * Description: Display Greenspark sustainability impact widgets on your WooCommerce store.
  * Version:     1.0.0
@@ -56,7 +56,7 @@ function greenspark_wc_check_woocommerce(): bool {
         add_action( 'admin_notices', static function (): void {
             echo '<div class="notice notice-error is-dismissible"><p>';
             esc_html_e(
-                'Greenspark for WooCommerce requires WooCommerce to be installed and active.',
+                'Greenspark widgets for Woocommerce requires WooCommerce to be installed and active.',
                 'widgets-woocommerce'
             );
             echo '</p></div>';
@@ -68,7 +68,7 @@ function greenspark_wc_check_woocommerce(): bool {
         add_action( 'admin_notices', static function (): void {
             echo '<div class="notice notice-error is-dismissible"><p>';
             esc_html_e(
-                'Greenspark for WooCommerce requires WooCommerce 8.0 or later.',
+                'Greenspark widgets for Woocommerce requires WooCommerce 8.0 or later.',
                 'widgets-woocommerce'
             );
             echo '</p></div>';
