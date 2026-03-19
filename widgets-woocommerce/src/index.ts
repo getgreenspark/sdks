@@ -8,7 +8,7 @@ setup().catch((e) => {
 
 if (typeof window !== 'undefined') {
   if (!window.GreensparkWidgets) {
-    window.addEventListener('widgets-woocommerce-setup', () => runGreenspark(), { once: true })
+    window.addEventListener('greenspark-setup', () => runGreenspark(), { once: true })
   } else {
     runGreenspark()
   }

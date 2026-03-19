@@ -8,7 +8,7 @@
  * Author URI:  https://getgreenspark.com
  * Developer:   Greenspark
  * Developer URI: https://getgreenspark.com
- * Text Domain: widgets-woocommerce
+ * Text Domain: greenspark
  * Domain Path: /languages
  * Requires at least: 6.0
  * Requires PHP: 7.4
@@ -17,7 +17,7 @@
  * WC requires at least: 8.0
  * WC tested up to: 10.6.1
  *
- * @package Widgets_WooCommerce
+ * @package Greenspark
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -57,7 +57,7 @@ function greenspark_wc_check_woocommerce(): bool {
             echo '<div class="notice notice-error is-dismissible"><p>';
             esc_html_e(
                 'Greenspark widgets for Woocommerce requires WooCommerce to be installed and active.',
-                'widgets-woocommerce'
+                'greenspark'
             );
             echo '</p></div>';
         } );
@@ -69,7 +69,7 @@ function greenspark_wc_check_woocommerce(): bool {
             echo '<div class="notice notice-error is-dismissible"><p>';
             esc_html_e(
                 'Greenspark widgets for Woocommerce requires WooCommerce 8.0 or later.',
-                'widgets-woocommerce'
+                'greenspark'
             );
             echo '</p></div>';
         } );

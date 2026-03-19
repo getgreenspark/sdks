@@ -34,7 +34,7 @@ export async function setup(): Promise<void> {
   try {
     await loadScript(widgetUrl)
     scriptRetryCount = 0
-    window.dispatchEvent(new Event('widgets-woocommerce-setup'))
+    window.dispatchEvent(new Event('greenspark-setup'))
   } catch (error) {
     if (scriptRetryCount >= MAX_SCRIPT_RETRIES) {
       err('script-loader: gave up after', MAX_SCRIPT_RETRIES, 'retries', error)

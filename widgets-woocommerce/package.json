@@ -11,7 +11,7 @@
     "lint": "eslint src",
     "dev": "webpack --mode=development",
     "build": "rm -rf assets/js/widgets-woocommerce@* && webpack --mode=production",
-    "build:zip": "npm run build && cd .. && zip -r widgets-woocommerce/widgets-woocommerce.zip widgets-woocommerce/widgets-woocommerce.php widgets-woocommerce/readme.txt widgets-woocommerce/changelog.txt widgets-woocommerce/assets/js/",
+    "build:zip": "npm run build && rm -rf /tmp/greenspark-zip && mkdir -p /tmp/greenspark-zip/greenspark/assets/js && cp greenspark.php readme.txt changelog.txt /tmp/greenspark-zip/greenspark/ && cp assets/js/* /tmp/greenspark-zip/greenspark/assets/js/ && cd /tmp/greenspark-zip && zip -r greenspark.zip greenspark/ && mv greenspark.zip \"$OLDPWD/\" && rm -rf /tmp/greenspark-zip",
     "release": "release-it"
   },
   "license": "GPL-3.0-or-later",
