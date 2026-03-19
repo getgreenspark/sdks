@@ -1,0 +1,6 @@
+*** Greenspark for WooCommerce Changelog ***
+
+2026-03-19 - version 1.0.0
+* Added - Support for all 10 Greenspark widget types via Custom HTML embed codes.
+* Added - Automatic cart mutation detection for live-updating cart widgets.
+* Added - Compatibility with WooCommerce block-based checkout and HPOS.
