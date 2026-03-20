@@ -118,6 +118,7 @@ export function renderOrderImpacts(ctx: RunContext, widgetId: string, containerS
           .then(() => movePopup(widgetId))
           .catch((e: unknown) => err('render: order-impacts render error', e))
       })
+      .catch((e: unknown) => err('render: order-impacts Error fetching cart:', e))
     return
   }
 
