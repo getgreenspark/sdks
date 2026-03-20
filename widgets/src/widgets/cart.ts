@@ -1,5 +1,5 @@
-import type { WidgetConfig } from '@/widgets/base'
-import { Widget } from '@/widgets/base'
+import type {WidgetConfig} from '@/widgets/base'
+import {Widget} from '@/widgets/base'
 import type {
   CartWidgetParams,
   PopupTheme,
@@ -7,7 +7,7 @@ import type {
   WidgetColor,
   WidgetStyle,
 } from '@/interfaces'
-import { WidgetValidator } from '@/utils/widget-validation'
+import {WidgetValidator} from '@/utils/widget-validation'
 
 export class CartWidget extends Widget implements CartWidgetParams {
   color: WidgetColor
@@ -45,7 +45,7 @@ export class CartWidget extends Widget implements CartWidgetParams {
 
   async renderToString(options?: Partial<CartWidgetParams>): Promise<string | undefined> {
     if (options) this.updateDefaults(options)
-    if (this.order.lineItems?.length === 0) return
+    if (!this.isCartPreviewMode() && this.order.lineItems?.length === 0) return
     this.validateOptions()
     return await this.api.fetchCartWidget(this.requestBody)
   }
@@ -53,6 +53,11 @@ export class CartWidget extends Widget implements CartWidgetParams {
   async renderToElement(options?: Partial<CartWidgetParams>): Promise<HTMLElement | undefined> {
     const html = await this.renderToString(options)
     if (html) return this.parseHtml(html)
+  }
+
+  /** `preview/cart-widget` ignores order (dashboard-api preview service). */
+  private isCartPreviewMode(): boolean {
+    return this.api.integrationSlug === 'GS_PREVIEW'
   }
 
   private updateDefaults({
@@ -72,12 +77,14 @@ export class CartWidget extends Widget implements CartWidgetParams {
   }
 
   private validateOptions() {
-    return WidgetValidator.for('Cart Widget')
+    const validator = WidgetValidator.for('Cart Widget')
       .color(this.color)
       .withPopup(this.withPopup)
       .popupTheme(this.popupTheme)
       .style(this.style)
-      .order(this.order)
-      .validate()
+    if (!this.isCartPreviewMode()) {
+      validator.order(this.order)
+    }
+    return validator.validate()
   }
 }

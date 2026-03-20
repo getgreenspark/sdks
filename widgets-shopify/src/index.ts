@@ -124,10 +124,11 @@ function runGreenspark() {
   const locale = window.Shopify.locale as 'en'
   const shopUniqueName = window.Shopify.shop
 
+  /** GS_PREVIEW uses `preview/cart-widget`, which does not use line items (see dashboard-api). */
   const previewOrderFallback = (): ReturnType<typeof parseCart> => ({
-    lineItems: [{ productId: productId || '1', quantity: 1 }],
+    lineItems: [],
     currency: String(currency ?? 'USD').toLowerCase(),
-    totalPrice: 10000,
+    totalPrice: 0,
   })
   const greenspark = new window.GreensparkWidgets({
     locale,

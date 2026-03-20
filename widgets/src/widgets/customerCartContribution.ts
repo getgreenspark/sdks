@@ -1,5 +1,5 @@
-import type { WidgetConfig } from '@/widgets/base'
-import { Widget } from '@/widgets/base'
+import type {WidgetConfig} from '@/widgets/base'
+import {Widget} from '@/widgets/base'
 import type {
   CustomerCartContributionWidgetParams,
   PopupTheme,
@@ -7,7 +7,7 @@ import type {
   WidgetColor,
   WidgetStyle,
 } from '@/interfaces'
-import { WidgetValidator } from '@/utils/widget-validation'
+import {WidgetValidator} from '@/utils/widget-validation'
 
 export class CustomerCartContributionWidget
   extends Widget
@@ -50,7 +50,7 @@ export class CustomerCartContributionWidget
 
   async renderToString(options?: Partial<CustomerCartContributionWidgetParams>): Promise<string | undefined> {
     if (options) this.updateDefaults(options)
-    if (this.order.lineItems?.length === 0) return
+    if (!this.isCustomerContributionPreviewMode() && this.order.lineItems?.length === 0) return
     this.validateOptions()
     return await this.api.fetchCustomerCartContributionWidget(this.requestBody)
   }
@@ -60,6 +60,11 @@ export class CustomerCartContributionWidget
   ): Promise<HTMLElement | undefined> {
     const html = await this.renderToString(options)
     if (html) return this.parseHtml(html)
+  }
+
+  /** Theme editor / GS_PREVIEW uses `preview/cart-widget`, which does not use cart order (see dashboard-api). */
+  private isCustomerContributionPreviewMode(): boolean {
+    return this.api.integrationSlug === 'GS_PREVIEW'
   }
 
   private updateDefaults({
@@ -79,12 +84,14 @@ export class CustomerCartContributionWidget
   }
 
   private validateOptions() {
-    return WidgetValidator.for('Customer Cart Contribution Widget')
+    const validator = WidgetValidator.for('Customer Cart Contribution Widget')
       .color(this.color)
       .withPopup(this.withPopup)
       .popupTheme(this.popupTheme)
       .style(this.style)
-      .order(this.order)
-      .validate()
+    if (!this.isCustomerContributionPreviewMode()) {
+      validator.order(this.order)
+    }
+    return validator.validate()
   }
 }
