@@ -123,6 +123,12 @@ function runGreenspark() {
   const productId = String(window?.ShopifyAnalytics?.meta?.product?.id ?? '')
   const locale = window.Shopify.locale as 'en'
   const shopUniqueName = window.Shopify.shop
+
+  const previewOrderFallback = (): ReturnType<typeof parseCart> => ({
+    lineItems: [{ productId: productId || '1', quantity: 1 }],
+    currency: String(currency ?? 'USD').toLowerCase(),
+    totalPrice: 10000,
+  })
   const greenspark = new window.GreensparkWidgets({
     locale,
     integrationSlug: shopUniqueName,
@@ -191,6 +197,153 @@ function runGreenspark() {
       )
     }
     return containerSelector
+  }
+
+  const movePopupToBody = (widgetId: string) => {
+    popupHistory.forEach((outdatedPopup) => {
+      outdatedPopup.innerHTML = ''
+      outdatedPopup.style.display = 'none'
+    })
+
+    const parent = document.getElementById(widgetId)
+    const popup = parent?.querySelector<HTMLElement>('div[class^="gs-popup-"]')
+    if (popup) {
+      document.body.append(popup)
+      popupHistory.push(popup)
+    }
+  }
+
+  /** Theme editor: show callout + GS_PREVIEW when ById fails with “missing automation” 400s. */
+  type AxiosLikeError = { response?: { status?: number; data?: unknown } }
+  const MISSING_AUTOMATION_CODES: ReadonlySet<string> = new Set([
+    'NO_PER_PRODUCT_SETTINGS',
+    'NO_PER_PAID_INVOICE_SETTINGS',
+    'NO_PER_ORDER_SETTINGS',
+    'NO_BY_PERCENTAGE_SETTINGS',
+    'NO_BY_PERCENTAGE_OF_REVENUE_SETTINGS',
+    'NO_SPEND_LEVEL_SETTINGS',
+    'NO_TIERED_SPEND_LEVEL_SETTINGS',
+    'NO_ORDER_IMPACTS',
+  ])
+  const PREVIEW_WIDGET_COLOR = 'green'
+  const PREVIEW_WIDGET_STYLE = 'default'
+  const PREVIEW_POPUP_THEME = 'light' as const
+
+  function isShopifyThemeEditor(): boolean {
+    return Boolean(
+      (window as unknown as { Shopify?: { designMode?: boolean } }).Shopify?.designMode,
+    )
+  }
+
+  function normalizeAxiosErrorData(data: unknown): string {
+    if (typeof data === 'string') {
+      try {
+        const parsed: unknown = JSON.parse(data)
+        if (typeof parsed === 'string') return parsed
+      } catch {
+        return data
+      }
+      return data
+    }
+    if (data == null) return ''
+    return String(data)
+  }
+
+  function isMissingAutomationError(e: unknown): boolean {
+    const err = e as AxiosLikeError
+    if (err.response?.status !== 400) return false
+    return MISSING_AUTOMATION_CODES.has(normalizeAxiosErrorData(err.response.data))
+  }
+
+  /** Stacks disclaimer above preview; outer column survives flex-row parents on the mount node. */
+  function editorPreviewShellHtml(innerId: string): string {
+    return (
+      '<div class="greenspark-theme-editor-preview-shell" style="display:flex;flex-direction:column;width:100%;align-items:stretch;box-sizing:border-box;">' +
+      '<div class="greenspark-theme-editor-callout" style="padding:12px;margin-bottom:12px;background:#FFF8E6;border:1px solid #E3B765;border-radius:6px;font-size:14px;line-height:1.4;color:#222;">' +
+      'You need to have a matching automation before real widget appears on your live storefront' +
+      '</div>' +
+      `<div id="${innerId}"></div>` +
+      '</div>'
+    )
+  }
+
+  type GreensparkClient = InstanceType<NonNullable<typeof window.GreensparkWidgets>>
+
+  function tryEditorPreviewForByIdFailure(
+    widgetId: string,
+    _merchantLabel: string,
+    e: unknown,
+    renderPreview: (client: GreensparkClient, containerSelector: string) => Promise<unknown>,
+  ): void {
+    const err = e as AxiosLikeError
+    if (!err.response) {
+      console.error('Greenspark Widget - ', e)
+      return
+    }
+    if (!isShopifyThemeEditor() || !isMissingAutomationError(e)) {
+      console.error('Greenspark Widget - ', e)
+      return
+    }
+    const mount = document.getElementById(widgetId)
+    if (!mount) return
+    const safe = widgetId.replace(/[^a-z0-9_-]/gi, '-').toLowerCase()
+    const innerId = `gs-editor-preview-${safe}`
+    mount.innerHTML = editorPreviewShellHtml(innerId)
+    const previewClient = new window.GreensparkWidgets({
+      locale,
+      integrationSlug: 'GS_PREVIEW',
+      isShopifyIntegration: true,
+    })
+    void renderPreview(previewClient, `#${innerId}`)
+      .then(() => movePopupToBody(widgetId))
+      .catch((e2: unknown) => console.error('Greenspark preview failed', e2))
+  }
+
+  function tryEditorCartImpactPreview(widgetId: string, e: unknown): void {
+    const po = previewOrderFallback()
+    tryEditorPreviewForByIdFailure(widgetId, 'Greenspark cart impact widget', e, (c, sel) =>
+      c
+        .cart({
+          color: PREVIEW_WIDGET_COLOR,
+          containerSelector: sel,
+          useShadowDom,
+          style: PREVIEW_WIDGET_STYLE,
+          withPopup: true,
+          popupTheme: PREVIEW_POPUP_THEME,
+          order: po,
+          version,
+        })
+        .render({ order: po }, sel),
+    )
+  }
+
+  function maybeMountEmptyCartEditorPreview(widgetId: string): void {
+    if (!isShopifyThemeEditor()) return
+    const mount = document.getElementById(widgetId)
+    if (!mount) return
+    const po = previewOrderFallback()
+    const safe = widgetId.replace(/[^a-z0-9_-]/gi, '-').toLowerCase()
+    const innerId = `gs-editor-preview-cart-empty-${safe}`
+    mount.innerHTML = editorPreviewShellHtml(innerId)
+    const previewClient = new window.GreensparkWidgets({
+      locale,
+      integrationSlug: 'GS_PREVIEW',
+      isShopifyIntegration: true,
+    })
+    void previewClient
+      .cart({
+        color: PREVIEW_WIDGET_COLOR,
+        containerSelector: `#${innerId}`,
+        useShadowDom,
+        style: PREVIEW_WIDGET_STYLE,
+        withPopup: true,
+        popupTheme: PREVIEW_POPUP_THEME,
+        order: po,
+        version,
+      })
+      .render({ order: po }, `#${innerId}`)
+      .then(() => movePopupToBody(widgetId))
+      .catch((e2: unknown) => console.error('Greenspark preview failed', e2))
   }
 
   const renderOrderImpacts = (widgetId: string, containerSelector: string) => {
@@ -450,7 +603,10 @@ function runGreenspark() {
         .then((r) => r.json())
         .then((updatedCart) => {
           const order = parseCart(updatedCart)
-          if (order.lineItems.length <= 0) return
+          if (order.lineItems.length <= 0) {
+            maybeMountEmptyCartEditorPreview(widgetId)
+            return
+          }
           containerSelector = getWidgetContainer(widgetId)
           if (!document.querySelector(containerSelector)) return
           return window[cartWidgetWindowKey]!.render({ order }, containerSelector)
@@ -463,7 +619,7 @@ function runGreenspark() {
               }
             })
             .then(ensureHandlers)
-            .catch((e: unknown) => console.error('Greenspark Widget - ', e))
+            .catch((e: unknown) => tryEditorCartImpactPreview(widgetId, e))
         })
     }
 
@@ -474,7 +630,10 @@ function runGreenspark() {
       .then((cartData) => {
         if (!cartData) return
         const order = parseCart(cartData)
-        if (order.lineItems.length === 0) return
+        if (order.lineItems.length === 0) {
+          maybeMountEmptyCartEditorPreview(widgetId)
+          return
+        }
 
         containerSelector = getWidgetContainer(widgetId)
         if (!document.querySelector(containerSelector)) return
@@ -492,7 +651,7 @@ function runGreenspark() {
           .render({ order }, containerSelector)
           .then(() => movePopupToBody(widgetId))
           .then(ensureHandlers)
-          .catch((e: Error) => console.error('Greenspark Widget - ', e))
+          .catch((e: unknown) => tryEditorCartImpactPreview(widgetId, e))
       })
       .catch((e: unknown) => console.error('Greenspark Widget - Error fetching cart:', e))
   }
@@ -508,9 +667,21 @@ function runGreenspark() {
     widget
       .render()
       .then(() => movePopupToBody(widgetId))
-      .catch((e) => {
-        if (!e.response) return console.error('Greenspark Widget - ', e)
-      })
+      .catch((e: unknown) =>
+        tryEditorPreviewForByIdFailure(widgetId, 'Greenspark per-order widget', e, (c, sel) =>
+          c
+            .perOrder({
+              color: PREVIEW_WIDGET_COLOR,
+              containerSelector: sel,
+              useShadowDom,
+              style: PREVIEW_WIDGET_STYLE,
+              withPopup: true,
+              popupTheme: PREVIEW_POPUP_THEME,
+              version,
+            })
+            .render(),
+        ),
+      )
   }
 
   const renderOffsetByProduct = (widgetId: string, containerSelector: string) => {
@@ -525,9 +696,22 @@ function runGreenspark() {
     widget
       .render()
       .then(() => movePopupToBody(widgetId))
-      .catch((e) => {
-        if (!e.response) return console.error('Greenspark Widget - ', e)
-      })
+      .catch((e: unknown) =>
+        tryEditorPreviewForByIdFailure(widgetId, 'Greenspark per-product widget', e, (c, sel) =>
+          c
+            .perProduct({
+              productId: productId || '1',
+              color: PREVIEW_WIDGET_COLOR,
+              containerSelector: sel,
+              useShadowDom,
+              style: PREVIEW_WIDGET_STYLE,
+              withPopup: true,
+              popupTheme: PREVIEW_POPUP_THEME,
+              version,
+            })
+            .render(),
+        ),
+      )
   }
 
   const renderOffsetBySpend = (widgetId: string, containerSelector: string) => {
@@ -542,9 +726,22 @@ function runGreenspark() {
     widget
       .render()
       .then(() => movePopupToBody(widgetId))
-      .catch((e) => {
-        if (!e.response) return console.error('Greenspark Widget - ', e)
-      })
+      .catch((e: unknown) =>
+        tryEditorPreviewForByIdFailure(widgetId, 'Greenspark spend-level widget', e, (c, sel) =>
+          c
+            .spendLevel({
+              currency,
+              color: PREVIEW_WIDGET_COLOR,
+              containerSelector: sel,
+              useShadowDom,
+              style: PREVIEW_WIDGET_STYLE,
+              withPopup: true,
+              popupTheme: PREVIEW_POPUP_THEME,
+              version,
+            })
+            .render(),
+        ),
+      )
   }
 
   const renderOffsetByStoreRevenue = (widgetId: string, containerSelector: string) => {
@@ -559,9 +756,26 @@ function runGreenspark() {
     widget
       .render()
       .then(() => movePopupToBody(widgetId))
-      .catch((e) => {
-        if (!e.response) return console.error('Greenspark Widget - ', e)
-      })
+      .catch((e: unknown) =>
+        tryEditorPreviewForByIdFailure(
+          widgetId,
+          'Greenspark tiered spend-level widget',
+          e,
+          (c, sel) =>
+            c
+              .tieredSpendLevel({
+                currency,
+                color: PREVIEW_WIDGET_COLOR,
+                containerSelector: sel,
+                useShadowDom,
+                style: PREVIEW_WIDGET_STYLE,
+                withPopup: true,
+                popupTheme: PREVIEW_POPUP_THEME,
+                version,
+              })
+              .render(),
+        ),
+      )
   }
 
   const renderByPercentage = (widgetId: string, containerSelector: string) => {
@@ -575,9 +789,21 @@ function runGreenspark() {
     widget
       .render()
       .then(() => movePopupToBody(widgetId))
-      .catch((e) => {
-        if (!e.response) return console.error('Greenspark Widget - ', e)
-      })
+      .catch((e: unknown) =>
+        tryEditorPreviewForByIdFailure(widgetId, 'Greenspark by-percentage widget', e, (c, sel) =>
+          c
+            .byPercentage({
+              color: PREVIEW_WIDGET_COLOR,
+              containerSelector: sel,
+              useShadowDom,
+              style: PREVIEW_WIDGET_STYLE,
+              withPopup: true,
+              popupTheme: PREVIEW_POPUP_THEME,
+              version,
+            })
+            .render(),
+        ),
+      )
   }
 
   const renderByPercentageOfRevenue = (widgetId: string, containerSelector: string) => {
@@ -591,9 +817,25 @@ function runGreenspark() {
     widget
       .render()
       .then(() => movePopupToBody(widgetId))
-      .catch((e) => {
-        if (!e.response) return console.error('Greenspark Widget - ', e)
-      })
+      .catch((e: unknown) =>
+        tryEditorPreviewForByIdFailure(
+          widgetId,
+          'Greenspark by-percentage-of-revenue widget',
+          e,
+          (c, sel) =>
+            c
+              .byPercentageOfRevenue({
+                color: PREVIEW_WIDGET_COLOR,
+                containerSelector: sel,
+                useShadowDom,
+                style: PREVIEW_WIDGET_STYLE,
+                withPopup: true,
+                popupTheme: PREVIEW_POPUP_THEME,
+                version,
+              })
+              .render(),
+        ),
+      )
   }
 
   const renderStats = (widgetId: string, containerSelector: string) => {
@@ -607,9 +849,20 @@ function runGreenspark() {
     widget
       .render()
       .then(() => movePopupToBody(widgetId))
-      .catch((e) => {
-        if (!e.response) return console.error('Greenspark Widget - ', e)
-      })
+      .catch((e: unknown) =>
+        tryEditorPreviewForByIdFailure(widgetId, 'Greenspark stats widget', e, (c, sel) =>
+          c
+            .topStats({
+              color: PREVIEW_WIDGET_COLOR,
+              containerSelector: sel,
+              useShadowDom,
+              withPopup: true,
+              popupTheme: PREVIEW_POPUP_THEME,
+              version,
+            })
+            .render(),
+        ),
+      )
   }
 
   const renderStatic = (widgetId: string, containerSelector: string) => {
@@ -623,9 +876,19 @@ function runGreenspark() {
     widget
       .render()
       .then(() => movePopupToBody(widgetId))
-      .catch((e) => {
-        if (!e.response) return console.error('Greenspark Widget - ', e)
-      })
+      .catch((e: unknown) =>
+        tryEditorPreviewForByIdFailure(widgetId, 'Greenspark static widget', e, (c, sel) =>
+          c
+            .static({
+              color: PREVIEW_WIDGET_COLOR,
+              containerSelector: sel,
+              useShadowDom,
+              style: PREVIEW_WIDGET_STYLE,
+              version,
+            })
+            .render(),
+        ),
+      )
   }
 
   const renderBanner = (widgetId: string, containerSelector: string) => {
@@ -639,23 +902,18 @@ function runGreenspark() {
     widget
       .render()
       .then(() => movePopupToBody(widgetId))
-      .catch((e) => {
-        if (!e.response) return console.error('Greenspark Widget - ', e)
-      })
-  }
-
-  const movePopupToBody = (widgetId: string) => {
-    popupHistory.forEach((outdatedPopup) => {
-      outdatedPopup.innerHTML = ''
-      outdatedPopup.style.display = 'none'
-    })
-
-    const parent = document.getElementById(widgetId)
-    const popup = parent?.querySelector<HTMLElement>('div[class^="gs-popup-"]')
-    if (popup) {
-      document.body.append(popup)
-      popupHistory.push(popup)
-    }
+      .catch((e: unknown) =>
+        tryEditorPreviewForByIdFailure(widgetId, 'Greenspark banner widget', e, (c, sel) =>
+          c
+            .fullWidthBanner({
+              containerSelector: sel,
+              useShadowDom,
+              options: ['trees', 'carbon', 'plastic'],
+              version,
+            })
+            .render(),
+        ),
+      )
   }
 
   const targets = document.querySelectorAll('.greenspark-widget-target')
