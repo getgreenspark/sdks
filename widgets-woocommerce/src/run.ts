@@ -1,10 +1,4 @@
-import {
-  getCurrency,
-  getConfig,
-  getLocale,
-  getProductIdFromPage,
-  getScriptSrc,
-} from './config'
+import { getCurrency, getConfig, getLocale, getProductIdFromPage } from './config'
 import { createCartApi } from './cart'
 import { getWidgetContainer, movePopupToBody } from './dom'
 import { err } from './debug'
@@ -30,8 +24,7 @@ function injectWidgetStyles(): void {
 }
 
 export function runGreenspark(): void {
-  const scriptSrc = getScriptSrc()
-  if (!scriptSrc && typeof document === 'undefined') return
+  if (typeof document === 'undefined') return
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', runGreenspark, { once: true })
     return
@@ -148,9 +141,13 @@ function interceptCartMutations(onCartChange: () => void): void {
     const method = resolveFetchMethod(input, init)
     const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url
     if (MUTATING_METHODS.has(method) && WC_CART_API_PATTERN.test(url)) {
-      result.then((res) => {
-        if (res.ok) debouncedChange()
-      })
+      void result
+        .then((res) => {
+          if (res.ok) debouncedChange()
+        })
+        .catch(() => {
+          /* ignore: avoid unhandled rejection on network/abort; caller still sees original failure */
+        })
     }
     return result
   }
@@ -184,6 +181,13 @@ function interceptCartMutations(onCartChange: () => void): void {
  * These fire in classic (non-block) WooCommerce themes.
  */
 function listenWooCommerceEvents(onCartChange: () => void): void {
+  if (typeof window !== 'undefined' && window.__greensparkWcWooEventHooks) {
+    return
+  }
+  if (typeof window !== 'undefined') {
+    window.__greensparkWcWooEventHooks = true
+  }
+
   const events = [
     'added_to_cart',
     'removed_from_cart',

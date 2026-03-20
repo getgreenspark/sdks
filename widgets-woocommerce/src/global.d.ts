@@ -16,6 +16,8 @@ declare global {
     greensparkWC?: GreensparkWCContext
     /** Set when fetch/XHR cart hooks are installed (idempotent across duplicate script tags). */
     __greensparkWcCartMutationHooks?: boolean
+    /** Set when WooCommerce jQuery/DOM cart listeners are registered (idempotent). */
+    __greensparkWcWooEventHooks?: boolean
   }
 
   /** WooCommerce pages include jQuery globally. */

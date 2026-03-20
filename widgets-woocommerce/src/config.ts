@@ -3,11 +3,6 @@ import type { WooCommerceConfig } from './interfaces'
 
 export const widgetUrl = 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
 
-export function getScriptSrc(): string | undefined {
-  if (typeof document === 'undefined') return undefined
-  return (document.currentScript as HTMLScriptElement | null)?.getAttribute('src') ?? undefined
-}
-
 export function getLocale(): string {
   if (typeof window !== 'undefined' && window.greensparkWC?.locale) {
     return window.greensparkWC.locale
@@ -24,10 +19,11 @@ export function getCurrency(): string {
 }
 
 export function getStoreApiBase(): string {
-  if (typeof window !== 'undefined' && window.greensparkWC?.storeApiBase) {
-    return window.greensparkWC.storeApiBase
-  }
-  return '/wp-json/wc/store/v1'
+  const raw =
+    typeof window !== 'undefined' && window.greensparkWC?.storeApiBase
+      ? window.greensparkWC.storeApiBase
+      : '/wp-json/wc/store/v1'
+  return raw.replace(/\/+$/, '')
 }
 
 export function getProductIdFromPage(): string {
@@ -54,19 +50,16 @@ export function getProductIdFromPage(): string {
   return ''
 }
 
-function getIntegrationSlugFromTarget(): string | null {
-  if (typeof document === 'undefined') return null
-  const first = document.querySelector('.greenspark-widget-target') as HTMLElement | null
-  const slug = first?.getAttribute?.('data-integration-slug')?.trim()
-  return slug || null
-}
-
 export function getConfig(): WooCommerceConfig | null {
-  if (typeof window === 'undefined') return null
-  const integrationSlug = getIntegrationSlugFromTarget()
-  if (!integrationSlug) {
-    err('config: getConfig() => null (integrationSlug required). Add data-integration-slug on a .greenspark-widget-target div.')
+  if (typeof window === 'undefined' || typeof document === 'undefined') return null
+  const first = document.querySelector('.greenspark-widget-target')
+  if (!first) return null
+  const slug = first.getAttribute('data-integration-slug')?.trim()
+  if (!slug) {
+    err(
+      'config: .greenspark-widget-target found but data-integration-slug is missing or empty. Add it per your Greenspark embed instructions.',
+    )
     return null
   }
-  return { integrationSlug }
+  return { integrationSlug: slug }
 }
