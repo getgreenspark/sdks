@@ -119,7 +119,7 @@ export function runGreenspark(): void {
  * Store API: /wc/store/v1/cart/add-item, /cart/update-item, /cart/remove-item, etc.
  * Classic:   ?wc-ajax=add_to_cart, ?wc-ajax=update_order_review, etc.
  */
-const WC_CART_API_PATTERN = /\/(wc\/store\/v\d+\/cart\/|wc-ajax=)/
+const WC_CART_API_PATTERN = /(\/wc\/store\/v\d+\/cart\/|[?&]wc-ajax=)/
 const MUTATING_METHODS = new Set(['POST', 'PUT', 'DELETE'])
 
 function interceptCartMutations(onCartChange: () => void): void {

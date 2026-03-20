@@ -1,4 +1,4 @@
-*** Greenspark widgets for Woocommerce Changelog ***
+*** Greenspark widgets for WooCommerce Changelog ***
 
 2026-03-19 - version 1.0.0
 * Added - Support for all 10 Greenspark widget types via Custom HTML embed codes.
