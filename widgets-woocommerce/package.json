@@ -1,0 +1,58 @@
+{
+  "name": "@getgreenspark/widgets-woocommerce",
+  "version": "1.0.0",
+  "bugs": {
+    "url": "https://github.com/getgreenspark/sdks/issues"
+  },
+  "main": "./assets/js/widgets-woocommerce@latest.js",
+  "description": "WooCommerce storefront adapter for Greenspark Widget SDK.",
+  "author": "Greenspark <support@getgreenspark.com>",
+  "scripts": {
+    "lint": "eslint src",
+    "dev": "webpack --mode=development",
+    "build": "rm -rf assets/js/widgets-woocommerce@* && webpack --mode=production",
+    "build:zip": "npm run build && rm -rf /tmp/greenspark-zip && mkdir -p /tmp/greenspark-zip/greenspark/assets/js && cp greenspark.php readme.txt changelog.txt /tmp/greenspark-zip/greenspark/ && cp assets/js/* /tmp/greenspark-zip/greenspark/assets/js/ && cd /tmp/greenspark-zip && zip -r greenspark.zip greenspark/ && mv greenspark.zip \"$OLDPWD/\" && rm -rf /tmp/greenspark-zip",
+    "release": "release-it"
+  },
+  "license": "GPL-3.0-or-later",
+  "homepage": "https://github.com/getgreenspark/sdks",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/getgreenspark/sdks.git"
+  },
+  "typings": "./dist/index.d.ts",
+  "devDependencies": {
+    "@eslint/js": "^9.9.1",
+    "@types/node": "^22.18.3",
+    "@types/webpack-env": "^1.18.5",
+    "eslint": "^9.9.1",
+    "release-it": "^17.6.0",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.3.0",
+    "webpack": "^5.93.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "release-it": {
+    "$schema": "https://unpkg.com/release-it/schema/release-it.json",
+    "git": {
+      "tag": true,
+      "commitMessage": "@getgreenspark/widgets-woocommerce v${version}",
+      "tagName": "widgets-woocommerce-v${version}",
+      "tagAnnotation": "@getgreenspark/widgets-woocommerce v${version}"
+    },
+    "npm": {
+      "publish": false
+    },
+    "hooks": {
+      "before:init": [
+        "npm run lint",
+        "npm run build"
+      ]
+    }
+  },
+  "directories": {
+    "src": "src"
+  }
+}
