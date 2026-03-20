@@ -120,19 +120,32 @@ export function runGreenspark(): void {
  * Classic:   ?wc-ajax=add_to_cart, ?wc-ajax=update_order_review, etc.
  */
 const WC_CART_API_PATTERN = /(\/wc\/store\/v\d+\/cart\/|[?&]wc-ajax=)/
-const MUTATING_METHODS = new Set(['POST', 'PUT', 'DELETE'])
+const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
+
+function resolveFetchMethod(input: RequestInfo | URL, init?: RequestInit): string {
+  if (init?.method) return init.method.toUpperCase()
+  if (typeof Request !== 'undefined' && input instanceof Request) return input.method.toUpperCase()
+  return 'GET'
+}
 
 function interceptCartMutations(onCartChange: () => void): void {
+  if (typeof window !== 'undefined' && window.__greensparkWcCartMutationHooks) {
+    return
+  }
+  if (typeof window !== 'undefined') {
+    window.__greensparkWcCartMutationHooks = true
+  }
+
   let debounceTimer: ReturnType<typeof setTimeout> | null = null
   function debouncedChange() {
     if (debounceTimer) clearTimeout(debounceTimer)
     debounceTimer = setTimeout(onCartChange, 300)
   }
 
-  const originalFetch = window.fetch
+  const originalFetch = window.fetch.bind(window)
   window.fetch = function (input: RequestInfo | URL, init?: RequestInit) {
-    const result = originalFetch.call(this, input, init)
-    const method = (init?.method ?? 'GET').toUpperCase()
+    const result = originalFetch(input, init)
+    const method = resolveFetchMethod(input, init)
     const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url
     if (MUTATING_METHODS.has(method) && WC_CART_API_PATTERN.test(url)) {
       result.then((res) => {

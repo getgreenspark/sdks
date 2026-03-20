@@ -14,6 +14,8 @@ declare global {
   interface Window extends Partial<Record<GreensparkCartWidgetKey, CartWidgetById>> {
     GreensparkWidgets: typeof GreensparkWidgets
     greensparkWC?: GreensparkWCContext
+    /** Set when fetch/XHR cart hooks are installed (idempotent across duplicate script tags). */
+    __greensparkWcCartMutationHooks?: boolean
   }
 
   /** WooCommerce pages include jQuery globally. */
