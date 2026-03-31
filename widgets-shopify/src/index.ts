@@ -459,7 +459,7 @@ function runGreenspark() {
         .then((r) => r.json())
         .then((updatedCart) => {
           const order = parseCart(updatedCart)
-          if (order.lineItems.length <= 0) {
+          if (order.lineItems.length === 0) {
             cleanupPopups()
             return
           }
