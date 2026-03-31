@@ -193,6 +193,15 @@ function runGreenspark() {
     return containerSelector
   }
 
+  const cleanupPopups = () => {
+    popupHistory.forEach((outdatedPopup) => {
+      outdatedPopup.innerHTML = ''
+      outdatedPopup.style.display = 'none'
+      outdatedPopup.remove()
+    })
+    popupHistory.length = 0
+  }
+
   const renderOrderImpacts = (widgetId: string, containerSelector: string) => {
     const targetEl = document.getElementById(widgetId)
 
@@ -450,7 +459,10 @@ function runGreenspark() {
         .then((r) => r.json())
         .then((updatedCart) => {
           const order = parseCart(updatedCart)
-          if (order.lineItems.length <= 0) return
+          if (order.lineItems.length === 0) {
+            cleanupPopups()
+            return
+          }
           containerSelector = getWidgetContainer(widgetId)
           if (!document.querySelector(containerSelector)) return
           return window[cartWidgetWindowKey]!.render({ order }, containerSelector)
@@ -474,7 +486,10 @@ function runGreenspark() {
       .then((cartData) => {
         if (!cartData) return
         const order = parseCart(cartData)
-        if (order.lineItems.length === 0) return
+        if (order.lineItems.length === 0) {
+          cleanupPopups()
+          return
+        }
 
         containerSelector = getWidgetContainer(widgetId)
         if (!document.querySelector(containerSelector)) return
@@ -645,10 +660,7 @@ function runGreenspark() {
   }
 
   const movePopupToBody = (widgetId: string) => {
-    popupHistory.forEach((outdatedPopup) => {
-      outdatedPopup.innerHTML = ''
-      outdatedPopup.style.display = 'none'
-    })
+    cleanupPopups()
 
     const parent = document.getElementById(widgetId)
     const popup = parent?.querySelector<HTMLElement>('div[class^="gs-popup-"]')
