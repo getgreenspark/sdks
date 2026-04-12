@@ -46,6 +46,35 @@ export const VALID_WIDGET_TYPES: ReadonlySet<string> = new Set<WidgetType>([
   'banner',
 ])
 
+/**
+ * Legacy theme/HTML placements used a base64 `id` on the target div: `btoa("0|widgetId")`.
+ * Digit maps to the widget kind (pre–Page Builder). Kept so older storefront markup keeps working.
+ */
+export type LegacyWidgetVariant =
+  | 'orderImpacts'
+  | 'offsetPerOrder'
+  | 'offsetByProduct'
+  | 'offsetBySpend'
+  | 'offsetByStoreRevenue'
+  | 'byPercentage'
+  | 'byPercentageOfRevenue'
+  | 'stats'
+  | 'static'
+  | 'banner'
+
+export const LEGACY_ENUM_TO_VARIANT: Record<string, LegacyWidgetVariant> = {
+  '0': 'orderImpacts',
+  '1': 'offsetPerOrder',
+  '2': 'offsetByProduct',
+  '3': 'offsetBySpend',
+  '4': 'offsetByStoreRevenue',
+  '5': 'byPercentage',
+  '6': 'byPercentageOfRevenue',
+  '7': 'stats',
+  '8': 'static',
+  '9': 'banner',
+} as const
+
 /** Cart currency object in Storefront API responses. */
 export interface StorefrontCartCurrency {
   code: string

@@ -8,8 +8,14 @@ import {
 import {createCartApi} from './cart'
 import {getWidgetContainer, movePopupToBody} from './dom'
 import {err} from './debug'
-import {VALID_WIDGET_TYPES, type WidgetTargetConfig, type WidgetType} from './interfaces'
-import {renderWidget} from './widgets'
+import {
+  LEGACY_ENUM_TO_VARIANT,
+  VALID_WIDGET_TYPES,
+  type LegacyWidgetVariant,
+  type WidgetTargetConfig,
+  type WidgetType,
+} from './interfaces'
+import {renderLegacyWidget, renderWidget} from './widgets'
 
 const MAX_RETRIES = 5
 let retryCount = 0
@@ -32,8 +38,9 @@ function injectWidgetStyles(): void {
 /** Parse data-* attributes from a widget target div into a typed config object. */
 function parseWidgetConfig(el: HTMLElement): WidgetTargetConfig | null {
   const widgetType = el.getAttribute('data-widget-type')?.trim()
-  if (!widgetType || !VALID_WIDGET_TYPES.has(widgetType)) {
-    err('run: unknown or missing data-widget-type:', widgetType)
+  if (!widgetType) return null
+  if (!VALID_WIDGET_TYPES.has(widgetType)) {
+    err('run: unknown data-widget-type:', widgetType, '— expected one of:', [...VALID_WIDGET_TYPES].join(', '))
     return null
   }
 
@@ -59,6 +66,24 @@ function ensureTargetId(el: HTMLElement, index: number): string {
     el.id = `gs-target-${index}`
   }
   return el.id
+}
+
+/**
+ * Pre–Page Builder: target div had `id` set to base64(`"<enumDigit>|<widgetEditorId>"`).
+ * Returns null if the element does not use that pattern.
+ */
+function tryParseLegacyWidgetTarget(el: HTMLElement): {widgetId: string; variant: LegacyWidgetVariant} | null {
+  const rawId = el.id?.trim()
+  if (!rawId) return null
+  let decoded: string
+  try {
+    decoded = atob(rawId)
+  } catch {
+    return null
+  }
+  const [typeDigit] = decoded.split('|')
+  if (!typeDigit || !LEGACY_ENUM_TO_VARIANT[typeDigit]) return null
+  return {widgetId: rawId, variant: LEGACY_ENUM_TO_VARIANT[typeDigit]}
 }
 
 export function runGreenspark(): void {
@@ -118,13 +143,26 @@ export function runGreenspark(): void {
     }
     targets.forEach((target, index) => {
       const el = target as HTMLElement
-      const widgetConfig = parseWidgetConfig(el)
-      if (!widgetConfig) return
-
-      const targetId = ensureTargetId(el, index)
       el.querySelectorAll('.greenspark-widget-instance').forEach((e) => e.remove())
-      const containerSelector = getWidgetContainer(targetId)
-      renderWidget(ctx, widgetConfig, targetId, containerSelector)
+
+      const widgetConfig = parseWidgetConfig(el)
+      if (widgetConfig) {
+        const targetId = ensureTargetId(el, index)
+        const containerSelector = getWidgetContainer(targetId)
+        renderWidget(ctx, widgetConfig, targetId, containerSelector)
+        return
+      }
+
+      const legacy = tryParseLegacyWidgetTarget(el)
+      if (legacy) {
+        const containerSelector = getWidgetContainer(legacy.widgetId)
+        renderLegacyWidget(ctx, legacy.variant, legacy.widgetId, containerSelector)
+        return
+      }
+
+      err(
+        'run: widget target needs data-widget-type (Page Builder) or a legacy base64 id (theme). See Greenspark BigCommerce install guide.',
+      )
     })
   }
 

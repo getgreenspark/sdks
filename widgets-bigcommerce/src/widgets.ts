@@ -1,5 +1,5 @@
 import {err} from './debug'
-import type {RunContext, WidgetTargetConfig} from './interfaces'
+import type {LegacyWidgetVariant, RunContext, WidgetTargetConfig} from './interfaces'
 import {movePopupToBody} from './dom'
 import type {GreensparkCartWidgetKey} from './global'
 
@@ -218,4 +218,131 @@ export function renderWidget(ctx: RunContext, config: WidgetTargetConfig, target
     return
   }
   fn()
+}
+
+// ---------------------------------------------------------------------------
+// Legacy: base64 element `id` (type digit | widget id) + *ById API
+// ---------------------------------------------------------------------------
+
+function renderLegacyOffsetPerOrder(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  const {greenspark, useShadowDom, version} = ctx
+  renderWithPopup(widgetId, () =>
+    greenspark.perOrderById({widgetId, containerSelector, useShadowDom, version}).render(),
+  )
+}
+
+function renderLegacyOffsetByProduct(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  const {greenspark, productId, useShadowDom, version} = ctx
+  renderWithPopup(widgetId, () =>
+    greenspark.perProductById({widgetId, productId, containerSelector, useShadowDom, version}).render(),
+  )
+}
+
+function renderLegacyOffsetBySpend(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  const {greenspark, currency, useShadowDom, version} = ctx
+  renderWithPopup(widgetId, () =>
+    greenspark.spendLevelById({widgetId, currency, containerSelector, useShadowDom, version}).render(),
+  )
+}
+
+function renderLegacyOffsetByStoreRevenue(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  const {greenspark, currency, useShadowDom, version} = ctx
+  renderWithPopup(widgetId, () =>
+    greenspark.tieredSpendLevelById({widgetId, currency, containerSelector, useShadowDom, version}).render(),
+  )
+}
+
+function renderLegacyByPercentage(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  const {greenspark, useShadowDom, version} = ctx
+  renderWithPopup(widgetId, () =>
+    greenspark.byPercentageById({widgetId, containerSelector, useShadowDom, version}).render(),
+  )
+}
+
+function renderLegacyByPercentageOfRevenue(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  const {greenspark, useShadowDom, version} = ctx
+  renderWithPopup(widgetId, () =>
+    greenspark.byPercentageOfRevenueById({widgetId, containerSelector, useShadowDom, version}).render(),
+  )
+}
+
+function renderLegacyStats(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  const {greenspark, useShadowDom, version} = ctx
+  renderWithPopup(widgetId, () =>
+    greenspark.topStatsById({widgetId, containerSelector, useShadowDom, version}).render(),
+  )
+}
+
+function renderLegacyStatic(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  const {greenspark, useShadowDom, version} = ctx
+  renderWithPopup(widgetId, () =>
+    greenspark.staticById({widgetId, containerSelector, useShadowDom, version}).render(),
+  )
+}
+
+function renderLegacyBanner(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  const {greenspark, useShadowDom, version} = ctx
+  renderWithPopup(widgetId, () =>
+    greenspark.fullWidthBannerById({widgetId, containerSelector, useShadowDom, version}).render(),
+  )
+}
+
+function renderLegacyOrderImpacts(ctx: RunContext, widgetId: string, containerSelector: string): void {
+  const targetEl = document.getElementById(widgetId)
+  if (!targetEl || !document.querySelector(containerSelector)) return
+
+  const {cartApi, getWidgetContainer, movePopupToBody: moveFn, greenspark, useShadowDom, version} = ctx
+  const {getCart} = cartApi
+  const cartWidgetWindowKey = `greensparkCartWidget-${widgetId}` as GreensparkCartWidgetKey
+
+  if (window[cartWidgetWindowKey]) {
+    getCart()
+      .then((order) => {
+        if (order.lineItems.length <= 0) return
+        const sel = getWidgetContainer(widgetId)
+        if (!document.querySelector(sel)) return
+        return window[cartWidgetWindowKey]!
+          .render({order}, sel)
+          .then(() => moveFn(widgetId))
+          .catch((e: unknown) => err('render: order-impacts render error', e))
+      })
+    return
+  }
+
+  getCart()
+    .then((order) => {
+      if (order.lineItems.length === 0) return
+      const sel = getWidgetContainer(widgetId)
+      if (!document.querySelector(sel)) return
+      const widget = greenspark.cartById({
+        widgetId,
+        containerSelector: sel,
+        useShadowDom,
+        order,
+        version,
+      })
+      ;(window as unknown as Record<string, unknown>)[cartWidgetWindowKey] = widget
+      return widget
+        .render({order}, sel)
+        .then(() => moveFn(widgetId))
+        .catch((e: Error) => err('render: order-impacts widget render error', e))
+    })
+    .catch((e: unknown) => err('render: order-impacts Error fetching cart:', e))
+}
+
+/** Renders a widget placed with the pre-Page Builder pattern (`id` = base64 `"<digit>|<id>"`). */
+export function renderLegacyWidget(ctx: RunContext, variant: LegacyWidgetVariant, widgetId: string, containerSelector: string): void {
+  const fns: Record<LegacyWidgetVariant, () => void> = {
+    orderImpacts: () => renderLegacyOrderImpacts(ctx, widgetId, containerSelector),
+    offsetPerOrder: () => renderLegacyOffsetPerOrder(ctx, widgetId, containerSelector),
+    offsetByProduct: () => renderLegacyOffsetByProduct(ctx, widgetId, containerSelector),
+    offsetBySpend: () => renderLegacyOffsetBySpend(ctx, widgetId, containerSelector),
+    offsetByStoreRevenue: () => renderLegacyOffsetByStoreRevenue(ctx, widgetId, containerSelector),
+    byPercentage: () => renderLegacyByPercentage(ctx, widgetId, containerSelector),
+    byPercentageOfRevenue: () => renderLegacyByPercentageOfRevenue(ctx, widgetId, containerSelector),
+    stats: () => renderLegacyStats(ctx, widgetId, containerSelector),
+    static: () => renderLegacyStatic(ctx, widgetId, containerSelector),
+    banner: () => renderLegacyBanner(ctx, widgetId, containerSelector),
+  }
+  fns[variant]()
 }
