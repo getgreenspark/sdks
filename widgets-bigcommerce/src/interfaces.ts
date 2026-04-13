@@ -2,6 +2,76 @@ export interface BigCommerceConfig {
   integrationSlug: string
 }
 
+/** Widget type identifiers as defined in the BigCommerce Page Builder schema. */
+export type WidgetType =
+  | 'stats'
+  | 'static'
+  | 'perOrder'
+  | 'perProduct'
+  | 'cart'
+  | 'spendLevel'
+  | 'tieredSpendLevel'
+  | 'byPercentage'
+  | 'byPercentageOfRevenue'
+  | 'banner'
+
+/** Parsed data-* configuration from a widget target div. */
+export interface WidgetTargetConfig {
+  widgetType: WidgetType
+  color?: string
+  style?: string
+  withPopup?: boolean
+  popupTheme?: string
+  /* Banner-specific fields */
+  title?: string
+  description?: string
+  imageUrl?: string
+  ctaUrl?: string
+  textColor?: string
+  buttonBgColor?: string
+  buttonTextColor?: string
+  /** Comma-separated fullWidthBanner statistic keys from Page Builder (parsed in widgets.ts). */
+  bannerOptions?: string
+}
+
+export const WIDGET_TYPES: ReadonlySet<string> = new Set<WidgetType>([
+  'stats',
+  'static',
+  'perOrder',
+  'perProduct',
+  'cart',
+  'spendLevel',
+  'tieredSpendLevel',
+  'byPercentage',
+  'byPercentageOfRevenue',
+  'banner',
+])
+
+export type WidgetByIdType =
+  | 'orderImpacts'
+  | 'offsetPerOrder'
+  | 'offsetByProduct'
+  | 'offsetBySpend'
+  | 'offsetByStoreRevenue'
+  | 'byPercentage'
+  | 'byPercentageOfRevenue'
+  | 'stats'
+  | 'static'
+  | 'banner'
+
+export const EnumToWidgetTypeMap: Record<string, WidgetByIdType> = {
+  '0': 'orderImpacts',
+  '1': 'offsetPerOrder',
+  '2': 'offsetByProduct',
+  '3': 'offsetBySpend',
+  '4': 'offsetByStoreRevenue',
+  '5': 'byPercentage',
+  '6': 'byPercentageOfRevenue',
+  '7': 'stats',
+  '8': 'static',
+  '9': 'banner',
+} as const
+
 /** Cart currency object in Storefront API responses. */
 export interface StorefrontCartCurrency {
   code: string
@@ -68,28 +138,3 @@ export interface RunContext {
   useShadowDom: boolean
   version: 'v2'
 }
-
-export type WidgetVariant =
-  | 'orderImpacts'
-  | 'offsetPerOrder'
-  | 'offsetByProduct'
-  | 'offsetBySpend'
-  | 'offsetByStoreRevenue'
-  | 'byPercentage'
-  | 'byPercentageOfRevenue'
-  | 'stats'
-  | 'static'
-  | 'banner'
-
-export const EnumToWidgetTypeMap: Record<string, WidgetVariant> = {
-  '0': 'orderImpacts',
-  '1': 'offsetPerOrder',
-  '2': 'offsetByProduct',
-  '3': 'offsetBySpend',
-  '4': 'offsetByStoreRevenue',
-  '5': 'byPercentage',
-  '6': 'byPercentageOfRevenue',
-  '7': 'stats',
-  '8': 'static',
-  '9': 'banner',
-} as const

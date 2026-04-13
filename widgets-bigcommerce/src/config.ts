@@ -1,11 +1,12 @@
 import {err} from './debug'
 import type {BigCommerceConfig} from './interfaces'
 
-const IS_DEV_STORE = false as const
-
-export const widgetUrl = IS_DEV_STORE
-  ? 'https://cdn.getgreenspark.com/scripts/widgets%402.6.1-3.js'
-  : 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
+export const getWidgetUrl = () => {
+  const isDevStore = getIntegrationSlugFromTarget() === 'x7xpxqvqcf'
+  return isDevStore
+    ? 'https://cdn.getgreenspark.com/scripts/widgets%402.6.2-5.js'
+    : 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
+}
 
 export function getScriptSrc(): string | undefined {
   if (typeof document === 'undefined') return undefined
@@ -35,9 +36,11 @@ export function getProductIdFromPage(): string {
 
 function getIntegrationSlugFromTarget(): string | null {
   if (typeof document === 'undefined') return null
-  const first = document.querySelector('.greenspark-widget-target') as HTMLElement | null
-  const slug = first?.getAttribute?.('data-integration-slug')?.trim()
-  return slug || null
+  for (const el of document.querySelectorAll('.greenspark-widget-target')) {
+    const slug = (el as HTMLElement).getAttribute('data-integration-slug')?.trim()
+    if (slug) return slug
+  }
+  return null
 }
 
 export function getConfig(): BigCommerceConfig | null {

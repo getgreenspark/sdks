@@ -8,8 +8,14 @@ import {
 import {createCartApi} from './cart'
 import {getWidgetContainer, movePopupToBody} from './dom'
 import {err} from './debug'
-import {EnumToWidgetTypeMap, type WidgetVariant} from './interfaces'
-import {renderWidget} from './widgets'
+import {
+  EnumToWidgetTypeMap,
+  WIDGET_TYPES,
+  type WidgetByIdType,
+  type WidgetTargetConfig,
+  type WidgetType,
+} from './interfaces'
+import {renderWidget, renderWidgetById} from './widgets'
 
 const MAX_RETRIES = 5
 let retryCount = 0
@@ -27,6 +33,61 @@ function injectWidgetStyles(): void {
     }
   `
   document.head.appendChild(style)
+}
+
+/** Parse data-* attributes from a widget target div into a typed config object. */
+function parseWidgetConfig(el: HTMLElement): WidgetTargetConfig | null {
+  const widgetType = el.getAttribute('data-widget-type')?.trim()
+  if (!widgetType) return null
+  if (!WIDGET_TYPES.has(widgetType)) {
+    err('run: unknown data-widget-type:', widgetType, '— expected one of:', [...WIDGET_TYPES].join(', '))
+    return null
+  }
+
+  return {
+    widgetType: widgetType as WidgetType,
+    color: el.getAttribute('data-color') ?? undefined,
+    style: el.getAttribute('data-style') ?? undefined,
+    withPopup: el.getAttribute('data-with-popup') === null ? undefined : el.getAttribute('data-with-popup') === 'true',
+    popupTheme: el.getAttribute('data-popup-theme') ?? undefined,
+    title: el.getAttribute('data-title') ?? undefined,
+    description: el.getAttribute('data-description') ?? undefined,
+    imageUrl: el.getAttribute('data-image-url') ?? undefined,
+    ctaUrl: el.getAttribute('data-cta-url') ?? undefined,
+    textColor: el.getAttribute('data-text-color') ?? undefined,
+    buttonBgColor: el.getAttribute('data-button-bg-color') ?? undefined,
+    buttonTextColor: el.getAttribute('data-button-text-color') ?? undefined,
+    bannerOptions: el.getAttribute('data-banner-options') ?? undefined,
+  }
+}
+
+/** Assign a stable unique ID to each target div so dom.ts helpers can reference it. */
+function ensureTargetId(el: HTMLElement, index: number): string {
+  if (!el.id) {
+    el.id = `gs-target-${index}`
+  }
+  return el.id
+}
+
+/**
+ * Script + placement div: `id` is base64(`"<enumDigit>|<widgetEditorId>"`), same as widgets-shopify.
+ * Returns null if the element does not use that pattern.
+ */
+function tryParseEncodedPlacementWidgetId(el: HTMLElement): {
+  widgetId: string;
+  variant: WidgetByIdType
+} | null {
+  const rawId = el.id?.trim()
+  if (!rawId) return null
+  let decoded: string
+  try {
+    decoded = atob(rawId)
+  } catch {
+    return null
+  }
+  const [typeDigit] = decoded.split('|')
+  if (!typeDigit || !EnumToWidgetTypeMap[typeDigit]) return null
+  return {widgetId: rawId, variant: EnumToWidgetTypeMap[typeDigit]}
 }
 
 export function runGreenspark(): void {
@@ -82,27 +143,34 @@ export function runGreenspark(): void {
     injectWidgetStyles()
     const targets = document.querySelectorAll('.greenspark-widget-target')
     if (targets.length === 0) {
-      err('run: no .greenspark-widget-target in DOM – ensure template outputs a div with class greenspark-widget-target and id = base64(widgetType|widgetId)')
+      err(
+        'run: no .greenspark-widget-target in DOM – add a Page Builder widget or a placement div with the Greenspark script',
+      )
     }
-    targets.forEach((target) => {
+    targets.forEach((target, index) => {
       const el = target as HTMLElement
-      const rawId = el.id
       el.querySelectorAll('.greenspark-widget-instance').forEach((e) => e.remove())
-      let type: string
-      try {
-        ;[type] = atob(rawId).split('|')
-      } catch (e) {
-        err('run: invalid widget id (not base64 type|widgetId):', rawId, e)
+
+      // Page Builder / widget template: inline config on data-* attributes + direct widget API
+      const templateConfig = parseWidgetConfig(el)
+      if (templateConfig) {
+        const targetId = ensureTargetId(el, index)
+        const containerSelector = getWidgetContainer(targetId)
+        renderWidget(ctx, templateConfig, targetId, containerSelector)
         return
       }
-      const variant = EnumToWidgetTypeMap[type] as WidgetVariant | undefined
-      if (!variant) {
-        err('run: unknown widget type', type, '– known types: 0–9 (see EnumToWidgetTypeMap)')
+
+      // Script + placement div: encoded element id + *ById API (same pattern as widgets-shopify)
+      const placement = tryParseEncodedPlacementWidgetId(el)
+      if (placement) {
+        const containerSelector = getWidgetContainer(placement.widgetId)
+        renderWidgetById(ctx, placement.variant, placement.widgetId, containerSelector)
         return
       }
-      const widgetId = rawId
-      const containerSelector = getWidgetContainer(widgetId)
-      renderWidget(ctx, variant, widgetId, containerSelector)
+
+      err(
+        'run: each .greenspark-widget-target needs either data-widget-type (Page Builder) or id = base64("0–9|widgetId") (script/placement). See Greenspark BigCommerce guide.',
+      )
     })
   }
 
@@ -158,4 +226,3 @@ function interceptCartMutations(onCartChange: () => void): void {
     originalSend.call(this, body)
   }
 }
-
