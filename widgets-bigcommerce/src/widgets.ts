@@ -3,19 +3,19 @@ import type {RunContext, WidgetByIdType, WidgetTargetConfig} from './interfaces'
 import {movePopupToBody} from './dom'
 import type {GreensparkCartWidgetKey} from './global'
 
-function renderWithPopup(targetId: string, render: () => Promise<unknown>): void {
+function renderWithPopup(widgetId: string, render: () => Promise<unknown>): void {
   render()
-    .then(() => movePopupToBody(targetId))
+    .then(() => movePopupToBody(widgetId))
     .catch((e: unknown) => {
       if ((e as { response?: unknown }).response === undefined) {
-        err('render: renderWithPopup failed', targetId, e)
+        err('render: renderWithPopup failed', widgetId, e)
       }
     })
 }
 
-function renderStats(ctx: RunContext, config: WidgetTargetConfig, targetId: string, containerSelector: string): void {
+function renderStats(ctx: RunContext, config: WidgetTargetConfig, widgetId: string, containerSelector: string): void {
   const {greenspark, useShadowDom, version} = ctx
-  renderWithPopup(targetId, () =>
+  renderWithPopup(widgetId, () =>
     greenspark.topStats({
       color: config.color as never,
       withPopup: config.withPopup,
@@ -27,9 +27,9 @@ function renderStats(ctx: RunContext, config: WidgetTargetConfig, targetId: stri
   )
 }
 
-function renderStatic(ctx: RunContext, config: WidgetTargetConfig, targetId: string, containerSelector: string): void {
+function renderStatic(ctx: RunContext, config: WidgetTargetConfig, widgetId: string, containerSelector: string): void {
   const {greenspark, useShadowDom, version} = ctx
-  renderWithPopup(targetId, () =>
+  renderWithPopup(widgetId, () =>
     greenspark.static({
       color: config.color as never,
       style: config.style as never,
@@ -40,9 +40,9 @@ function renderStatic(ctx: RunContext, config: WidgetTargetConfig, targetId: str
   )
 }
 
-function renderPerOrder(ctx: RunContext, config: WidgetTargetConfig, targetId: string, containerSelector: string): void {
+function renderPerOrder(ctx: RunContext, config: WidgetTargetConfig, widgetId: string, containerSelector: string): void {
   const {greenspark, useShadowDom, version} = ctx
-  renderWithPopup(targetId, () =>
+  renderWithPopup(widgetId, () =>
     greenspark.perOrder({
       color: config.color as never,
       style: config.style as never,
@@ -55,9 +55,9 @@ function renderPerOrder(ctx: RunContext, config: WidgetTargetConfig, targetId: s
   )
 }
 
-function renderPerProduct(ctx: RunContext, config: WidgetTargetConfig, targetId: string, containerSelector: string): void {
+function renderPerProduct(ctx: RunContext, config: WidgetTargetConfig, widgetId: string, containerSelector: string): void {
   const {greenspark, productId, useShadowDom, version} = ctx
-  renderWithPopup(targetId, () =>
+  renderWithPopup(widgetId, () =>
     greenspark.perProduct({
       color: config.color as never,
       style: config.style as never,
@@ -71,8 +71,8 @@ function renderPerProduct(ctx: RunContext, config: WidgetTargetConfig, targetId:
   )
 }
 
-function renderCart(ctx: RunContext, config: WidgetTargetConfig, targetId: string, containerSelector: string): void {
-  const targetEl = document.getElementById(targetId)
+function renderCart(ctx: RunContext, config: WidgetTargetConfig, widgetId: string, containerSelector: string): void {
+  const targetEl = document.getElementById(widgetId)
   if (!targetEl || !document.querySelector(containerSelector)) return
 
   const {
@@ -84,17 +84,17 @@ function renderCart(ctx: RunContext, config: WidgetTargetConfig, targetId: strin
     version
   } = ctx
   const {getCart} = cartApi
-  const cartWidgetWindowKey = `greensparkCartWidget-${targetId}` as GreensparkCartWidgetKey
+  const cartWidgetWindowKey = `greensparkCartWidget-${widgetId}` as GreensparkCartWidgetKey
 
   if (window[cartWidgetWindowKey]) {
     getCart()
       .then((order) => {
         if (order.lineItems.length <= 0) return
-        const sel = getWidgetContainer(targetId)
+        const sel = getWidgetContainer(widgetId)
         if (!document.querySelector(sel)) return
         return window[cartWidgetWindowKey]!
           .render({order}, sel)
-          .then(() => moveFn(targetId))
+          .then(() => moveFn(widgetId))
           .catch((e: unknown) => err('render: cart render error', e))
       })
     return
@@ -103,7 +103,7 @@ function renderCart(ctx: RunContext, config: WidgetTargetConfig, targetId: strin
   getCart()
     .then((order) => {
       if (order.lineItems.length === 0) return
-      const sel = getWidgetContainer(targetId)
+      const sel = getWidgetContainer(widgetId)
       if (!document.querySelector(sel)) return
       const widget = greenspark.cart({
           color: config.color as never,
@@ -118,15 +118,15 @@ function renderCart(ctx: RunContext, config: WidgetTargetConfig, targetId: strin
       ;(window as unknown as Record<string, unknown>)[cartWidgetWindowKey] = widget
       return widget
         .render({order}, sel)
-        .then(() => moveFn(targetId))
+        .then(() => moveFn(widgetId))
         .catch((e: Error) => err('render: cart widget render error', e))
     })
     .catch((e: unknown) => err('render: cart Error fetching cart:', e))
 }
 
-function renderSpendLevel(ctx: RunContext, config: WidgetTargetConfig, targetId: string, containerSelector: string): void {
+function renderSpendLevel(ctx: RunContext, config: WidgetTargetConfig, widgetId: string, containerSelector: string): void {
   const {greenspark, currency, useShadowDom, version} = ctx
-  renderWithPopup(targetId, () =>
+  renderWithPopup(widgetId, () =>
     greenspark.spendLevel({
       color: config.color as never,
       style: config.style as never,
@@ -140,9 +140,9 @@ function renderSpendLevel(ctx: RunContext, config: WidgetTargetConfig, targetId:
   )
 }
 
-function renderTieredSpendLevel(ctx: RunContext, config: WidgetTargetConfig, targetId: string, containerSelector: string): void {
+function renderTieredSpendLevel(ctx: RunContext, config: WidgetTargetConfig, widgetId: string, containerSelector: string): void {
   const {greenspark, currency, useShadowDom, version} = ctx
-  renderWithPopup(targetId, () =>
+  renderWithPopup(widgetId, () =>
     greenspark.tieredSpendLevel({
       color: config.color as never,
       style: config.style as never,
@@ -156,9 +156,9 @@ function renderTieredSpendLevel(ctx: RunContext, config: WidgetTargetConfig, tar
   )
 }
 
-function renderByPercentage(ctx: RunContext, config: WidgetTargetConfig, targetId: string, containerSelector: string): void {
+function renderByPercentage(ctx: RunContext, config: WidgetTargetConfig, widgetId: string, containerSelector: string): void {
   const {greenspark, useShadowDom, version} = ctx
-  renderWithPopup(targetId, () =>
+  renderWithPopup(widgetId, () =>
     greenspark.byPercentage({
       color: config.color as never,
       style: config.style as never,
@@ -171,9 +171,9 @@ function renderByPercentage(ctx: RunContext, config: WidgetTargetConfig, targetI
   )
 }
 
-function renderByPercentageOfRevenue(ctx: RunContext, config: WidgetTargetConfig, targetId: string, containerSelector: string): void {
+function renderByPercentageOfRevenue(ctx: RunContext, config: WidgetTargetConfig, widgetId: string, containerSelector: string): void {
   const {greenspark, useShadowDom, version} = ctx
-  renderWithPopup(targetId, () =>
+  renderWithPopup(widgetId, () =>
     greenspark.byPercentageOfRevenue({
       color: config.color as never,
       style: config.style as never,
@@ -186,9 +186,9 @@ function renderByPercentageOfRevenue(ctx: RunContext, config: WidgetTargetConfig
   )
 }
 
-function renderBanner(ctx: RunContext, config: WidgetTargetConfig, targetId: string, containerSelector: string): void {
+function renderBanner(ctx: RunContext, config: WidgetTargetConfig, widgetId: string, containerSelector: string): void {
   const {greenspark, useShadowDom, version} = ctx
-  renderWithPopup(targetId, () =>
+  renderWithPopup(widgetId, () =>
     greenspark.fullWidthBanner({
       options: [],
       imageUrl: config.imageUrl,
@@ -206,18 +206,18 @@ function renderBanner(ctx: RunContext, config: WidgetTargetConfig, targetId: str
 }
 
 /** Dispatch to the correct render function based on the widget type from Page Builder config. */
-export function renderWidget(ctx: RunContext, config: WidgetTargetConfig, targetId: string, containerSelector: string): void {
+export function renderWidget(ctx: RunContext, config: WidgetTargetConfig, widgetId: string, containerSelector: string): void {
   const dispatch: Record<string, () => void> = {
-    stats: () => renderStats(ctx, config, targetId, containerSelector),
-    static: () => renderStatic(ctx, config, targetId, containerSelector),
-    perOrder: () => renderPerOrder(ctx, config, targetId, containerSelector),
-    perProduct: () => renderPerProduct(ctx, config, targetId, containerSelector),
-    cart: () => renderCart(ctx, config, targetId, containerSelector),
-    spendLevel: () => renderSpendLevel(ctx, config, targetId, containerSelector),
-    tieredSpendLevel: () => renderTieredSpendLevel(ctx, config, targetId, containerSelector),
-    byPercentage: () => renderByPercentage(ctx, config, targetId, containerSelector),
-    byPercentageOfRevenue: () => renderByPercentageOfRevenue(ctx, config, targetId, containerSelector),
-    banner: () => renderBanner(ctx, config, targetId, containerSelector),
+    stats: () => renderStats(ctx, config, widgetId, containerSelector),
+    static: () => renderStatic(ctx, config, widgetId, containerSelector),
+    perOrder: () => renderPerOrder(ctx, config, widgetId, containerSelector),
+    perProduct: () => renderPerProduct(ctx, config, widgetId, containerSelector),
+    cart: () => renderCart(ctx, config, widgetId, containerSelector),
+    spendLevel: () => renderSpendLevel(ctx, config, widgetId, containerSelector),
+    tieredSpendLevel: () => renderTieredSpendLevel(ctx, config, widgetId, containerSelector),
+    byPercentage: () => renderByPercentage(ctx, config, widgetId, containerSelector),
+    byPercentageOfRevenue: () => renderByPercentageOfRevenue(ctx, config, widgetId, containerSelector),
+    banner: () => renderBanner(ctx, config, widgetId, containerSelector),
   }
   const fn = dispatch[config.widgetType]
   if (!fn) {
