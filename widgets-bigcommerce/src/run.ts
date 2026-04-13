@@ -48,7 +48,7 @@ function parseWidgetConfig(el: HTMLElement): WidgetTargetConfig | null {
     widgetType: widgetType as WidgetType,
     color: el.getAttribute('data-color') ?? undefined,
     style: el.getAttribute('data-style') ?? undefined,
-    withPopup: el.getAttribute('data-with-popup') === 'true',
+    withPopup: el.getAttribute('data-with-popup') === null ? undefined : el.getAttribute('data-with-popup') === 'true',
     popupTheme: el.getAttribute('data-popup-theme') ?? undefined,
     title: el.getAttribute('data-title') ?? undefined,
     description: el.getAttribute('data-description') ?? undefined,

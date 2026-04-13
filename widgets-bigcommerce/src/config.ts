@@ -36,9 +36,11 @@ export function getProductIdFromPage(): string {
 
 function getIntegrationSlugFromTarget(): string | null {
   if (typeof document === 'undefined') return null
-  const first = document.querySelector('.greenspark-widget-target') as HTMLElement | null
-  const slug = first?.getAttribute?.('data-integration-slug')?.trim()
-  return slug || null
+  for (const el of document.querySelectorAll('.greenspark-widget-target')) {
+    const slug = (el as HTMLElement).getAttribute('data-integration-slug')?.trim()
+    if (slug) return slug
+  }
+  return null
 }
 
 export function getConfig(): BigCommerceConfig | null {
