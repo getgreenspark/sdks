@@ -3,6 +3,17 @@ import type {RunContext, WidgetByIdType, WidgetTargetConfig} from './interfaces'
 import {movePopupToBody} from './dom'
 import type {GreensparkCartWidgetKey} from './global'
 
+/**
+ * fullWidthBanner requires a non-empty `options` array of statistic keys (see widgets widget-validation).
+ * Merchants still customize copy and imagery via Page Builder fields on the widget.
+ */
+const DEFAULT_FULL_WIDTH_BANNER_OPTIONS = [
+  'monthsEarthPositive',
+  'trees',
+  'plastic',
+  'carbon',
+] as const
+
 function renderWithPopup(widgetId: string, render: () => Promise<unknown>): void {
   render()
     .then(() => movePopupToBody(widgetId))
@@ -57,6 +68,10 @@ function renderPerOrder(ctx: RunContext, config: WidgetTargetConfig, widgetId: s
 
 function renderPerProduct(ctx: RunContext, config: WidgetTargetConfig, widgetId: string, containerSelector: string): void {
   const {greenspark, productId, useShadowDom, version} = ctx
+  if (!productId?.trim()) {
+    err('render: perProduct skipped — no product id on this page (use a product detail page or placement ById).')
+    return
+  }
   renderWithPopup(widgetId, () =>
     greenspark.perProduct({
       color: config.color as never,
@@ -115,7 +130,7 @@ function renderCart(ctx: RunContext, config: WidgetTargetConfig, widgetId: strin
           useShadowDom,
           version,
         })
-      ;(window as unknown as Record<string, unknown>)[cartWidgetWindowKey] = widget
+      window[cartWidgetWindowKey] = widget
       return widget
         .render({order}, sel)
         .then(() => moveFn(widgetId))
@@ -190,7 +205,7 @@ function renderBanner(ctx: RunContext, config: WidgetTargetConfig, widgetId: str
   const {greenspark, useShadowDom, version} = ctx
   renderWithPopup(widgetId, () =>
     greenspark.fullWidthBanner({
-      options: [],
+      options: [...DEFAULT_FULL_WIDTH_BANNER_OPTIONS] as never,
       imageUrl: config.imageUrl,
       title: config.title,
       description: config.description,
@@ -358,7 +373,7 @@ function renderByIdOrderImpacts(ctx: RunContext, widgetId: string, containerSele
           order,
           version,
         })
-      ;(window as unknown as Record<string, unknown>)[cartWidgetWindowKey] = widget
+      window[cartWidgetWindowKey] = widget
       return widget
         .render({order}, sel)
         .then(() => moveFn(widgetId))
