@@ -4,7 +4,7 @@ import type {BigCommerceConfig} from './interfaces'
 export const getWidgetUrl = () => {
   const isDevStore = getIntegrationSlugFromTarget() === 'x7xpxqvqcf'
   return isDevStore
-    ? 'https://cdn.getgreenspark.com/scripts/widgets%402.6.2-4.js'
+    ? 'https://cdn.getgreenspark.com/scripts/widgets%402.6.2-5.js'
     : 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
 }
 
