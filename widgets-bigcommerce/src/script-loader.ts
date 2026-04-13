@@ -1,5 +1,5 @@
-import { err } from './debug'
-import { widgetUrl } from './config'
+import {err} from './debug'
+import {getWidgetUrl} from './config'
 
 const MAX_SCRIPT_RETRIES = 5
 let scriptRetryCount = 0
@@ -28,11 +28,11 @@ export async function setup(): Promise<void> {
   if (typeof window === 'undefined' || window.GreensparkWidgets) return
   if (document.readyState === 'loading') {
     return new Promise<void>((resolve) => {
-      document.addEventListener('DOMContentLoaded', () => setup().then(resolve), { once: true })
+      document.addEventListener('DOMContentLoaded', () => setup().then(resolve), {once: true})
     })
   }
   try {
-    await loadScript(widgetUrl)
+    await loadScript(getWidgetUrl())
     scriptRetryCount = 0
     window.dispatchEvent(new Event('greenspark-bigcommerce-setup'))
   } catch (error) {
