@@ -4,7 +4,7 @@ import type {BigCommerceConfig} from './interfaces'
 const IS_DEV_STORE = true as const
 
 export const widgetUrl = IS_DEV_STORE
-  ? 'https://cdn.getgreenspark.com/scripts/widgets%402.6.2-0.js'
+  ? 'https://cdn.getgreenspark.com/scripts/widgets%402.6.2-1.js'
   : 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
 
 export function getScriptSrc(): string | undefined {
