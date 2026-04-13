@@ -32,8 +32,7 @@ export interface WidgetTargetConfig {
   buttonTextColor?: string
 }
 
-/** All valid widget type strings for runtime validation. */
-export const VALID_WIDGET_TYPES: ReadonlySet<string> = new Set<WidgetType>([
+export const WIDGET_TYPES: ReadonlySet<string> = new Set<WidgetType>([
   'stats',
   'static',
   'perOrder',
@@ -46,11 +45,8 @@ export const VALID_WIDGET_TYPES: ReadonlySet<string> = new Set<WidgetType>([
   'banner',
 ])
 
-/**
- * Legacy theme/HTML placements used a base64 `id` on the target div: `btoa("0|widgetId")`.
- * Digit maps to the widget kind (pre–Page Builder). Kept so older storefront markup keeps working.
- */
-export type LegacyWidgetVariant =
+
+export type WidgetByIdType =
   | 'orderImpacts'
   | 'offsetPerOrder'
   | 'offsetByProduct'
@@ -62,7 +58,7 @@ export type LegacyWidgetVariant =
   | 'static'
   | 'banner'
 
-export const LEGACY_ENUM_TO_VARIANT: Record<string, LegacyWidgetVariant> = {
+export const WIDGET_BY_ID_TYPES: Record<string, WidgetByIdType> = {
   '0': 'orderImpacts',
   '1': 'offsetPerOrder',
   '2': 'offsetByProduct',

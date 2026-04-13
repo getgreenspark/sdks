@@ -1,5 +1,5 @@
 import {err} from './debug'
-import type {LegacyWidgetVariant, RunContext, WidgetTargetConfig} from './interfaces'
+import type {RunContext, WidgetByIdType, WidgetTargetConfig} from './interfaces'
 import {movePopupToBody} from './dom'
 import type {GreensparkCartWidgetKey} from './global'
 
@@ -7,7 +7,7 @@ function renderWithPopup(targetId: string, render: () => Promise<unknown>): void
   render()
     .then(() => movePopupToBody(targetId))
     .catch((e: unknown) => {
-      if ((e as {response?: unknown}).response === undefined) {
+      if ((e as { response?: unknown }).response === undefined) {
         err('render: renderWithPopup failed', targetId, e)
       }
     })
@@ -75,7 +75,14 @@ function renderCart(ctx: RunContext, config: WidgetTargetConfig, targetId: strin
   const targetEl = document.getElementById(targetId)
   if (!targetEl || !document.querySelector(containerSelector)) return
 
-  const {cartApi, getWidgetContainer, movePopupToBody: moveFn, greenspark, useShadowDom, version} = ctx
+  const {
+    cartApi,
+    getWidgetContainer,
+    movePopupToBody: moveFn,
+    greenspark,
+    useShadowDom,
+    version
+  } = ctx
   const {getCart} = cartApi
   const cartWidgetWindowKey = `greensparkCartWidget-${targetId}` as GreensparkCartWidgetKey
 
@@ -99,15 +106,15 @@ function renderCart(ctx: RunContext, config: WidgetTargetConfig, targetId: strin
       const sel = getWidgetContainer(targetId)
       if (!document.querySelector(sel)) return
       const widget = greenspark.cart({
-        color: config.color as never,
-        style: config.style as never,
-        withPopup: config.withPopup,
-        popupTheme: config.popupTheme as never,
-        order,
-        containerSelector: sel,
-        useShadowDom,
-        version,
-      })
+          color: config.color as never,
+          style: config.style as never,
+          withPopup: config.withPopup,
+          popupTheme: config.popupTheme as never,
+          order,
+          containerSelector: sel,
+          useShadowDom,
+          version,
+        })
       ;(window as unknown as Record<string, unknown>)[cartWidgetWindowKey] = widget
       return widget
         .render({order}, sel)
@@ -234,21 +241,39 @@ function renderLegacyOffsetPerOrder(ctx: RunContext, widgetId: string, container
 function renderLegacyOffsetByProduct(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const {greenspark, productId, useShadowDom, version} = ctx
   renderWithPopup(widgetId, () =>
-    greenspark.perProductById({widgetId, productId, containerSelector, useShadowDom, version}).render(),
+    greenspark.perProductById({
+      widgetId,
+      productId,
+      containerSelector,
+      useShadowDom,
+      version
+    }).render(),
   )
 }
 
 function renderLegacyOffsetBySpend(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const {greenspark, currency, useShadowDom, version} = ctx
   renderWithPopup(widgetId, () =>
-    greenspark.spendLevelById({widgetId, currency, containerSelector, useShadowDom, version}).render(),
+    greenspark.spendLevelById({
+      widgetId,
+      currency,
+      containerSelector,
+      useShadowDom,
+      version
+    }).render(),
   )
 }
 
 function renderLegacyOffsetByStoreRevenue(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const {greenspark, currency, useShadowDom, version} = ctx
   renderWithPopup(widgetId, () =>
-    greenspark.tieredSpendLevelById({widgetId, currency, containerSelector, useShadowDom, version}).render(),
+    greenspark.tieredSpendLevelById({
+      widgetId,
+      currency,
+      containerSelector,
+      useShadowDom,
+      version
+    }).render(),
   )
 }
 
@@ -262,7 +287,12 @@ function renderLegacyByPercentage(ctx: RunContext, widgetId: string, containerSe
 function renderLegacyByPercentageOfRevenue(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const {greenspark, useShadowDom, version} = ctx
   renderWithPopup(widgetId, () =>
-    greenspark.byPercentageOfRevenueById({widgetId, containerSelector, useShadowDom, version}).render(),
+    greenspark.byPercentageOfRevenueById({
+      widgetId,
+      containerSelector,
+      useShadowDom,
+      version
+    }).render(),
   )
 }
 
@@ -291,7 +321,14 @@ function renderLegacyOrderImpacts(ctx: RunContext, widgetId: string, containerSe
   const targetEl = document.getElementById(widgetId)
   if (!targetEl || !document.querySelector(containerSelector)) return
 
-  const {cartApi, getWidgetContainer, movePopupToBody: moveFn, greenspark, useShadowDom, version} = ctx
+  const {
+    cartApi,
+    getWidgetContainer,
+    movePopupToBody: moveFn,
+    greenspark,
+    useShadowDom,
+    version
+  } = ctx
   const {getCart} = cartApi
   const cartWidgetWindowKey = `greensparkCartWidget-${widgetId}` as GreensparkCartWidgetKey
 
@@ -315,12 +352,12 @@ function renderLegacyOrderImpacts(ctx: RunContext, widgetId: string, containerSe
       const sel = getWidgetContainer(widgetId)
       if (!document.querySelector(sel)) return
       const widget = greenspark.cartById({
-        widgetId,
-        containerSelector: sel,
-        useShadowDom,
-        order,
-        version,
-      })
+          widgetId,
+          containerSelector: sel,
+          useShadowDom,
+          order,
+          version,
+        })
       ;(window as unknown as Record<string, unknown>)[cartWidgetWindowKey] = widget
       return widget
         .render({order}, sel)
@@ -331,8 +368,8 @@ function renderLegacyOrderImpacts(ctx: RunContext, widgetId: string, containerSe
 }
 
 /** Renders a widget placed with the pre-Page Builder pattern (`id` = base64 `"<digit>|<id>"`). */
-export function renderLegacyWidget(ctx: RunContext, variant: LegacyWidgetVariant, widgetId: string, containerSelector: string): void {
-  const fns: Record<LegacyWidgetVariant, () => void> = {
+export function renderLegacyWidget(ctx: RunContext, variant: WidgetByIdType, widgetId: string, containerSelector: string): void {
+  const fns: Record<WidgetByIdType, () => void> = {
     orderImpacts: () => renderLegacyOrderImpacts(ctx, widgetId, containerSelector),
     offsetPerOrder: () => renderLegacyOffsetPerOrder(ctx, widgetId, containerSelector),
     offsetByProduct: () => renderLegacyOffsetByProduct(ctx, widgetId, containerSelector),

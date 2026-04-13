@@ -9,9 +9,9 @@ import {createCartApi} from './cart'
 import {getWidgetContainer, movePopupToBody} from './dom'
 import {err} from './debug'
 import {
-  LEGACY_ENUM_TO_VARIANT,
-  VALID_WIDGET_TYPES,
-  type LegacyWidgetVariant,
+  WIDGET_BY_ID_TYPES,
+  WIDGET_TYPES,
+  type WidgetByIdType,
   type WidgetTargetConfig,
   type WidgetType,
 } from './interfaces'
@@ -39,8 +39,8 @@ function injectWidgetStyles(): void {
 function parseWidgetConfig(el: HTMLElement): WidgetTargetConfig | null {
   const widgetType = el.getAttribute('data-widget-type')?.trim()
   if (!widgetType) return null
-  if (!VALID_WIDGET_TYPES.has(widgetType)) {
-    err('run: unknown data-widget-type:', widgetType, '— expected one of:', [...VALID_WIDGET_TYPES].join(', '))
+  if (!WIDGET_TYPES.has(widgetType)) {
+    err('run: unknown data-widget-type:', widgetType, '— expected one of:', [...WIDGET_TYPES].join(', '))
     return null
   }
 
@@ -72,7 +72,10 @@ function ensureTargetId(el: HTMLElement, index: number): string {
  * Pre–Page Builder: target div had `id` set to base64(`"<enumDigit>|<widgetEditorId>"`).
  * Returns null if the element does not use that pattern.
  */
-function tryParseLegacyWidgetTarget(el: HTMLElement): {widgetId: string; variant: LegacyWidgetVariant} | null {
+function tryParseLegacyWidgetTarget(el: HTMLElement): {
+  widgetId: string;
+  variant: WidgetByIdType
+} | null {
   const rawId = el.id?.trim()
   if (!rawId) return null
   let decoded: string
@@ -82,8 +85,8 @@ function tryParseLegacyWidgetTarget(el: HTMLElement): {widgetId: string; variant
     return null
   }
   const [typeDigit] = decoded.split('|')
-  if (!typeDigit || !LEGACY_ENUM_TO_VARIANT[typeDigit]) return null
-  return {widgetId: rawId, variant: LEGACY_ENUM_TO_VARIANT[typeDigit]}
+  if (!typeDigit || !WIDGET_BY_ID_TYPES[typeDigit]) return null
+  return {widgetId: rawId, variant: WIDGET_BY_ID_TYPES[typeDigit]}
 }
 
 export function runGreenspark(): void {
