@@ -228,17 +228,17 @@ export function renderWidget(ctx: RunContext, config: WidgetTargetConfig, target
 }
 
 // ---------------------------------------------------------------------------
-// Legacy: base64 element `id` (type digit | widget id) + *ById API
+// Script + placement div: encoded element `id` + *ById API
 // ---------------------------------------------------------------------------
 
-function renderLegacyOffsetPerOrder(ctx: RunContext, widgetId: string, containerSelector: string): void {
+function renderByIdOffsetPerOrder(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const {greenspark, useShadowDom, version} = ctx
   renderWithPopup(widgetId, () =>
     greenspark.perOrderById({widgetId, containerSelector, useShadowDom, version}).render(),
   )
 }
 
-function renderLegacyOffsetByProduct(ctx: RunContext, widgetId: string, containerSelector: string): void {
+function renderByIdOffsetByProduct(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const {greenspark, productId, useShadowDom, version} = ctx
   renderWithPopup(widgetId, () =>
     greenspark.perProductById({
@@ -251,7 +251,7 @@ function renderLegacyOffsetByProduct(ctx: RunContext, widgetId: string, containe
   )
 }
 
-function renderLegacyOffsetBySpend(ctx: RunContext, widgetId: string, containerSelector: string): void {
+function renderByIdOffsetBySpend(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const {greenspark, currency, useShadowDom, version} = ctx
   renderWithPopup(widgetId, () =>
     greenspark.spendLevelById({
@@ -264,7 +264,7 @@ function renderLegacyOffsetBySpend(ctx: RunContext, widgetId: string, containerS
   )
 }
 
-function renderLegacyOffsetByStoreRevenue(ctx: RunContext, widgetId: string, containerSelector: string): void {
+function renderByIdOffsetByStoreRevenue(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const {greenspark, currency, useShadowDom, version} = ctx
   renderWithPopup(widgetId, () =>
     greenspark.tieredSpendLevelById({
@@ -277,14 +277,14 @@ function renderLegacyOffsetByStoreRevenue(ctx: RunContext, widgetId: string, con
   )
 }
 
-function renderLegacyByPercentage(ctx: RunContext, widgetId: string, containerSelector: string): void {
+function renderByIdByPercentage(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const {greenspark, useShadowDom, version} = ctx
   renderWithPopup(widgetId, () =>
     greenspark.byPercentageById({widgetId, containerSelector, useShadowDom, version}).render(),
   )
 }
 
-function renderLegacyByPercentageOfRevenue(ctx: RunContext, widgetId: string, containerSelector: string): void {
+function renderByIdByPercentageOfRevenue(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const {greenspark, useShadowDom, version} = ctx
   renderWithPopup(widgetId, () =>
     greenspark.byPercentageOfRevenueById({
@@ -296,28 +296,28 @@ function renderLegacyByPercentageOfRevenue(ctx: RunContext, widgetId: string, co
   )
 }
 
-function renderLegacyStats(ctx: RunContext, widgetId: string, containerSelector: string): void {
+function renderByIdStats(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const {greenspark, useShadowDom, version} = ctx
   renderWithPopup(widgetId, () =>
     greenspark.topStatsById({widgetId, containerSelector, useShadowDom, version}).render(),
   )
 }
 
-function renderLegacyStatic(ctx: RunContext, widgetId: string, containerSelector: string): void {
+function renderByIdStatic(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const {greenspark, useShadowDom, version} = ctx
   renderWithPopup(widgetId, () =>
     greenspark.staticById({widgetId, containerSelector, useShadowDom, version}).render(),
   )
 }
 
-function renderLegacyBanner(ctx: RunContext, widgetId: string, containerSelector: string): void {
+function renderByIdBanner(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const {greenspark, useShadowDom, version} = ctx
   renderWithPopup(widgetId, () =>
     greenspark.fullWidthBannerById({widgetId, containerSelector, useShadowDom, version}).render(),
   )
 }
 
-function renderLegacyOrderImpacts(ctx: RunContext, widgetId: string, containerSelector: string): void {
+function renderByIdOrderImpacts(ctx: RunContext, widgetId: string, containerSelector: string): void {
   const targetEl = document.getElementById(widgetId)
   if (!targetEl || !document.querySelector(containerSelector)) return
 
@@ -367,19 +367,21 @@ function renderLegacyOrderImpacts(ctx: RunContext, widgetId: string, containerSe
     .catch((e: unknown) => err('render: order-impacts Error fetching cart:', e))
 }
 
-/** Renders a widget placed with the pre-Page Builder pattern (`id` = base64 `"<digit>|<id>"`). */
-export function renderLegacyWidget(ctx: RunContext, variant: WidgetByIdType, widgetId: string, containerSelector: string): void {
+/**
+ * Renders via *ById endpoints using the placement div `id` (base64 `enumDigit|widgetId`),
+ */
+export function renderWidgetById(ctx: RunContext, variant: WidgetByIdType, widgetId: string, containerSelector: string): void {
   const fns: Record<WidgetByIdType, () => void> = {
-    orderImpacts: () => renderLegacyOrderImpacts(ctx, widgetId, containerSelector),
-    offsetPerOrder: () => renderLegacyOffsetPerOrder(ctx, widgetId, containerSelector),
-    offsetByProduct: () => renderLegacyOffsetByProduct(ctx, widgetId, containerSelector),
-    offsetBySpend: () => renderLegacyOffsetBySpend(ctx, widgetId, containerSelector),
-    offsetByStoreRevenue: () => renderLegacyOffsetByStoreRevenue(ctx, widgetId, containerSelector),
-    byPercentage: () => renderLegacyByPercentage(ctx, widgetId, containerSelector),
-    byPercentageOfRevenue: () => renderLegacyByPercentageOfRevenue(ctx, widgetId, containerSelector),
-    stats: () => renderLegacyStats(ctx, widgetId, containerSelector),
-    static: () => renderLegacyStatic(ctx, widgetId, containerSelector),
-    banner: () => renderLegacyBanner(ctx, widgetId, containerSelector),
+    orderImpacts: () => renderByIdOrderImpacts(ctx, widgetId, containerSelector),
+    offsetPerOrder: () => renderByIdOffsetPerOrder(ctx, widgetId, containerSelector),
+    offsetByProduct: () => renderByIdOffsetByProduct(ctx, widgetId, containerSelector),
+    offsetBySpend: () => renderByIdOffsetBySpend(ctx, widgetId, containerSelector),
+    offsetByStoreRevenue: () => renderByIdOffsetByStoreRevenue(ctx, widgetId, containerSelector),
+    byPercentage: () => renderByIdByPercentage(ctx, widgetId, containerSelector),
+    byPercentageOfRevenue: () => renderByIdByPercentageOfRevenue(ctx, widgetId, containerSelector),
+    stats: () => renderByIdStats(ctx, widgetId, containerSelector),
+    static: () => renderByIdStatic(ctx, widgetId, containerSelector),
+    banner: () => renderByIdBanner(ctx, widgetId, containerSelector),
   }
   fns[variant]()
 }

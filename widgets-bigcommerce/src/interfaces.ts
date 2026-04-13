@@ -45,7 +45,6 @@ export const WIDGET_TYPES: ReadonlySet<string> = new Set<WidgetType>([
   'banner',
 ])
 
-
 export type WidgetByIdType =
   | 'orderImpacts'
   | 'offsetPerOrder'
@@ -58,7 +57,7 @@ export type WidgetByIdType =
   | 'static'
   | 'banner'
 
-export const WIDGET_BY_ID_TYPES: Record<string, WidgetByIdType> = {
+export const EnumToWidgetTypeMap: Record<string, WidgetByIdType> = {
   '0': 'orderImpacts',
   '1': 'offsetPerOrder',
   '2': 'offsetByProduct',

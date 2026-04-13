@@ -9,13 +9,13 @@ import {createCartApi} from './cart'
 import {getWidgetContainer, movePopupToBody} from './dom'
 import {err} from './debug'
 import {
-  WIDGET_BY_ID_TYPES,
+  EnumToWidgetTypeMap,
   WIDGET_TYPES,
   type WidgetByIdType,
   type WidgetTargetConfig,
   type WidgetType,
 } from './interfaces'
-import {renderLegacyWidget, renderWidget} from './widgets'
+import {renderWidget, renderWidgetById} from './widgets'
 
 const MAX_RETRIES = 5
 let retryCount = 0
@@ -69,10 +69,10 @@ function ensureTargetId(el: HTMLElement, index: number): string {
 }
 
 /**
- * Pre–Page Builder: target div had `id` set to base64(`"<enumDigit>|<widgetEditorId>"`).
+ * Script + placement div: `id` is base64(`"<enumDigit>|<widgetEditorId>"`), same as widgets-shopify.
  * Returns null if the element does not use that pattern.
  */
-function tryParseLegacyWidgetTarget(el: HTMLElement): {
+function tryParseEncodedPlacementWidgetId(el: HTMLElement): {
   widgetId: string;
   variant: WidgetByIdType
 } | null {
@@ -85,8 +85,8 @@ function tryParseLegacyWidgetTarget(el: HTMLElement): {
     return null
   }
   const [typeDigit] = decoded.split('|')
-  if (!typeDigit || !WIDGET_BY_ID_TYPES[typeDigit]) return null
-  return {widgetId: rawId, variant: WIDGET_BY_ID_TYPES[typeDigit]}
+  if (!typeDigit || !EnumToWidgetTypeMap[typeDigit]) return null
+  return {widgetId: rawId, variant: EnumToWidgetTypeMap[typeDigit]}
 }
 
 export function runGreenspark(): void {
@@ -142,29 +142,33 @@ export function runGreenspark(): void {
     injectWidgetStyles()
     const targets = document.querySelectorAll('.greenspark-widget-target')
     if (targets.length === 0) {
-      err('run: no .greenspark-widget-target in DOM – ensure Page Builder widget is placed on the page')
+      err(
+        'run: no .greenspark-widget-target in DOM – add a Page Builder widget or a placement div with the Greenspark script',
+      )
     }
     targets.forEach((target, index) => {
       const el = target as HTMLElement
       el.querySelectorAll('.greenspark-widget-instance').forEach((e) => e.remove())
 
-      const widgetConfig = parseWidgetConfig(el)
-      if (widgetConfig) {
+      // Page Builder / widget template: inline config on data-* attributes + direct widget API
+      const templateConfig = parseWidgetConfig(el)
+      if (templateConfig) {
         const targetId = ensureTargetId(el, index)
         const containerSelector = getWidgetContainer(targetId)
-        renderWidget(ctx, widgetConfig, targetId, containerSelector)
+        renderWidget(ctx, templateConfig, targetId, containerSelector)
         return
       }
 
-      const legacy = tryParseLegacyWidgetTarget(el)
-      if (legacy) {
-        const containerSelector = getWidgetContainer(legacy.widgetId)
-        renderLegacyWidget(ctx, legacy.variant, legacy.widgetId, containerSelector)
+      // Script + placement div: encoded element id + *ById API (same pattern as widgets-shopify)
+      const placement = tryParseEncodedPlacementWidgetId(el)
+      if (placement) {
+        const containerSelector = getWidgetContainer(placement.widgetId)
+        renderWidgetById(ctx, placement.variant, placement.widgetId, containerSelector)
         return
       }
 
       err(
-        'run: widget target needs data-widget-type (Page Builder) or a legacy base64 id (theme). See Greenspark BigCommerce install guide.',
+        'run: each .greenspark-widget-target needs either data-widget-type (Page Builder) or id = base64("0–9|widgetId") (script/placement). See Greenspark BigCommerce guide.',
       )
     })
   }
