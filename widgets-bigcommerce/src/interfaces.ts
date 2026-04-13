@@ -134,8 +134,8 @@ export interface CartApi {
 export interface RunContext {
   greenspark: InstanceType<Window['GreensparkWidgets']>
   cartApi: CartApi
-  getWidgetContainer: (targetId: string) => string
-  movePopupToBody: (targetId: string) => void
+  getWidgetContainer: (widgetId: string) => string
+  movePopupToBody: (widgetId: string) => void
   productId: string
   currency: string
   useShadowDom: boolean
