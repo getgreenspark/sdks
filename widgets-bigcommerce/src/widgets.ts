@@ -3,16 +3,41 @@ import type {RunContext, WidgetByIdType, WidgetTargetConfig} from './interfaces'
 import {movePopupToBody} from './dom'
 import type {GreensparkCartWidgetKey} from './global'
 
-/**
- * fullWidthBanner requires a non-empty `options` array of statistic keys (see widgets widget-validation).
- * Merchants still customize copy and imagery via Page Builder fields on the widget.
- */
-const DEFAULT_FULL_WIDTH_BANNER_OPTIONS = [
-  'monthsEarthPositive',
+/** Allowed keys for `fullWidthBanner` `options` (must match widgets `widget-validation` FULL_WIDTH_OPTIONS). */
+const BANNER_STATISTIC_KEYS = [
   'trees',
   'plastic',
   'carbon',
+  'kelp',
+  'water',
+  'bees',
+  'monthsEarthPositive',
+  'straws',
+  'miles',
+  'footballPitches',
 ] as const
+
+type BannerStatisticKey = (typeof BANNER_STATISTIC_KEYS)[number]
+
+const BANNER_STATISTIC_SET: ReadonlySet<string> = new Set(BANNER_STATISTIC_KEYS)
+
+const DEFAULT_FULL_WIDTH_BANNER_OPTIONS: readonly BannerStatisticKey[] = [
+  'monthsEarthPositive',
+]
+
+function parseBannerStatisticOptions(raw: string | undefined): readonly BannerStatisticKey[] {
+  if (!raw?.trim()) return DEFAULT_FULL_WIDTH_BANNER_OPTIONS
+  const parts = raw
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+  const valid = parts.filter((p): p is BannerStatisticKey => BANNER_STATISTIC_SET.has(p))
+  if (valid.length === 0) {
+    err('render: banner had no valid statistic keys in data-banner-options; using defaults. Allowed:', [...BANNER_STATISTIC_KEYS].join(', '))
+    return DEFAULT_FULL_WIDTH_BANNER_OPTIONS
+  }
+  return valid
+}
 
 function renderWithPopup(widgetId: string, render: () => Promise<unknown>): void {
   render()
@@ -121,15 +146,15 @@ function renderCart(ctx: RunContext, config: WidgetTargetConfig, widgetId: strin
       const sel = getWidgetContainer(widgetId)
       if (!document.querySelector(sel)) return
       const widget = greenspark.cart({
-          color: config.color as never,
-          style: config.style as never,
-          withPopup: config.withPopup,
-          popupTheme: config.popupTheme as never,
-          order,
-          containerSelector: sel,
-          useShadowDom,
-          version,
-        })
+        color: config.color as never,
+        style: config.style as never,
+        withPopup: config.withPopup,
+        popupTheme: config.popupTheme as never,
+        order,
+        containerSelector: sel,
+        useShadowDom,
+        version,
+      })
       window[cartWidgetWindowKey] = widget
       return widget
         .render({order}, sel)
@@ -203,9 +228,10 @@ function renderByPercentageOfRevenue(ctx: RunContext, config: WidgetTargetConfig
 
 function renderBanner(ctx: RunContext, config: WidgetTargetConfig, widgetId: string, containerSelector: string): void {
   const {greenspark, useShadowDom, version} = ctx
+  const bannerOpts = parseBannerStatisticOptions(config.bannerOptions)
   renderWithPopup(widgetId, () =>
     greenspark.fullWidthBanner({
-      options: [...DEFAULT_FULL_WIDTH_BANNER_OPTIONS] as never,
+      options: [...bannerOpts] as never,
       imageUrl: config.imageUrl,
       title: config.title,
       description: config.description,
@@ -367,12 +393,12 @@ function renderByIdOrderImpacts(ctx: RunContext, widgetId: string, containerSele
       const sel = getWidgetContainer(widgetId)
       if (!document.querySelector(sel)) return
       const widget = greenspark.cartById({
-          widgetId,
-          containerSelector: sel,
-          useShadowDom,
-          order,
-          version,
-        })
+        widgetId,
+        containerSelector: sel,
+        useShadowDom,
+        order,
+        version,
+      })
       window[cartWidgetWindowKey] = widget
       return widget
         .render({order}, sel)

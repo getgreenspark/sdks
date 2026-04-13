@@ -57,6 +57,7 @@ function parseWidgetConfig(el: HTMLElement): WidgetTargetConfig | null {
     textColor: el.getAttribute('data-text-color') ?? undefined,
     buttonBgColor: el.getAttribute('data-button-bg-color') ?? undefined,
     buttonTextColor: el.getAttribute('data-button-text-color') ?? undefined,
+    bannerOptions: el.getAttribute('data-banner-options') ?? undefined,
   }
 }
 

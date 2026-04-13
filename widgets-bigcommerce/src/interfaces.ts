@@ -30,6 +30,8 @@ export interface WidgetTargetConfig {
   textColor?: string
   buttonBgColor?: string
   buttonTextColor?: string
+  /** Comma-separated fullWidthBanner statistic keys from Page Builder (parsed in widgets.ts). */
+  bannerOptions?: string
 }
 
 export const WIDGET_TYPES: ReadonlySet<string> = new Set<WidgetType>([
