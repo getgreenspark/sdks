@@ -1,6 +1,12 @@
-import type { AxiosHeaders, AxiosInstance, AxiosResponse } from 'axios'
+import type {
+  AxiosHeaders,
+  AxiosInstance,
+  AxiosRequestHeaders,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from 'axios'
 import axios from 'axios'
-import { cartWidgetCache } from '@/utils/cache'
+import { widgetHtmlCache } from '@/utils/cache'
 import type {
   ByPercentageOfRevenueRequestBody,
   ByPercentageOfRevenueWidgetByIdParams,
@@ -45,6 +51,38 @@ import type {
   WidgetParams,
 } from '@/interfaces'
 
+interface WidgetHttpError extends Error {
+  response: AxiosResponse<string>
+}
+
+function createSyntheticResponse(
+  data: string,
+  status = 200,
+  statusText = 'OK',
+): AxiosResponse<string> {
+  return {
+    data,
+    status,
+    statusText,
+    headers: {},
+    config: {
+      headers: {} as AxiosRequestHeaders,
+    } as InternalAxiosRequestConfig,
+  }
+}
+
+function createSuppressedUnauthorizedError(status: number): WidgetHttpError {
+  const error = new Error(`Greenspark widget request suppressed after ${status}`)
+  return Object.assign(error, {
+    response: createSyntheticResponse('', status, status === 401 ? 'Unauthorized' : 'Forbidden'),
+  })
+}
+
+function getHttpStatus(error: unknown): number | undefined {
+  const maybeError = error as { response?: { status?: unknown } }
+  return typeof maybeError.response?.status === 'number' ? maybeError.response.status : undefined
+}
+
 export class ConnectionHandler {
   apiKey?: string
   integrationSlug?: string
@@ -83,6 +121,54 @@ export class ConnectionHandler {
     }
   }
 
+  private async postWidgetHtml<TBody extends object>(
+    endpoint: string,
+    body: TBody,
+    cacheKey: object,
+    headers?: typeof AxiosHeaders,
+    skipCache = false,
+  ): Promise<AxiosResponse<string>> {
+    const integrationContext = this.integrationSlug || this.origin || this.apiKey || ''
+    const key = {
+      ...cacheKey,
+      _endpoint: endpoint,
+      _locale: this.locale,
+      _integrationContext: integrationContext,
+    }
+
+    if (!skipCache) {
+      const unauthorizedStatus = widgetHtmlCache.getUnauthorizedStatus(key)
+      if (unauthorizedStatus !== null) {
+        throw createSuppressedUnauthorizedError(unauthorizedStatus)
+      }
+
+      const cachedResponse = widgetHtmlCache.get(key)
+      if (cachedResponse !== null) {
+        return createSyntheticResponse(cachedResponse)
+      }
+    }
+
+    const response = await this.api
+      .post<string, AxiosResponse<string>, TBody>(endpoint, body, {
+        params: { lng: this.locale },
+        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
+      })
+      .catch((error: unknown) => {
+        const status = getHttpStatus(error)
+        if (!skipCache && (status === 401 || status === 403)) {
+          widgetHtmlCache.setUnauthorizedStatus(key, status)
+        }
+
+        return Promise.reject(error)
+      })
+
+    if (!skipCache) {
+      widgetHtmlCache.set(key, response.data)
+    }
+
+    return response
+  }
+
   async fetchCartWidget(
     { version, ...body }: CartWidgetParams,
     headers?: typeof AxiosHeaders,
@@ -108,26 +194,14 @@ export class ConnectionHandler {
       version,
     }
 
-    const integrationContext = this.integrationSlug || this.apiKey || ''
-
-    // Check cache first
-    const cachedResponse = cartWidgetCache.get(cacheParams, this.locale, integrationContext)
-    if (cachedResponse) {
-      return cachedResponse
-    }
-
-    // Cache miss - make API call
-    const response = await this.api.post<string, AxiosResponse<string>, CartWidgetRequestBody>(
-      `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/cart-widget`,
+    const endpoint = `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/cart-widget`
+    const response = await this.postWidgetHtml<CartWidgetRequestBody>(
+      endpoint,
       requestParams,
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      cacheParams,
+      headers,
+      Boolean(isPreview),
     )
-
-    // Store in cache
-    cartWidgetCache.set(cacheParams, response.data, this.locale, integrationContext)
 
     return response.data
   }
@@ -143,26 +217,12 @@ export class ConnectionHandler {
       version,
     }
 
-    const integrationContext = this.integrationSlug || this.apiKey || ''
-
-    // Check cache first
-    const cachedResponse = cartWidgetCache.get(cacheParams, this.locale, integrationContext)
-    if (cachedResponse) {
-      return cachedResponse
-    }
-
-    // Cache miss - make API call
-    const response = await this.api.post<string, AxiosResponse<string>, CartWidgetByIdRequestBody>(
+    const response = await this.postWidgetHtml<CartWidgetByIdRequestBody>(
       `/${version}/widgets/cart-widget/${body.widgetId}`,
       requestParams,
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      cacheParams,
+      headers,
     )
-
-    // Store in cache
-    cartWidgetCache.set(cacheParams, response.data, this.locale, integrationContext)
 
     return response.data
   }
@@ -192,26 +252,14 @@ export class ConnectionHandler {
       version,
     }
 
-    const integrationContext = this.integrationSlug || this.apiKey || ''
-
-    // Check cache first
-    const cachedResponse = cartWidgetCache.get(cacheParams, this.locale, integrationContext)
-    if (cachedResponse) {
-      return cachedResponse
-    }
-
-    // Cache miss - make API call
-    const response = await this.api.post<string, AxiosResponse<string>, CustomerCartContributionWidgetRequestBody>(
-      `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/cart-widget`,
+    const endpoint = `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/cart-widget`
+    const response = await this.postWidgetHtml<CustomerCartContributionWidgetRequestBody>(
+      endpoint,
       requestParams,
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      cacheParams,
+      headers,
+      Boolean(isPreview),
     )
-
-    // Store in cache
-    cartWidgetCache.set(cacheParams, response.data, this.locale, integrationContext)
 
     return response.data
   }
@@ -221,23 +269,24 @@ export class ConnectionHandler {
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
-    return this.api.post<string, AxiosResponse<string>, SpendLevelRequestBody>(
+    const requestBody = version
+      ? Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+      )
+      : Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+      )
+
+    return this.postWidgetHtml<SpendLevelRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/spend-level-widget`,
-      version
-        ? Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        )
-        : Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-        ),
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      requestBody,
+      headers,
+      Boolean(isPreview),
     )
   }
 
@@ -245,13 +294,12 @@ export class ConnectionHandler {
     { version, ...body }: SpendLevelWidgetByIdParams,
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, SpendLevelWidgetByIdRequestBody>(
+    const requestBody = { integrationSlug: this.integrationSlug || '', ...body }
+    return this.postWidgetHtml<SpendLevelWidgetByIdRequestBody>(
       `/${version}/widgets/spend-level-widget/${body.widgetId}`,
-      { integrationSlug: this.integrationSlug || '', ...body },
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      { ...requestBody, version },
+      headers,
     )
   }
 
@@ -260,23 +308,24 @@ export class ConnectionHandler {
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
-    return this.api.post<string, AxiosResponse<string>, PerOrderRequestBody>(
+    const requestBody = version
+      ? Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+      )
+      : Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+      )
+
+    return this.postWidgetHtml<PerOrderRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/per-order-widget`,
-      version
-        ? Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        )
-        : Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-        ),
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      requestBody,
+      headers,
+      Boolean(isPreview),
     )
   }
 
@@ -284,13 +333,12 @@ export class ConnectionHandler {
     { version, ...body }: PerOrderWidgetByIdParams,
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, PerOrderByIdRequestBody>(
+    const requestBody = { integrationSlug: this.integrationSlug || '', ...body }
+    return this.postWidgetHtml<PerOrderByIdRequestBody>(
       `/${version}/widgets/per-order-widget/${body.widgetId}`,
-      { integrationSlug: this.integrationSlug || '', ...body },
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      { ...requestBody, version },
+      headers,
     )
   }
 
@@ -299,17 +347,18 @@ export class ConnectionHandler {
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
-    return this.api.post<string, AxiosResponse<string>, PerPurchaseRequestBody>(
+    const requestBody = Object.assign(
+      {},
+      body,
+      this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+    )
+
+    return this.postWidgetHtml<PerPurchaseRequestBody>(
       `${version}/${isPreview ? `preview` : 'widgets'}/per-purchase-widget`,
-      Object.assign(
-        {},
-        body,
-        this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-      ),
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      requestBody,
+      headers,
+      Boolean(isPreview),
     )
   }
 
@@ -322,23 +371,24 @@ export class ConnectionHandler {
       isPreview === undefined
         ? Boolean(this.integrationSlug === 'GS_PREVIEW' && version)
         : isPreview
-    return this.api.post<string, AxiosResponse<string>, ByPercentageRequestBody>(
+    const requestBody = version
+      ? Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+      )
+      : Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+      )
+
+    return this.postWidgetHtml<ByPercentageRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/by-percentage-widget`,
-      version
-        ? Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        )
-        : Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-        ),
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      requestBody,
+      headers,
+      isPreview,
     )
   }
 
@@ -346,13 +396,12 @@ export class ConnectionHandler {
     { version, ...body }: ByPercentageWidgetByIdParams,
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, ByPercentageWidgetByIdRequestBody>(
+    const requestBody = { integrationSlug: this.integrationSlug || '', ...body }
+    return this.postWidgetHtml<ByPercentageWidgetByIdRequestBody>(
       `/${version}/widgets/by-percentage-widget/${body.widgetId}`,
-      { integrationSlug: this.integrationSlug || '', ...body },
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      { ...requestBody, version },
+      headers,
     )
   }
 
@@ -361,23 +410,24 @@ export class ConnectionHandler {
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
-    return this.api.post<string, AxiosResponse<string>, ByPercentageOfRevenueRequestBody>(
+    const requestBody = version
+      ? Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+      )
+      : Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+      )
+
+    return this.postWidgetHtml<ByPercentageOfRevenueRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/by-percentage-of-revenue-widget`,
-      version
-        ? Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        )
-        : Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-        ),
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      requestBody,
+      headers,
+      Boolean(isPreview),
     )
   }
 
@@ -385,13 +435,12 @@ export class ConnectionHandler {
     { version, ...body }: ByPercentageOfRevenueWidgetByIdParams,
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, ByPercentageOfRevenueWidgetByIdRequestBody>(
+    const requestBody = { integrationSlug: this.integrationSlug || '', ...body }
+    return this.postWidgetHtml<ByPercentageOfRevenueWidgetByIdRequestBody>(
       `/${version}/widgets/by-percentage-of-revenue-widget/${body.widgetId}`,
-      { integrationSlug: this.integrationSlug || '', ...body },
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      { ...requestBody, version },
+      headers,
     )
   }
 
@@ -400,23 +449,24 @@ export class ConnectionHandler {
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
-    return this.api.post<string, AxiosResponse<string>, TieredSpendLevelRequestBody>(
+    const requestBody = version
+      ? Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+      )
+      : Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+      )
+
+    return this.postWidgetHtml<TieredSpendLevelRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/tiered-spend-level-widget`,
-      version
-        ? Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        )
-        : Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-        ),
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      requestBody,
+      headers,
+      Boolean(isPreview),
     )
   }
 
@@ -424,13 +474,12 @@ export class ConnectionHandler {
     { version, ...body }: TieredSpendLevelWidgetByIdParams,
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, TieredSpendLevelByIdRequestBody>(
+    const requestBody = { integrationSlug: this.integrationSlug || '', ...body }
+    return this.postWidgetHtml<TieredSpendLevelByIdRequestBody>(
       `/${version}/widgets/tiered-spend-level-widget/${body.widgetId}`,
-      { integrationSlug: this.integrationSlug || '', ...body },
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      { ...requestBody, version },
+      headers,
     )
   }
 
@@ -439,23 +488,24 @@ export class ConnectionHandler {
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
-    return this.api.post<string, AxiosResponse<string>, PerProductRequestBody>(
+    const requestBody = version
+      ? Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+      )
+      : Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+      )
+
+    return this.postWidgetHtml<PerProductRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/per-product-widget`,
-      version
-        ? Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        )
-        : Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-        ),
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      requestBody,
+      headers,
+      Boolean(isPreview),
     )
   }
 
@@ -463,13 +513,12 @@ export class ConnectionHandler {
     { version, ...body }: PerProductWidgetByIdParams,
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, PerProductByIdRequestBody>(
+    const requestBody = { integrationSlug: this.integrationSlug || '', ...body }
+    return this.postWidgetHtml<PerProductByIdRequestBody>(
       `/${version}/widgets/per-product-widget/${body.widgetId}`,
-      { integrationSlug: this.integrationSlug || '', ...body },
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      { ...requestBody, version },
+      headers,
     )
   }
 
@@ -478,13 +527,12 @@ export class ConnectionHandler {
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
-    return this.api.post<string, AxiosResponse<string>, TopStatsRequestBody>(
+    return this.postWidgetHtml<TopStatsRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/stats-widget`,
       body,
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      { ...body, version },
+      headers,
+      Boolean(isPreview),
     )
   }
 
@@ -492,13 +540,11 @@ export class ConnectionHandler {
     { version, ...body }: TopStatsWidgetByIdParams,
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, TopStatsWidgetByIdParams>(
+    return this.postWidgetHtml<TopStatsWidgetByIdParams>(
       `/${version}/widgets/stats-widget/${body.widgetId}`,
       { ...body },
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      { ...body, version },
+      headers,
     )
   }
 
@@ -507,13 +553,12 @@ export class ConnectionHandler {
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
-    return this.api.post<string, AxiosResponse<string>, StaticWidgetParams>(
+    return this.postWidgetHtml<StaticWidgetParams>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/static-widget`,
       body,
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      { ...body, version },
+      headers,
+      Boolean(isPreview),
     )
   }
 
@@ -521,13 +566,11 @@ export class ConnectionHandler {
     { version, ...body }: StaticWidgetByIdParams,
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, StaticWidgetByIdParams>(
+    return this.postWidgetHtml<StaticWidgetByIdParams>(
       `/${version}/widgets/static-widget/${body.widgetId}`,
       { ...body },
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      { ...body, version },
+      headers,
     )
   }
 
@@ -536,13 +579,12 @@ export class ConnectionHandler {
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
-    return this.api.post<string, AxiosResponse<string>, FullWidthBannerRequestBody>(
+    return this.postWidgetHtml<FullWidthBannerRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/full-width-banner`,
       body,
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      { ...body, version },
+      headers,
+      Boolean(isPreview),
     )
   }
 
@@ -550,13 +592,11 @@ export class ConnectionHandler {
     { version, ...body }: FullWidthBannerWidgetByIdParams,
     headers?: typeof AxiosHeaders,
   ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, FullWidthBannerWidgetByIdParams>(
+    return this.postWidgetHtml<FullWidthBannerWidgetByIdParams>(
       `/${version}/widgets/full-width-banner/${body.widgetId}`,
       { ...body },
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      { ...body, version },
+      headers,
     )
   }
 }
