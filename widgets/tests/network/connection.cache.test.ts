@@ -184,6 +184,9 @@ describe('ConnectionHandler - Cache Integration', () => {
       expect(result2.statusText).toBe('OK')
       expect(result2.headers).toBeDefined()
       expect(result2.config).toBeDefined()
+      expect(result2.config.method).toBe('post')
+      expect(result2.config.url).toBe('/widgets/spend-level-widget')
+      expect(result2.config.params).toEqual({ lng: 'en' })
       expect(axiosMock.post).toHaveBeenCalledTimes(1)
     })
 

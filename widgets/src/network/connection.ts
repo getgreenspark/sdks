@@ -55,10 +55,19 @@ interface WidgetHttpError extends Error {
   response: AxiosResponse<string>
 }
 
+interface SyntheticRequestConfig {
+  url: string
+  method: 'post'
+  params: { lng: string }
+  baseURL?: string
+  headers: RawAxiosRequestHeaders
+}
+
 function createSyntheticResponse(
   data: string,
   status = 200,
   statusText = 'OK',
+  requestConfig?: SyntheticRequestConfig,
 ): AxiosResponse<string> {
   return {
     data,
@@ -66,7 +75,11 @@ function createSyntheticResponse(
     statusText,
     headers: {},
     config: {
-      headers: {} as AxiosRequestHeaders,
+      url: requestConfig?.url,
+      method: requestConfig?.method ?? 'post',
+      params: requestConfig?.params,
+      baseURL: requestConfig?.baseURL,
+      headers: requestConfig?.headers ?? ({} as AxiosRequestHeaders),
     } as InternalAxiosRequestConfig,
   }
 }
@@ -138,6 +151,20 @@ export class ConnectionHandler {
       _integrationContext: integrationContext,
     }
 
+    const requestHeaders: RawAxiosRequestHeaders = {
+      ...headers,
+      accept: 'text/html',
+      'content-type': 'application/json',
+    }
+
+    const requestConfig: SyntheticRequestConfig = {
+      url: endpoint,
+      method: 'post',
+      params: { lng: this.locale },
+      baseURL: this.api.defaults.baseURL,
+      headers: requestHeaders,
+    }
+
     if (!skipCache) {
       const unauthorizedStatus = widgetHtmlCache.getUnauthorizedStatus(key)
       if (unauthorizedStatus !== null) {
@@ -146,14 +173,14 @@ export class ConnectionHandler {
 
       const cachedResponse = widgetHtmlCache.get(key)
       if (cachedResponse !== null) {
-        return createSyntheticResponse(cachedResponse)
+        return createSyntheticResponse(cachedResponse, 200, 'OK', requestConfig)
       }
     }
 
     const response = await this.api
       .post<string, AxiosResponse<string>, TBody>(endpoint, body, {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
+        params: requestConfig.params,
+        headers: requestHeaders,
       })
       .catch((error: unknown) => {
         const status = getHttpStatus(error)

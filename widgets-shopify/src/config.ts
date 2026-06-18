@@ -1,4 +1,4 @@
-export const GREenspark_API = {
+export const GREENSPARK_API = {
   dev: 'https://dev-api.getmads.com',
   prod: 'https://api.getgreenspark.com',
 } as const
@@ -8,5 +8,5 @@ export function isGreensparkDevStore(context: string): boolean {
 }
 
 export function getGreensparkApiUrl(shopUniqueName: string): string {
-  return isGreensparkDevStore(shopUniqueName) ? GREenspark_API.dev : GREenspark_API.prod
+  return isGreensparkDevStore(shopUniqueName) ? GREENSPARK_API.dev : GREENSPARK_API.prod
 }
