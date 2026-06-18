@@ -40,9 +40,7 @@ function mergePendingTargets(targets?: Iterable<Element>): void {
     return
   }
 
-  if (pendingTargets === null) return
-
-  const next = pendingTargets ? [...pendingTargets] : []
+  const next = pendingTargets === null ? [] : [...pendingTargets]
   for (const target of targets) {
     if (!(target instanceof HTMLElement)) continue
     if (!next.includes(target)) next.push(target)
@@ -55,8 +53,8 @@ export function scheduleRun(targets?: Iterable<Element>): void {
 
   if (scheduledRenderTimer) window.clearTimeout(scheduledRenderTimer)
   scheduledRenderTimer = window.setTimeout(() => {
-    const targetsToRender = pendingTargets ? [...pendingTargets] : undefined
-    pendingTargets = null
+    const targetsToRender = pendingTargets?.length ? [...pendingTargets] : undefined
+    pendingTargets = []
     scheduledRenderTimer = null
 
     setup()

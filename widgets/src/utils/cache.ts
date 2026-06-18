@@ -150,5 +150,4 @@ class WidgetHtmlCache {
 }
 
 export const widgetHtmlCache = new WidgetHtmlCache()
-export const cartWidgetCache = widgetHtmlCache
 
