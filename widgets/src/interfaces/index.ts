@@ -17,6 +17,7 @@ type ApiSettingsBase = {
   locale?: string
   isShopifyIntegration?: boolean
   origin?: string
+  apiUrl?: string
 }
 
 type WidgetPopupParams = {

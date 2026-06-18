@@ -1,4 +1,5 @@
 import type { CartApi, CartOrderPayload, ShopifyCart } from './interfaces'
+import { getGreensparkApiUrl } from './config'
 import { err } from './debug'
 import { CART_REFRESH_SELECTORS } from './selectors'
 
@@ -26,12 +27,6 @@ function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
     if (!response.ok) return Promise.reject(response)
     return response.json() as Promise<T>
   })
-}
-
-function getGreensparkApiUrl(shopUniqueName: string): string {
-  return shopUniqueName.includes('greenspark-development-store')
-    ? 'https://dev-api.getmads.com'
-    : 'https://api.getgreenspark.com'
 }
 
 export function createCartApi(shopUniqueName: string): CartApi {

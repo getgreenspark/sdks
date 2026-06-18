@@ -1,9 +1,6 @@
 import { err } from './debug'
 
-const isDevStore = window.location.hostname.includes('greenspark-development-store')
-export const widgetUrl = isDevStore
-  ? 'https://cdn.getgreenspark.com/scripts/widgets%402.5.0.js'
-  : 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
+export const widgetUrl = 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
 
 const MAX_SCRIPT_RETRIES = 5
 

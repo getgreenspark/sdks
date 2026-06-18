@@ -96,18 +96,20 @@ export class ConnectionHandler {
                 locale = 'en',
                 isShopifyIntegration = false,
                 origin,
+                apiUrl,
               }: {
     apiKey?: string
     integrationSlug?: string
     locale: string
     isShopifyIntegration?: boolean
     origin?: string
+    apiUrl?: string
   }) {
     this.apiKey = apiKey
     this.integrationSlug = integrationSlug
     this.locale = locale
     this.api = axios.create({
-      baseURL: process.env.API_URL,
+      baseURL: apiUrl || process.env.API_URL,
       timeout: 10000,
     })
     this.origin = origin

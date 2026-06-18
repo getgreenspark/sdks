@@ -1,4 +1,5 @@
 import { createCartApi } from './cart'
+import { getGreensparkApiUrl } from './config'
 import { getWidgetContainer, injectWidgetStyles, movePopupToBody } from './dom'
 import { err, warn } from './debug'
 import { EnumToWidgetTypeMap, type RunContext, type WidgetVariant } from './interfaces'
@@ -189,6 +190,7 @@ export function runGreenspark(targets?: Iterable<Element>): void {
     locale,
     integrationSlug: shopUniqueName,
     isShopifyIntegration: true,
+    apiUrl: getGreensparkApiUrl(shopUniqueName),
   })
 
   const ctx: RunContext = {
