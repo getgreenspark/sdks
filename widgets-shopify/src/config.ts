@@ -3,10 +3,10 @@ export const GREENSPARK_API = {
   prod: 'https://api.getgreenspark.com',
 } as const
 
-export function isGreensparkDevStore(context: string): boolean {
+export function isDevStore(context: string): boolean {
   return context.includes('greenspark-development-store')
 }
 
 export function getGreensparkApiUrl(shopUniqueName: string): string {
-  return isGreensparkDevStore(shopUniqueName) ? GREENSPARK_API.dev : GREENSPARK_API.prod
+  return isDevStore(shopUniqueName) ? GREENSPARK_API.dev : GREENSPARK_API.prod
 }
