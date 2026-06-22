@@ -29,7 +29,33 @@ export interface ShopifyCart {
   total_price: number
 }
 
-type WIDGET_VARIANTS =
+export interface CartOrderPayload {
+  lineItems: { productId: string; quantity: number }[]
+  currency: string
+  totalPrice: number
+}
+
+export interface CartApi {
+  getCart: () => Promise<ShopifyCart>
+  getOrder: () => Promise<CartOrderPayload>
+  addItemToCart: (targetProductId: string, quantity?: number) => Promise<unknown>
+  updateCart: (updates: Record<string, number>) => Promise<Response>
+  refreshCartDrawer: () => void
+  captureEvent: (event: unknown) => Promise<Response>
+}
+
+export interface RunContext {
+  greenspark: InstanceType<Window['GreensparkWidgets']>
+  cartApi: CartApi
+  getWidgetContainer: (widgetId: string) => string
+  movePopupToBody: (widgetId: string) => void
+  productId: string
+  currency: string
+  useShadowDom: boolean
+  version: 'v2'
+}
+
+export type WidgetVariant =
   | 'orderImpacts'
   | 'offsetPerOrder'
   | 'offsetByProduct'
@@ -41,7 +67,7 @@ type WIDGET_VARIANTS =
   | 'static'
   | 'banner'
 
-export const EnumToWidgetTypeMap: Record<string, WIDGET_VARIANTS> = {
+export const EnumToWidgetTypeMap: Record<string, WidgetVariant> = {
   '0' : 'orderImpacts',
   '1' : 'offsetPerOrder',
   '2' : 'offsetByProduct',

@@ -14,6 +14,7 @@ declare global {
     _greensparkRemoveHandlerBound?: boolean
     _greensparkPreselectOptOut?: boolean
     _greensparkPreselectAddInProgress?: Record<string, boolean | undefined>
+    _greensparkFetchIntercepted?: boolean
   }
 }
 

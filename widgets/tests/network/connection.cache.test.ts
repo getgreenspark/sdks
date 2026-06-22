@@ -1,7 +1,7 @@
 // tests/network/connection.cache.test.ts
 import axios from 'axios'
 import { ConnectionHandler } from '@/network/connection'
-import { cartWidgetCache } from '@/utils/cache'
+import { widgetHtmlCache } from '@/utils/cache'
 import apiFixtures from '@tests/fixtures/api.json'
 import orderFixtures from '@tests/fixtures/order.json'
 import type { StoreOrder } from '@/interfaces'
@@ -19,17 +19,17 @@ describe('ConnectionHandler - Cache Integration', () => {
 
   beforeEach(() => {
     jest.useFakeTimers()
-    cartWidgetCache.clear()
+    widgetHtmlCache.clear()
+    axiosMock.post.mockReset()
     connection = new ConnectionHandler({
       apiKey: API_KEY,
       integrationSlug: INTEGRATION_SLUG,
       locale: 'en',
     })
-    axiosMock.post.mockClear()
   })
 
   afterEach(() => {
-    cartWidgetCache.clear()
+    widgetHtmlCache.clear()
     jest.useRealTimers()
   })
 
@@ -160,6 +160,129 @@ describe('ConnectionHandler - Cache Integration', () => {
       const result = await connection.fetchCustomerCartContributionWidget(params)
       expect(result).toBe(mockHtml)
       expect(axiosMock.post).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('non-cart widget caching', () => {
+    test('should cache response for a non-cart widget', async () => {
+      axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+
+      const params = {
+        color: 'beige' as const,
+        currency: 'GBP',
+      }
+
+      const promise1 = connection.fetchSpendLevelWidget(params)
+      await jest.runAllTimersAsync()
+      const result1 = await promise1
+      expect(result1.data).toBe(mockHtml)
+      expect(axiosMock.post).toHaveBeenCalledTimes(1)
+
+      const result2 = await connection.fetchSpendLevelWidget(params)
+      expect(result2.data).toBe(mockHtml)
+      expect(result2.status).toBe(200)
+      expect(result2.statusText).toBe('OK')
+      expect(result2.headers).toBeDefined()
+      expect(result2.config).toBeDefined()
+      expect(result2.config.method).toBe('post')
+      expect(result2.config.url).toBe('/widgets/spend-level-widget')
+      expect(result2.config.params).toEqual({ lng: 'en' })
+      expect(axiosMock.post).toHaveBeenCalledTimes(1)
+    })
+
+    test('should cache response for a non-cart widget by ID', async () => {
+      axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+
+      const params = {
+        widgetId: 'widget-123',
+        productId: 'product-1',
+        version: 'v2' as const,
+      }
+
+      const promise1 = connection.fetchPerProductWidgetById(params)
+      await jest.runAllTimersAsync()
+      const result1 = await promise1
+      expect(result1.data).toBe(mockHtml)
+      expect(axiosMock.post).toHaveBeenCalledTimes(1)
+
+      const result2 = await connection.fetchPerProductWidgetById(params)
+      expect(result2.data).toBe(mockHtml)
+      expect(axiosMock.post).toHaveBeenCalledTimes(1)
+    })
+
+    test('should cache separately for different origins', async () => {
+      const originOneConnection = new ConnectionHandler({
+        origin: 'https://shop-one.example',
+        locale: 'en',
+      })
+      const originTwoConnection = new ConnectionHandler({
+        origin: 'https://shop-two.example',
+        locale: 'en',
+      })
+      const params = {
+        color: 'beige' as const,
+        currency: 'GBP',
+      }
+
+      axiosMock.post
+        .mockResolvedValueOnce({ data: '<div>Shop One</div>' })
+        .mockResolvedValueOnce({ data: '<div>Shop Two</div>' })
+
+      const result1 = await originOneConnection.fetchSpendLevelWidget(params)
+      const result2 = await originTwoConnection.fetchSpendLevelWidget(params)
+
+      expect(result1.data).toBe('<div>Shop One</div>')
+      expect(result2.data).toBe('<div>Shop Two</div>')
+      expect(axiosMock.post).toHaveBeenCalledTimes(2)
+    })
+
+    test('should skip cache for preview requests', async () => {
+      const previewConnection = new ConnectionHandler({
+        integrationSlug: 'GS_PREVIEW',
+        locale: 'en',
+      })
+      const params = {
+        color: 'beige' as const,
+        currency: 'GBP',
+        version: 'v2' as const,
+      }
+
+      axiosMock.post
+        .mockResolvedValueOnce({ data: '<div>Preview 1</div>' })
+        .mockResolvedValueOnce({ data: '<div>Preview 2</div>' })
+
+      const result1 = await previewConnection.fetchSpendLevelWidget(params)
+      const result2 = await previewConnection.fetchSpendLevelWidget(params)
+
+      expect(result1.data).toBe('<div>Preview 1</div>')
+      expect(result2.data).toBe('<div>Preview 2</div>')
+      expect(axiosMock.post).toHaveBeenCalledTimes(2)
+    })
+
+    test('should suppress repeated unauthorized requests during cooldown', async () => {
+      const params = {
+        color: 'beige' as const,
+        currency: 'GBP',
+      }
+
+      axiosMock.post.mockRejectedValueOnce({ response: { status: 401 } })
+
+      await expect(connection.fetchSpendLevelWidget(params)).rejects.toMatchObject({
+        response: { status: 401 },
+      })
+      expect(axiosMock.post).toHaveBeenCalledTimes(1)
+
+      await expect(connection.fetchSpendLevelWidget(params)).rejects.toMatchObject({
+        response: { status: 401 },
+      })
+      expect(axiosMock.post).toHaveBeenCalledTimes(1)
+
+      jest.advanceTimersByTime(61_000)
+      axiosMock.post.mockResolvedValueOnce({ data: mockHtml })
+
+      const result = await connection.fetchSpendLevelWidget(params)
+      expect(result.data).toBe(mockHtml)
+      expect(axiosMock.post).toHaveBeenCalledTimes(2)
     })
   })
 })

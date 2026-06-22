@@ -1,6 +1,12 @@
-import type { AxiosHeaders, AxiosInstance, AxiosResponse } from 'axios'
+import type {
+  AxiosInstance,
+  AxiosRequestHeaders,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+  RawAxiosRequestHeaders,
+} from 'axios'
 import axios from 'axios'
-import { cartWidgetCache } from '@/utils/cache'
+import { widgetHtmlCache } from '@/utils/cache'
 import type {
   ByPercentageOfRevenueRequestBody,
   ByPercentageOfRevenueWidgetByIdParams,
@@ -45,6 +51,51 @@ import type {
   WidgetParams,
 } from '@/interfaces'
 
+interface WidgetHttpError extends Error {
+  response: AxiosResponse<string>
+}
+
+interface SyntheticRequestConfig {
+  url: string
+  method: 'post'
+  params: { lng: string }
+  baseURL?: string
+  headers: RawAxiosRequestHeaders
+}
+
+function createSyntheticResponse(
+  data: string,
+  status = 200,
+  statusText = 'OK',
+  requestConfig?: SyntheticRequestConfig,
+): AxiosResponse<string> {
+  return {
+    data,
+    status,
+    statusText,
+    headers: {},
+    config: {
+      url: requestConfig?.url,
+      method: requestConfig?.method ?? 'post',
+      params: requestConfig?.params,
+      baseURL: requestConfig?.baseURL,
+      headers: requestConfig?.headers ?? ({} as AxiosRequestHeaders),
+    } as InternalAxiosRequestConfig,
+  }
+}
+
+function createSuppressedUnauthorizedError(status: number): WidgetHttpError {
+  const error = new Error(`Greenspark widget request suppressed after ${status}`)
+  return Object.assign(error, {
+    response: createSyntheticResponse('', status, status === 401 ? 'Unauthorized' : 'Forbidden'),
+  })
+}
+
+function getHttpStatus(error: unknown): number | undefined {
+  const maybeError = error as { response?: { status?: unknown } }
+  return typeof maybeError.response?.status === 'number' ? maybeError.response.status : undefined
+}
+
 export class ConnectionHandler {
   apiKey?: string
   integrationSlug?: string
@@ -58,18 +109,20 @@ export class ConnectionHandler {
                 locale = 'en',
                 isShopifyIntegration = false,
                 origin,
+                apiUrl,
               }: {
     apiKey?: string
     integrationSlug?: string
     locale: string
     isShopifyIntegration?: boolean
     origin?: string
+    apiUrl?: string
   }) {
     this.apiKey = apiKey
     this.integrationSlug = integrationSlug
     this.locale = locale
     this.api = axios.create({
-      baseURL: process.env.API_URL,
+      baseURL: apiUrl || process.env.API_URL,
       timeout: 10000,
     })
     this.origin = origin
@@ -83,9 +136,71 @@ export class ConnectionHandler {
     }
   }
 
+  private async postWidgetHtml<TBody extends object>(
+    endpoint: string,
+    body: TBody,
+    cacheKey: object,
+    headers?: RawAxiosRequestHeaders,
+    skipCache = false,
+  ): Promise<AxiosResponse<string>> {
+    const integrationContext = this.integrationSlug || this.origin || this.apiKey || ''
+    const key = {
+      ...cacheKey,
+      _endpoint: endpoint,
+      _locale: this.locale,
+      _integrationContext: integrationContext,
+    }
+
+    const requestHeaders: RawAxiosRequestHeaders = {
+      ...headers,
+      accept: 'text/html',
+      'content-type': 'application/json',
+    }
+
+    const requestConfig: SyntheticRequestConfig = {
+      url: endpoint,
+      method: 'post',
+      params: { lng: this.locale },
+      baseURL: this.api.defaults.baseURL,
+      headers: requestHeaders,
+    }
+
+    if (!skipCache) {
+      const unauthorizedStatus = widgetHtmlCache.getUnauthorizedStatus(key)
+      if (unauthorizedStatus !== null) {
+        throw createSuppressedUnauthorizedError(unauthorizedStatus)
+      }
+
+      const cachedResponse = widgetHtmlCache.get(key)
+      if (cachedResponse !== null) {
+        return createSyntheticResponse(cachedResponse, 200, 'OK', requestConfig)
+      }
+    }
+
+    const response = await this.api
+      .post<string, AxiosResponse<string>, TBody>(endpoint, body, {
+        params: requestConfig.params,
+        headers: requestHeaders,
+      })
+      .catch((error: unknown) => {
+        const status = getHttpStatus(error)
+        if (!skipCache && (status === 401 || status === 403)) {
+          widgetHtmlCache.setUnauthorizedStatus(key, status)
+        }
+
+        return Promise.reject(error)
+      })
+
+    if (!skipCache) {
+      widgetHtmlCache.set(key, response.data)
+    }
+
+    return response
+  }
+
   async fetchCartWidget(
     { version, ...body }: CartWidgetParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<string> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
 
@@ -108,33 +223,21 @@ export class ConnectionHandler {
       version,
     }
 
-    const integrationContext = this.integrationSlug || this.apiKey || ''
-
-    // Check cache first
-    const cachedResponse = cartWidgetCache.get(cacheParams, this.locale, integrationContext)
-    if (cachedResponse) {
-      return cachedResponse
-    }
-
-    // Cache miss - make API call
-    const response = await this.api.post<string, AxiosResponse<string>, CartWidgetRequestBody>(
-      `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/cart-widget`,
+    const endpoint = `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/cart-widget`
+    const response = await this.postWidgetHtml<CartWidgetRequestBody>(
+      endpoint,
       requestParams,
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      cacheParams,
+      headers,
+      Boolean(isPreview),
     )
-
-    // Store in cache
-    cartWidgetCache.set(cacheParams, response.data, this.locale, integrationContext)
 
     return response.data
   }
 
   async fetchCartWidgetById(
     { version, ...body }: CartWidgetByIdParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<string> {
     // Build the complete request params for cache key
     const requestParams = { integrationSlug: this.integrationSlug || '', ...body }
@@ -143,33 +246,19 @@ export class ConnectionHandler {
       version,
     }
 
-    const integrationContext = this.integrationSlug || this.apiKey || ''
-
-    // Check cache first
-    const cachedResponse = cartWidgetCache.get(cacheParams, this.locale, integrationContext)
-    if (cachedResponse) {
-      return cachedResponse
-    }
-
-    // Cache miss - make API call
-    const response = await this.api.post<string, AxiosResponse<string>, CartWidgetByIdRequestBody>(
+    const response = await this.postWidgetHtml<CartWidgetByIdRequestBody>(
       `/${version}/widgets/cart-widget/${body.widgetId}`,
       requestParams,
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      cacheParams,
+      headers,
     )
-
-    // Store in cache
-    cartWidgetCache.set(cacheParams, response.data, this.locale, integrationContext)
 
     return response.data
   }
 
   async fetchCustomerCartContributionWidget(
     { version, ...body }: CustomerCartContributionWidgetParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<string> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
     const payload = isPreview ? { ...body, isCustomerContributionEnabled: true } : body
@@ -192,371 +281,351 @@ export class ConnectionHandler {
       version,
     }
 
-    const integrationContext = this.integrationSlug || this.apiKey || ''
-
-    // Check cache first
-    const cachedResponse = cartWidgetCache.get(cacheParams, this.locale, integrationContext)
-    if (cachedResponse) {
-      return cachedResponse
-    }
-
-    // Cache miss - make API call
-    const response = await this.api.post<string, AxiosResponse<string>, CustomerCartContributionWidgetRequestBody>(
-      `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/cart-widget`,
+    const endpoint = `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/cart-widget`
+    const response = await this.postWidgetHtml<CustomerCartContributionWidgetRequestBody>(
+      endpoint,
       requestParams,
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      cacheParams,
+      headers,
+      Boolean(isPreview),
     )
-
-    // Store in cache
-    cartWidgetCache.set(cacheParams, response.data, this.locale, integrationContext)
 
     return response.data
   }
 
   async fetchSpendLevelWidget(
     { version, ...body }: SpendLevelWidgetParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
-    return this.api.post<string, AxiosResponse<string>, SpendLevelRequestBody>(
+    const requestBody = version
+      ? Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+      )
+      : Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+      )
+
+    return this.postWidgetHtml<SpendLevelRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/spend-level-widget`,
-      version
-        ? Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        )
-        : Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-        ),
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      requestBody,
+      headers,
+      Boolean(isPreview),
     )
   }
 
   async fetchSpendLevelWidgetById(
     { version, ...body }: SpendLevelWidgetByIdParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, SpendLevelWidgetByIdRequestBody>(
+    const requestBody = { integrationSlug: this.integrationSlug || '', ...body }
+    return this.postWidgetHtml<SpendLevelWidgetByIdRequestBody>(
       `/${version}/widgets/spend-level-widget/${body.widgetId}`,
-      { integrationSlug: this.integrationSlug || '', ...body },
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      { ...requestBody, version },
+      headers,
     )
   }
 
   async fetchPerOrderWidget(
     { version, ...body }: PerOrderWidgetParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
-    return this.api.post<string, AxiosResponse<string>, PerOrderRequestBody>(
+    const requestBody = version
+      ? Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+      )
+      : Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+      )
+
+    return this.postWidgetHtml<PerOrderRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/per-order-widget`,
-      version
-        ? Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        )
-        : Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-        ),
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      requestBody,
+      headers,
+      Boolean(isPreview),
     )
   }
 
   async fetchPerOrderWidgetById(
     { version, ...body }: PerOrderWidgetByIdParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, PerOrderByIdRequestBody>(
+    const requestBody = { integrationSlug: this.integrationSlug || '', ...body }
+    return this.postWidgetHtml<PerOrderByIdRequestBody>(
       `/${version}/widgets/per-order-widget/${body.widgetId}`,
-      { integrationSlug: this.integrationSlug || '', ...body },
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      { ...requestBody, version },
+      headers,
     )
   }
 
   async fetchPerPurchaseWidget(
     { version, ...body }: PerPurchaseWidgetParams & Required<WidgetParams>,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
-    return this.api.post<string, AxiosResponse<string>, PerPurchaseRequestBody>(
+    const requestBody = Object.assign(
+      {},
+      body,
+      this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+    )
+
+    return this.postWidgetHtml<PerPurchaseRequestBody>(
       `${version}/${isPreview ? `preview` : 'widgets'}/per-purchase-widget`,
-      Object.assign(
-        {},
-        body,
-        this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-      ),
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      requestBody,
+      headers,
+      Boolean(isPreview),
     )
   }
 
   async fetchByPercentageWidget(
     { version, ...body }: ByPercentageWidgetParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
     isPreview?: boolean,
   ): Promise<AxiosResponse<string>> {
     isPreview =
       isPreview === undefined
         ? Boolean(this.integrationSlug === 'GS_PREVIEW' && version)
         : isPreview
-    return this.api.post<string, AxiosResponse<string>, ByPercentageRequestBody>(
+    const requestBody = version
+      ? Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+      )
+      : Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+      )
+
+    return this.postWidgetHtml<ByPercentageRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/by-percentage-widget`,
-      version
-        ? Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        )
-        : Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-        ),
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      requestBody,
+      headers,
+      isPreview,
     )
   }
 
   async fetchByPercentageWidgetById(
     { version, ...body }: ByPercentageWidgetByIdParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, ByPercentageWidgetByIdRequestBody>(
+    const requestBody = { integrationSlug: this.integrationSlug || '', ...body }
+    return this.postWidgetHtml<ByPercentageWidgetByIdRequestBody>(
       `/${version}/widgets/by-percentage-widget/${body.widgetId}`,
-      { integrationSlug: this.integrationSlug || '', ...body },
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      { ...requestBody, version },
+      headers,
     )
   }
 
   async fetchByPercentageOfRevenueWidget(
     { version, ...body }: ByPercentageOfRevenueWidgetParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
-    return this.api.post<string, AxiosResponse<string>, ByPercentageOfRevenueRequestBody>(
+    const requestBody = version
+      ? Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+      )
+      : Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+      )
+
+    return this.postWidgetHtml<ByPercentageOfRevenueRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/by-percentage-of-revenue-widget`,
-      version
-        ? Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        )
-        : Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-        ),
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      requestBody,
+      headers,
+      Boolean(isPreview),
     )
   }
 
   async fetchByPercentageOfRevenueWidgetById(
     { version, ...body }: ByPercentageOfRevenueWidgetByIdParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, ByPercentageOfRevenueWidgetByIdRequestBody>(
+    const requestBody = { integrationSlug: this.integrationSlug || '', ...body }
+    return this.postWidgetHtml<ByPercentageOfRevenueWidgetByIdRequestBody>(
       `/${version}/widgets/by-percentage-of-revenue-widget/${body.widgetId}`,
-      { integrationSlug: this.integrationSlug || '', ...body },
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      { ...requestBody, version },
+      headers,
     )
   }
 
   async fetchTieredSpendLevelWidget(
     { version, ...body }: TieredSpendLevelWidgetParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
-    return this.api.post<string, AxiosResponse<string>, TieredSpendLevelRequestBody>(
+    const requestBody = version
+      ? Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+      )
+      : Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+      )
+
+    return this.postWidgetHtml<TieredSpendLevelRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/tiered-spend-level-widget`,
-      version
-        ? Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        )
-        : Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-        ),
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      requestBody,
+      headers,
+      Boolean(isPreview),
     )
   }
 
   async fetchTieredSpendLevelWidgetById(
     { version, ...body }: TieredSpendLevelWidgetByIdParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, TieredSpendLevelByIdRequestBody>(
+    const requestBody = { integrationSlug: this.integrationSlug || '', ...body }
+    return this.postWidgetHtml<TieredSpendLevelByIdRequestBody>(
       `/${version}/widgets/tiered-spend-level-widget/${body.widgetId}`,
-      { integrationSlug: this.integrationSlug || '', ...body },
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      { ...requestBody, version },
+      headers,
     )
   }
 
   async fetchPerProductWidget(
     { version, ...body }: PerProductWidgetParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
-    return this.api.post<string, AxiosResponse<string>, PerProductRequestBody>(
+    const requestBody = version
+      ? Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
+      )
+      : Object.assign(
+        {},
+        body,
+        this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
+      )
+
+    return this.postWidgetHtml<PerProductRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/per-product-widget`,
-      version
-        ? Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { integrationSlug: this.integrationSlug } : null,
-        )
-        : Object.assign(
-          {},
-          body,
-          this.integrationSlug ? { shopUniqueName: this.integrationSlug } : null,
-        ),
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      requestBody,
+      headers,
+      Boolean(isPreview),
     )
   }
 
   async fetchPerProductWidgetById(
     { version, ...body }: PerProductWidgetByIdParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, PerProductByIdRequestBody>(
+    const requestBody = { integrationSlug: this.integrationSlug || '', ...body }
+    return this.postWidgetHtml<PerProductByIdRequestBody>(
       `/${version}/widgets/per-product-widget/${body.widgetId}`,
-      { integrationSlug: this.integrationSlug || '', ...body },
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      requestBody,
+      { ...requestBody, version },
+      headers,
     )
   }
 
   async fetchTopStatsWidget(
     { version, ...body }: TopStatsWidgetParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
-    return this.api.post<string, AxiosResponse<string>, TopStatsRequestBody>(
+    return this.postWidgetHtml<TopStatsRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/stats-widget`,
       body,
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      { ...body, version },
+      headers,
+      Boolean(isPreview),
     )
   }
 
   async fetchTopStatsWidgetById(
     { version, ...body }: TopStatsWidgetByIdParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, TopStatsWidgetByIdParams>(
+    return this.postWidgetHtml<TopStatsWidgetByIdParams>(
       `/${version}/widgets/stats-widget/${body.widgetId}`,
       { ...body },
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      { ...body, version },
+      headers,
     )
   }
 
   async fetchStaticWidget(
     { version, ...body }: StaticWidgetParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
-    return this.api.post<string, AxiosResponse<string>, StaticWidgetParams>(
+    return this.postWidgetHtml<StaticWidgetParams>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/static-widget`,
       body,
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      { ...body, version },
+      headers,
+      Boolean(isPreview),
     )
   }
 
   async fetchStaticWidgetById(
     { version, ...body }: StaticWidgetByIdParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, StaticWidgetByIdParams>(
+    return this.postWidgetHtml<StaticWidgetByIdParams>(
       `/${version}/widgets/static-widget/${body.widgetId}`,
       { ...body },
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      { ...body, version },
+      headers,
     )
   }
 
   async fetchFullWidthBannerWidget(
     { version, ...body }: FullWidthBannerWidgetParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<AxiosResponse<string>> {
     const isPreview = this.integrationSlug === 'GS_PREVIEW' && version
-    return this.api.post<string, AxiosResponse<string>, FullWidthBannerRequestBody>(
+    return this.postWidgetHtml<FullWidthBannerRequestBody>(
       `${version ? `/${version}` : ''}/${isPreview ? `preview` : 'widgets'}/full-width-banner`,
       body,
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      { ...body, version },
+      headers,
+      Boolean(isPreview),
     )
   }
 
   async fetchFullWidthBannerWidgetById(
     { version, ...body }: FullWidthBannerWidgetByIdParams,
-    headers?: typeof AxiosHeaders,
+    headers?: RawAxiosRequestHeaders,
   ): Promise<AxiosResponse<string>> {
-    return this.api.post<string, AxiosResponse<string>, FullWidthBannerWidgetByIdParams>(
+    return this.postWidgetHtml<FullWidthBannerWidgetByIdParams>(
       `/${version}/widgets/full-width-banner/${body.widgetId}`,
       { ...body },
-      {
-        params: { lng: this.locale },
-        headers: { ...headers, accept: 'text/html', 'content-type': 'application/json' },
-      },
+      { ...body, version },
+      headers,
     )
   }
 }
