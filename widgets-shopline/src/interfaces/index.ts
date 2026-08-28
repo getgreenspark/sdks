@@ -3,13 +3,13 @@ export interface ShoplineCartItem {
   variant_id?: string | number
   id?: string | number
   sku?: string
-  quantity: number
+  quantity?: number | string
 }
 
 export interface ShoplineCart {
   items: ShoplineCartItem[]
   currency: string
-  total_price: number
+  total_price?: number | string
 }
 
 export interface CartOrderPayload {

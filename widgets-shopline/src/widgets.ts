@@ -221,7 +221,7 @@ export function renderOrderImpacts(
     .then((order) => {
       if (!isCurrent()) return undefined
       if (!order) {
-        warn('widgets: invalid or missing cart currency; skip')
+        warn('widgets: invalid cart currency or total_price; skip')
         return undefined
       }
       if (shouldClearOrderImpactsMount(order)) {
