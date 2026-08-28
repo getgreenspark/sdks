@@ -18,12 +18,13 @@ export function toCents(amount: number | undefined): number {
   return Math.round(amount * 100)
 }
 
-/** Prefer product_id; never sku. SHOPLINE ids overflow JS numbers — keep strings. */
+/**
+ * Hotglue platformProductId is product_id only; variant_id must not spoof it.
+ * SHOPLINE ids overflow JS numbers — keep strings. Never sku.
+ */
 export function lineProductId(item: ShoplineCartItem): string {
-  if (item.product_id != null) return String(item.product_id)
-  if (item.variant_id != null) return String(item.variant_id)
-  if (item.id != null) return String(item.id)
-  return ''
+  if (item.product_id == null || item.product_id === '') return ''
+  return String(item.product_id)
 }
 
 export function parseCart(cart: ShoplineCart): CartOrderPayload | undefined {
@@ -31,10 +32,12 @@ export function parseCart(cart: ShoplineCart): CartOrderPayload | undefined {
   if (!currency) return undefined
 
   return {
-    lineItems: cart.items.map((item) => ({
-      productId: lineProductId(item),
-      quantity: item.quantity,
-    })),
+    lineItems: cart.items
+      .map((item) => ({
+        productId: lineProductId(item),
+        quantity: item.quantity,
+      }))
+      .filter((line) => line.productId !== ''),
     currency,
     totalPrice: toCents(cart.total_price),
   }
