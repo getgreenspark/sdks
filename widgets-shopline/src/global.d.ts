@@ -31,11 +31,9 @@ declare global {
     Shopline?: { designMode?: boolean }
     ThemeEvent?: ThemeEventConstructor
     themeEventCenter?: ThemeEventCenter
-    _greensparkCheckboxHandlerBound?: boolean
-    _greensparkRemoveHandlerBound?: boolean
-    _greensparkPreselectOptOut?: boolean
-    _greensparkPreselectAddInProgress?: Record<string, boolean | undefined>
-    _greensparkFetchIntercepted?: boolean
+    /** Shared with shopline-widgets-cli so both surfaces wrap fetch once. */
+    _greensparkCartFetchWrapped?: boolean
+    _greensparkCartRefreshBound?: boolean
     _greensparkThemeEventsBound?: boolean
   }
 }

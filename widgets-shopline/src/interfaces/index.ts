@@ -20,18 +20,15 @@ export interface CartOrderPayload {
 
 export interface CartApi {
   getCart: () => Promise<ShoplineCart>
-  getOrder: () => Promise<CartOrderPayload>
-  addItemToCart: (targetProductId: string, quantity?: number) => Promise<unknown>
-  updateCart: (updates: Record<string, number>) => Promise<Response | undefined>
-  refreshCartDrawer: () => void
-  captureEvent: (event: unknown) => Promise<Response>
+  getOrder: () => Promise<CartOrderPayload | undefined>
 }
 
 export interface RunContext {
   greenspark: InstanceType<Window['GreensparkWidgets']>
   cartApi: CartApi
   getWidgetContainer: (target: HTMLElement) => string
-  movePopupToBody: (widgetId: string) => void
+  movePopupToBody: (target: HTMLElement) => void
+  clearWidgetMount: (target: HTMLElement) => void
   productId: string
   currency: string
   useShadowDom: boolean

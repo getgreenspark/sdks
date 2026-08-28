@@ -9,6 +9,7 @@
   "author": "Greenspark <support@getgreenspark.com>",
   "scripts": {
     "lint": "eslint src",
+    "test": "tsx --test src/*.test.ts",
     "dev": "webpack --mode=development",
     "build": "rm -rf dist && mkdir -p dist && webpack --mode=production",
     "release": "release-it"
@@ -30,6 +31,7 @@
     "release-it": "^17.6.0",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.3.0",
     "webpack": "^5.93.0",
@@ -49,6 +51,7 @@
     "hooks": {
       "before:init": [
         "npm run lint",
+        "npm test",
         "npm run build"
       ]
     }

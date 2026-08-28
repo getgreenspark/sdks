@@ -1,6 +1,6 @@
-const popupHistory: HTMLElement[] = []
-
 const POPUP_SELECTOR = '.gs-popup, div[class^="gs-popup-"]'
+
+const ownedPopups = new WeakMap<HTMLElement, HTMLElement>()
 
 export function preparePopupMedia(root: ParentNode): void {
   root.querySelectorAll<HTMLImageElement>(`${POPUP_SELECTOR} img`).forEach((img) => {
@@ -24,26 +24,28 @@ export function getWidgetContainer(target: HTMLElement): string {
   return containerSelector
 }
 
-export function cleanupPopups(): void {
-  popupHistory.forEach((outdatedPopup) => {
-    outdatedPopup.innerHTML = ''
-    outdatedPopup.style.display = 'none'
-    outdatedPopup.remove()
-  })
-  popupHistory.length = 0
+export function cleanupOwnedPopup(target: HTMLElement): void {
+  const popup = ownedPopups.get(target)
+  if (!popup) return
+  popup.innerHTML = ''
+  popup.style.display = 'none'
+  popup.remove()
+  ownedPopups.delete(target)
 }
 
-export function movePopupToBody(widgetId: string): void {
-  cleanupPopups()
+/** Empty carts must not leave widget HTML; keep the mount node for the next refresh. */
+export function clearWidgetMount(target: HTMLElement): void {
+  cleanupOwnedPopup(target)
+  target.innerHTML = ''
+}
 
-  const parent =
-    document.getElementById(widgetId) ??
-    document.querySelector(`[data-gs-widget-id="${CSS.escape(widgetId)}"]`)
-  const popup = parent?.querySelector<HTMLElement>('div[class^="gs-popup-"], .gs-popup')
+export function movePopupToBody(target: HTMLElement): void {
+  cleanupOwnedPopup(target)
+  const popup = target.querySelector<HTMLElement>('div[class^="gs-popup-"], .gs-popup')
   if (popup) {
     preparePopupMedia(popup)
     document.body.append(popup)
-    popupHistory.push(popup)
+    ownedPopups.set(target, popup)
   }
 }
 

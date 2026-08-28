@@ -1,12 +1,5 @@
-import { getShopUniqueName, isGsDevStore } from './config'
+import { getShopUniqueName, widgetSdkUrl } from './config'
 import { err } from './debug'
-
-function widgetSdkUrl(): string {
-  const context = `${getShopUniqueName()} ${window.location.hostname}`
-  return isGsDevStore(context)
-    ? 'https://cdn.getgreenspark.com/scripts/widgets%402.6.3.js'
-    : 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
-}
 
 const MAX_SCRIPT_RETRIES = 5
 const SCRIPT_LOADED_ATTRIBUTE = 'data-greenspark-loaded'
@@ -56,22 +49,22 @@ export function setup(): Promise<void> {
   if (typeof window === 'undefined' || window.GreensparkWidgets) return Promise.resolve()
   if (setupPromise) return setupPromise
 
-  setupPromise = loadScript(widgetSdkUrl())
+  setupPromise = loadScript(widgetSdkUrl(getShopUniqueName()))
     .then(() => {
       scriptRetryCount = 0
-      window.dispatchEvent(new Event('greenspark-shopline-setup'))
+      window.dispatchEvent(new Event('greenspark-setup'))
     })
     .catch((error: unknown) => {
       setupPromise = null
       if (scriptRetryCount >= MAX_SCRIPT_RETRIES) {
         err('script-loader: gave up after', MAX_SCRIPT_RETRIES, 'retries', error)
-        return
+        return Promise.reject(error)
       }
       scriptRetryCount += 1
       err('script-loader: failed to load script, will retry in 1s', error)
-      return new Promise<void>((resolve) => {
+      return new Promise<void>((resolve, reject) => {
         setTimeout(() => {
-          setup().then(resolve)
+          setup().then(resolve).catch(reject)
         }, 1000)
       })
     })

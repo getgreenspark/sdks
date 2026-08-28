@@ -1,23 +1,34 @@
 import { createCartApi } from './cart'
-import { getCapturedWidgetId, getGreensparkApiUrl, getLocale, getProductIdFromPage, getShopUniqueName } from './config'
-import { getWidgetContainer, injectWidgetStyles, movePopupToBody } from './dom'
-import { err, warn } from './debug'
+import {
+  getGreensparkApiUrl,
+  getLocale,
+  getProductIdFromPage,
+  getShopUniqueName,
+  getWidgetsClientSlug,
+  parseCurrency,
+  stampedCurrency,
+} from './config'
+import { clearWidgetMount, getWidgetContainer, injectWidgetStyles, movePopupToBody } from './dom'
+import { err } from './debug'
 import { EnumToWidgetTypeMap, type RunContext, type WidgetVariant } from './interfaces'
-import { CART_DRAWER_INJECT_ANCHORS, CART_DRAWER_SELECTORS, TARGET_SELECTOR } from './selectors'
+import { TARGET_SELECTOR } from './selectors'
 import { setup } from './script-loader'
 import { renderWidget } from './widgets'
 
 const MAX_RETRIES = 5
 const RENDER_DEBOUNCE_MS = 150
-const CART_RERENDER_DELAY_MS = 300
-const CART_API_PATTERN = /\/(cart\/(add|update|change|clear)|api\/cart\/change|ajax-cart\/update)(\.js)?$/
+
+/**
+ * Theme `routes.cart_*_url` plus Ajax `POST /api/cart/change`.
+ * A default Accept header 302s to `/cart` — match the request URL, not only res.url.
+ */
+const CART_MUTATION_PATH =
+  /\/(cart\/(add|update|change|clear)|api\/cart\/change|ajax-cart\/update)(\.js)?$/
 
 let retryCount = 0
 let scheduledRenderTimer: number | null = null
-let cartDrawerRetryCount = 0
-let cartDrawerObserverInitialized = false
-let cartDrawerDebounceTimer: number | null = null
 let pendingTargets: HTMLElement[] | null = null
+let themeEventRetryCount = 0
 
 export function resolveWidgetId(target: HTMLElement): string {
   return target.getAttribute('data-gs-widget-id') || target.id
@@ -77,125 +88,6 @@ function getTargets(targets?: Iterable<Element>): HTMLElement[] {
   return [...document.querySelectorAll<HTMLElement>(TARGET_SELECTOR)]
 }
 
-function findDrawerEl(): Element | null {
-  return document.querySelector(CART_DRAWER_SELECTORS.join(', '))
-}
-
-function findFirstOrderImpactsWidgetId(): string | undefined {
-  for (const el of document.querySelectorAll<HTMLElement>(TARGET_SELECTOR)) {
-    const widgetId = resolveWidgetId(el)
-    if (widgetId && tryParseWidgetVariant(widgetId) === 'orderImpacts') return widgetId
-  }
-  return undefined
-}
-
-function configuredDrawerWidgetId(): string | undefined {
-  return getCapturedWidgetId() || findFirstOrderImpactsWidgetId()
-}
-
-/** App blocks cannot land in the OS 3.0 drawer; inject a *ById target when configured. */
-export function ensureDrawerTarget(): HTMLElement | null {
-  const widgetId = configuredDrawerWidgetId()
-  if (!widgetId) return null
-
-  const drawer = findDrawerEl()
-  if (!drawer) return null
-
-  const existingInDrawer = [...drawer.querySelectorAll<HTMLElement>(TARGET_SELECTOR)].find(
-    (el) => resolveWidgetId(el) === widgetId,
-  )
-  if (existingInDrawer) return existingInDrawer
-
-  const el = document.createElement('div')
-  el.className = 'greenspark-widget-target'
-  el.setAttribute('data-gs-widget-id', widgetId)
-  el.id = document.getElementById(widgetId)
-    ? `${widgetId.replace(/[^a-z0-9_-]/gi, '-')}--drawer`
-    : widgetId
-
-  const anchor = drawer.querySelector(CART_DRAWER_INJECT_ANCHORS.join(', '))
-  if (anchor?.parentElement) {
-    anchor.parentElement.insertBefore(el, anchor)
-  } else {
-    drawer.appendChild(el)
-  }
-
-  return el
-}
-
-function setupCartDrawerObserver(): void {
-  if (cartDrawerObserverInitialized) return
-
-  const drawerEl = findDrawerEl()
-  if (!drawerEl) {
-    if (cartDrawerRetryCount++ >= MAX_RETRIES) {
-      cartDrawerObserverInitialized = true
-      warn('run: cart drawer not found after max retries; stopping observer setup')
-      return
-    }
-    window.setTimeout(() => {
-      if (!cartDrawerObserverInitialized) setupCartDrawerObserver()
-    }, 400)
-    return
-  }
-
-  try {
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        if (mutation.type !== 'childList') continue
-        if (cartDrawerDebounceTimer) window.clearTimeout(cartDrawerDebounceTimer)
-
-        cartDrawerDebounceTimer = window.setTimeout(() => {
-          const injected = ensureDrawerTarget()
-          const targets = [...drawerEl.querySelectorAll<HTMLElement>(TARGET_SELECTOR)]
-          if (injected && !targets.includes(injected)) targets.push(injected)
-          const hasMissingWidget = targets.some(
-            (target) => !target.querySelector('.greenspark-widget-instance'),
-          )
-          if (hasMissingWidget) scheduleRun(targets)
-        }, 120)
-        break
-      }
-    })
-
-    observer.observe(drawerEl, { childList: true, subtree: true })
-    cartDrawerObserverInitialized = true
-    cartDrawerRetryCount = 0
-  } catch (error: unknown) {
-    err('run: failed to attach cart drawer observer', error)
-  }
-}
-
-function interceptCartMutations(): void {
-  if (window._greensparkFetchIntercepted || typeof window.fetch !== 'function') return
-  window._greensparkFetchIntercepted = true
-
-  const originalFetch = window.fetch
-  window.fetch = function (input: RequestInfo | URL, init?: RequestInit) {
-    const response = originalFetch.call(this, input, init)
-    const url = getFetchUrl(input)
-
-    if (!url || !CART_API_PATTERN.test(url.pathname)) {
-      return response
-    }
-
-    response
-      .then((res) => {
-        if (res.ok) {
-          window.setTimeout(() => {
-            ensureDrawerTarget()
-            scheduleRun()
-          }, CART_RERENDER_DELAY_MS)
-        }
-      })
-      .catch(() => {
-        // Ignore failed cart mutations here; the original fetch promise remains unchanged.
-      })
-
-    return response
-  }
-}
-
 function getFetchUrl(input: RequestInfo | URL): URL | null {
   try {
     if (input instanceof URL) return input
@@ -206,7 +98,41 @@ function getFetchUrl(input: RequestInfo | URL): URL | null {
   }
 }
 
-let themeEventRetryCount = 0
+function isCartMutationUrl(input: RequestInfo | URL | undefined): boolean {
+  if (input == null || input === '') return false
+  const parsed = getFetchUrl(input)
+  return parsed != null && CART_MUTATION_PATH.test(parsed.pathname)
+}
+
+function onCartRefresh(): void {
+  scheduleRun()
+}
+
+function interceptCartMutations(): void {
+  if (!window._greensparkCartRefreshBound) {
+    window._greensparkCartRefreshBound = true
+    window.addEventListener('greenspark-cart-refresh', onCartRefresh)
+  }
+
+  // CLI uses the same flag; skip wrapping if the theme extension already did.
+  if (window._greensparkCartFetchWrapped || typeof window.fetch !== 'function') return
+  window._greensparkCartFetchWrapped = true
+
+  const originalFetch = window.fetch.bind(window)
+  window.fetch = function (input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+    const response = originalFetch(input, init)
+    void response
+      .then((res) => {
+        if (isCartMutationUrl(input) || isCartMutationUrl(res.url)) {
+          window.dispatchEvent(new Event('greenspark-cart-refresh'))
+        }
+      })
+      .catch(() => {
+        // Observer only; the caller still handles the original fetch promise.
+      })
+    return response
+  }
+}
 
 function listenThemeEvents(): void {
   if (window._greensparkThemeEventsBound) return
@@ -217,17 +143,35 @@ function listenThemeEvents(): void {
     return
   }
 
-  const onCartChanged = (): void => {
-    ensureDrawerTarget()
-    scheduleRun()
-  }
-
   const subscribe = center.addListener?.bind(center) ?? center.addEventListener?.bind(center)
   if (!subscribe) return
 
   window._greensparkThemeEventsBound = true
-  subscribe('variant:added', onCartChanged)
-  subscribe('cart:opened', onCartChanged)
+  subscribe('variant:added', onCartRefresh)
+  subscribe('cart:opened', onCartRefresh)
+}
+
+function currencyForTarget(target: HTMLElement, cartCurrency: string): string {
+  return stampedCurrency(target) ?? parseCurrency(cartCurrency) ?? ''
+}
+
+function renderTargets(
+  ctxBase: Omit<RunContext, 'currency'>,
+  targetsToRender: HTMLElement[],
+  cartCurrency: string,
+): void {
+  targetsToRender.forEach((target) => {
+    const widgetId = resolveWidgetId(target)
+    const variant = getWidgetVariant(widgetId)
+    if (!variant) return
+
+    const ctx: RunContext = {
+      ...ctxBase,
+      currency: currencyForTarget(target, cartCurrency),
+    }
+    const containerSelector = getWidgetContainer(target)
+    renderWidget(ctx, variant, target, widgetId, containerSelector)
+  })
 }
 
 export function runGreenspark(targets?: Iterable<Element>): void {
@@ -236,10 +180,8 @@ export function runGreenspark(targets?: Iterable<Element>): void {
     return
   }
 
-  setupCartDrawerObserver()
   interceptCartMutations()
   listenThemeEvents()
-  ensureDrawerTarget()
 
   if (!window.GreensparkWidgets) {
     if (retryCount++ >= MAX_RETRIES) {
@@ -252,9 +194,9 @@ export function runGreenspark(targets?: Iterable<Element>): void {
 
   retryCount = 0
 
-  const shopUniqueName = getShopUniqueName()
-  if (!shopUniqueName) {
-    err('run: missing SHOPLINE shop context')
+  const liveSlug = getShopUniqueName()
+  if (!liveSlug) {
+    err('run: missing shop.permanent_domain; skip widgets')
     return
   }
 
@@ -263,52 +205,36 @@ export function runGreenspark(targets?: Iterable<Element>): void {
 
   const useShadowDom = false
   const version = 'v2' as const
-  const currency = ''
   const productId = getProductIdFromPage()
   const locale = getLocale()
   const greenspark = new window.GreensparkWidgets({
     locale,
-    integrationSlug: shopUniqueName,
+    integrationSlug: getWidgetsClientSlug(liveSlug),
+    // CDN still gates x-integration-slug on this alias.
     isShopifyIntegration: true,
-    apiUrl: getGreensparkApiUrl(shopUniqueName),
+    apiUrl: getGreensparkApiUrl(liveSlug),
   })
 
-  const ctx: RunContext = {
+  const ctxBase: Omit<RunContext, 'currency'> = {
     greenspark,
-    cartApi: createCartApi(shopUniqueName),
+    cartApi: createCartApi(),
     getWidgetContainer,
     movePopupToBody,
+    clearWidgetMount,
     productId,
-    currency,
     useShadowDom,
     version,
   }
 
   injectWidgetStyles()
 
-  const cartApi = ctx.cartApi
-  cartApi
+  ctxBase.cartApi
     .getOrder()
     .then((order) => {
-      ctx.currency = order.currency || ctx.currency
-      targetsToRender.forEach((target) => {
-        const widgetId = resolveWidgetId(target)
-        const variant = getWidgetVariant(widgetId)
-        if (!variant) return
-
-        const containerSelector = getWidgetContainer(target)
-        renderWidget(ctx, variant, widgetId, containerSelector)
-      })
+      renderTargets(ctxBase, targetsToRender, order?.currency ?? '')
     })
     .catch((error: unknown) => {
       err('run: getOrder failed; rendering without cart currency', error)
-      targetsToRender.forEach((target) => {
-        const widgetId = resolveWidgetId(target)
-        const variant = getWidgetVariant(widgetId)
-        if (!variant) return
-
-        const containerSelector = getWidgetContainer(target)
-        renderWidget(ctx, variant, widgetId, containerSelector)
-      })
+      renderTargets(ctxBase, targetsToRender, '')
     })
 }

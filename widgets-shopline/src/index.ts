@@ -7,7 +7,8 @@ captureScriptEl(document.currentScript instanceof HTMLScriptElement ? document.c
 
 function bootstrap(): void {
   const targets = [...document.querySelectorAll(TARGET_SELECTOR)]
-  scheduleRun(targets.length > 0 ? targets : undefined)
+  if (targets.length === 0) return
+  scheduleRun(targets)
 }
 
 if (document.readyState === 'loading') {

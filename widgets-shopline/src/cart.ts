@@ -1,12 +1,7 @@
 import type { CartApi, CartOrderPayload, ShoplineCart, ShoplineCartItem } from './interfaces'
-import { getGreensparkApiUrl } from './config'
-import { err } from './debug'
+import { parseCurrency } from './config'
 
-const CART_ENDPOINTS = {
-  get: '/api/carts/ajax-cart',
-  add: '/cart/add',
-  update: '/cart/update',
-} as const
+const CART_GET = '/api/carts/ajax-cart'
 
 /** Query-cart-details marks Content-Type application/json as required, including GET. */
 const JSON_HEADERS = {
@@ -14,24 +9,34 @@ const JSON_HEADERS = {
   Accept: 'application/json',
 } as const
 
-/** SKU ids are long decimal strings; never coerce with parseInt. */
-export function skuIdOf(item: ShoplineCartItem): string {
-  if (item.id != null) return String(item.id)
+/**
+ * ajax-cart `total_price` is major units (docs sample: 11);
+ * widget-api `totalPrice` is always cents (backend divides by 100).
+ */
+export function toCents(amount: number | undefined): number {
+  if (typeof amount !== 'number' || !Number.isFinite(amount)) return 0
+  return Math.round(amount * 100)
+}
+
+/** Prefer product_id; never sku. SHOPLINE ids overflow JS numbers — keep strings. */
+export function lineProductId(item: ShoplineCartItem): string {
+  if (item.product_id != null) return String(item.product_id)
   if (item.variant_id != null) return String(item.variant_id)
-  if (item.sku != null) return String(item.sku)
+  if (item.id != null) return String(item.id)
   return ''
 }
 
-export function parseCart(cart: ShoplineCart): CartOrderPayload {
-  const lineItems = cart.items.map((item) => ({
-    productId: String(item.product_id != null ? item.product_id : skuIdOf(item)),
-    quantity: item.quantity,
-  }))
+export function parseCart(cart: ShoplineCart): CartOrderPayload | undefined {
+  const currency = parseCurrency(cart.currency)
+  if (!currency) return undefined
 
   return {
-    lineItems,
-    currency: cart.currency,
-    totalPrice: cart.total_price,
+    lineItems: cart.items.map((item) => ({
+      productId: lineProductId(item),
+      quantity: item.quantity,
+    })),
+    currency,
+    totalPrice: toCents(cart.total_price),
   }
 }
 
@@ -53,98 +58,21 @@ function toShoplineCart(cart: ShoplineAjaxCart | undefined): ShoplineCart {
   return {
     items: cart?.items ?? [],
     currency: cart?.currency ? cart.currency : '',
-    total_price: typeof totalPrice === 'number' && !Number.isNaN(totalPrice) ? totalPrice : 0,
+    total_price: typeof totalPrice === 'number' && Number.isFinite(totalPrice) ? totalPrice : 0,
   }
 }
 
-function dispatchCartRefresh(): void {
-  const center = window.themeEventCenter
-  const ThemeEvent = window.ThemeEvent
-  if (!center || typeof center.dispatch !== 'function' || !ThemeEvent) return
-
-  center.dispatch(new ThemeEvent('cart:open', { detail: { refresh: true } }))
-}
-
-export function createCartApi(shopUniqueName: string): CartApi {
-  const greensparkApiUrl = getGreensparkApiUrl(shopUniqueName)
-
-  function captureEvent(event: unknown): Promise<Response> {
-    return fetch(`${greensparkApiUrl}/v2/events`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({
-        integrationSlug: shopUniqueName,
-        scope: 'CUSTOMER_CART_CONTRIBUTION_WIDGET',
-        type: 'ERROR',
-        event,
-      }),
-    })
-  }
-
+export function createCartApi(): CartApi {
   function getCart(): Promise<ShoplineCart> {
-    return fetchJSON<ShoplineAjaxCart>(CART_ENDPOINTS.get, {
+    return fetchJSON<ShoplineAjaxCart>(CART_GET, {
       method: 'GET',
       headers: JSON_HEADERS,
     }).then(toShoplineCart)
   }
 
-  function getOrder(): Promise<CartOrderPayload> {
+  function getOrder(): Promise<CartOrderPayload | undefined> {
     return getCart().then(parseCart)
   }
 
-  function addItemToCart(targetProductId: string, quantity = 1): Promise<unknown> {
-    return fetchJSON(CART_ENDPOINTS.add, {
-      method: 'POST',
-      headers: JSON_HEADERS,
-      body: JSON.stringify({ items: [{ id: targetProductId, quantity }] }),
-    }).catch((error: unknown) => {
-      if (error instanceof Response) {
-        error
-          .json()
-          .then((jsonError: unknown) => captureEvent(jsonError))
-          .catch((jsonError: unknown) => err('cart: failed to capture add error', jsonError))
-      }
-      return Promise.reject(error)
-    })
-  }
-
-  function updateCart(updates: Record<string, number>): Promise<Response | undefined> {
-    const entries = Object.entries(updates)
-    if (entries.length === 0) return Promise.resolve(undefined)
-
-    return entries
-      .reduce<Promise<Response | undefined>>(
-        (chain, [id, quantity]) =>
-          chain.then(() =>
-            fetch(CART_ENDPOINTS.update, {
-              method: 'POST',
-              credentials: 'same-origin',
-              headers: JSON_HEADERS,
-              body: JSON.stringify({ id, quantity }),
-            }),
-          ),
-        Promise.resolve(undefined),
-      )
-      .then((response) => {
-        if (response && !response.ok) return Promise.reject(response)
-        return response
-      })
-  }
-
-  function refreshCartDrawer(): void {
-    try {
-      dispatchCartRefresh()
-    } catch (error: unknown) {
-      err('cart: Error refreshing cart UI:', error)
-    }
-  }
-
-  return {
-    getCart,
-    getOrder,
-    addItemToCart,
-    updateCart,
-    refreshCartDrawer,
-    captureEvent,
-  }
+  return { getCart, getOrder }
 }
