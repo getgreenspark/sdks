@@ -9,7 +9,7 @@ import {
   stampedCurrency,
 } from './config'
 import { clearWidgetMount, getWidgetContainer, injectWidgetStyles, movePopupToBody } from './dom'
-import { err } from './debug'
+import { err, log } from './debug'
 import { EnumToWidgetTypeMap, type RunContext, type WidgetVariant } from './interfaces'
 import { TARGET_SELECTOR } from './selectors'
 import { setup } from './script-loader'
@@ -105,6 +105,7 @@ function isCartMutationUrl(input: RequestInfo | URL | undefined): boolean {
 }
 
 function onCartRefresh(): void {
+  log('cart refresh')
   scheduleRun()
 }
 
@@ -147,6 +148,7 @@ function listenThemeEvents(): void {
   if (!subscribe) return
 
   window._greensparkThemeEventsBound = true
+  log('theme events bound')
   subscribe('variant:added', onCartRefresh)
   subscribe('cart:opened', onCartRefresh)
 }
@@ -164,6 +166,7 @@ function renderTargets(
     const widgetId = resolveWidgetId(target)
     const variant = getWidgetVariant(widgetId)
     if (!variant) return
+    log('render', { id: target.id, variant, widgetId })
 
     const ctx: RunContext = {
       ...ctxBase,
@@ -201,6 +204,11 @@ export function runGreenspark(targets?: Iterable<Element>): void {
   }
 
   const targetsToRender = getTargets(targets)
+  log('run', {
+    slug: liveSlug,
+    targets: targetsToRender.length,
+    api: getGreensparkApiUrl(liveSlug),
+  })
   if (targetsToRender.length === 0) return
 
   const useShadowDom = false

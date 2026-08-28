@@ -1,5 +1,5 @@
-import { captureScriptEl } from './config'
-import { err } from './debug'
+import { captureScriptEl, getShopUniqueName } from './config'
+import { err, log } from './debug'
 import { scheduleRun } from './run'
 import { TARGET_SELECTOR } from './selectors'
 
@@ -7,6 +7,11 @@ captureScriptEl(document.currentScript instanceof HTMLScriptElement ? document.c
 
 function bootstrap(): void {
   const targets = [...document.querySelectorAll(TARGET_SELECTOR)]
+  log('bootstrap', {
+    slug: getShopUniqueName(),
+    targets: targets.length,
+    readyState: document.readyState,
+  })
   if (targets.length === 0) return
   scheduleRun(targets)
 }

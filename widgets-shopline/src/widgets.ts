@@ -1,6 +1,6 @@
 import type { GreensparkCartWidgetKey } from './global'
 import type { CartOrderPayload, RunContext, WidgetVariant } from './interfaces'
-import { err, warn } from './debug'
+import { err, log, warn } from './debug'
 
 /** Wipe only a parsed empty cart. `undefined` is invalid currency — leave a painted widget in place. */
 export function shouldClearOrderImpactsMount(order: CartOrderPayload | undefined): boolean {
@@ -35,6 +35,7 @@ function shouldSuppress(renderKey: string): boolean {
 function rememberUnauthorized(renderKey: string, error: unknown): void {
   const status = getHttpStatus(error)
   if (status === 401 || status === 403) {
+    log('suppressing unauthorized', renderKey, status)
     suppressedUntilByRenderKey.set(renderKey, Date.now() + UNAUTHORIZED_SUPPRESSION_MS)
   }
 }
@@ -197,8 +198,14 @@ export function renderOrderImpacts(
   // Do not skip in-flight refreshes: an early return would skip the gen bump,
   // so a newer cart never paints (stale last-write-wins). Overlapping
   // getCart/render is allowed; isCurrent() no-ops stale work.
-  if (shouldSuppress(renderKey)) return
-  if (!document.querySelector(containerSelector)) return
+  if (shouldSuppress(renderKey)) {
+    log('cart-widget suppressed (401/403)', renderKey)
+    return
+  }
+  if (!document.querySelector(containerSelector)) {
+    log('cart-widget skip; container missing', containerSelector)
+    return
+  }
 
   const {
     cartApi,
@@ -225,12 +232,18 @@ export function renderOrderImpacts(
         return undefined
       }
       if (shouldClearOrderImpactsMount(order)) {
+        log('cart empty; skip render', target.id)
         clearWidgetMount(target)
         return undefined
       }
 
       const selector = getWidgetContainer(target)
-      if (!document.querySelector(selector)) return undefined
+      if (!document.querySelector(selector)) {
+        log('cart-widget skip; instance container missing', selector)
+        return undefined
+      }
+
+      log('cart-widget render', { widgetId, selector, lineItems: order.lineItems.length })
 
       const widget =
         existingWidget ??

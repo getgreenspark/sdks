@@ -17,7 +17,8 @@ export default tseslint.config(eslint.configs.recommended, ...tseslint.configs.r
     'no-console': [
       'error',
       {
-        allow: ['error', 'warn'],
+        // debug.ts log() is QA-only; err/warn stay always-on.
+        allow: ['error', 'warn', 'log'],
       },
     ],
     'max-len': 'off',

@@ -1,5 +1,5 @@
 import { getShopUniqueName, widgetSdkUrl } from './config'
-import { err } from './debug'
+import { err, log } from './debug'
 
 const MAX_SCRIPT_RETRIES = 5
 const SCRIPT_LOADED_ATTRIBUTE = 'data-greenspark-loaded'
@@ -49,9 +49,12 @@ export function setup(): Promise<void> {
   if (typeof window === 'undefined' || window.GreensparkWidgets) return Promise.resolve()
   if (setupPromise) return setupPromise
 
-  setupPromise = loadScript(widgetSdkUrl(getShopUniqueName()))
+  const sdkUrl = widgetSdkUrl(getShopUniqueName())
+  log('loading SDK', sdkUrl)
+  setupPromise = loadScript(sdkUrl)
     .then(() => {
       scriptRetryCount = 0
+      log('SDK ready', sdkUrl)
       window.dispatchEvent(new Event('greenspark-setup'))
     })
     .catch((error: unknown) => {
