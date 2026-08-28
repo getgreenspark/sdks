@@ -3,6 +3,8 @@ import {
   CART_DRAWER_SELECTORS,
   WIDGET_INSTANCE_SELECTOR,
   collectUnmountedTargets,
+  isInsideCartDrawer,
+  partitionDrawerTargets,
 } from '../src/selectors'
 
 describe('CART_DRAWER_SELECTORS', () => {
@@ -25,5 +27,34 @@ describe('collectUnmountedTargets', () => {
   it('returns empty when every target already has an instance', () => {
     const mounted = { querySelector: () => ({}) }
     expect(collectUnmountedTargets([mounted])).toEqual([])
+  })
+})
+
+describe('isInsideCartDrawer', () => {
+  it('is true when closest hits a drawer custom element', () => {
+    expect(
+      isInsideCartDrawer({
+        closest: (selector: string) => (selector === 'theme-cart-drawer' ? {} : null),
+      }),
+    ).toBe(true)
+  })
+
+  it('is false when the node is not in a drawer', () => {
+    expect(isInsideCartDrawer({ closest: () => null })).toBe(false)
+  })
+})
+
+describe('partitionDrawerTargets', () => {
+  it('splits page widgets from drawer widgets', () => {
+    const page = { id: 'page', closest: () => null }
+    const drawer = {
+      id: 'drawer',
+      closest: (selector: string) => (selector === 'theme-cart-fixed-checkout' ? {} : null),
+    }
+
+    expect(partitionDrawerTargets([page, drawer])).toEqual({
+      pageTargets: [page],
+      drawerTargets: [drawer],
+    })
   })
 })

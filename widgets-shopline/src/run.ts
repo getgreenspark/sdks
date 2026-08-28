@@ -11,13 +11,20 @@ import {
 import { clearWidgetMount, getWidgetContainer, injectWidgetStyles, movePopupToBody } from './dom'
 import { err, log } from './debug'
 import { EnumToWidgetTypeMap, type RunContext, type WidgetVariant } from './interfaces'
-import { CART_DRAWER_SELECTORS, TARGET_SELECTOR, collectUnmountedTargets } from './selectors'
+import {
+  CART_DRAWER_SELECTORS,
+  TARGET_SELECTOR,
+  collectUnmountedTargets,
+  partitionDrawerTargets,
+} from './selectors'
 import { setup } from './script-loader'
 import { renderWidget } from './widgets'
 
 const MAX_RETRIES = 5
 const RENDER_DEBOUNCE_MS = 150
-const CART_DRAWER_DEBOUNCE_MS = 120
+const CART_DRAWER_DEBOUNCE_MS = 200
+/** After a cart mutation, wait for the theme wipe+observer path before in-place refresh. */
+const DRAWER_REFRESH_FALLBACK_MS = 500
 
 /**
  * Theme `routes.cart_*_url` plus Ajax `POST /api/cart/change`.
@@ -34,6 +41,8 @@ let cartDrawerRetryCount = 0
 let cartDrawerObserverInitialized = false
 let cartDrawerDebounceTimer: number | null = null
 let documentDrawerObserver: MutationObserver | null = null
+let drawerFallbackTimer: number | null = null
+let drawerRemountedThisRefresh = false
 
 export function resolveWidgetId(target: HTMLElement): string {
   return target.getAttribute('data-gs-widget-id') || target.id
@@ -111,7 +120,45 @@ function isCartMutationUrl(input: RequestInfo | URL | undefined): boolean {
 
 function onCartRefresh(): void {
   log('cart refresh')
-  scheduleRun()
+  const { pageTargets, drawerTargets } = partitionDrawerTargets(
+    document.querySelectorAll<HTMLElement>(TARGET_SELECTOR),
+  )
+  // Drawer nodes are about to be replaced; painting now flashes then gets wiped.
+  if (pageTargets.length > 0) scheduleRun(pageTargets)
+  if (drawerTargets.length > 0 || queryCartDrawerRoots().length > 0) {
+    scheduleDrawerRefreshFallback()
+  }
+}
+
+function onCartOpened(): void {
+  log('cart opened')
+  const { pageTargets } = partitionDrawerTargets(
+    document.querySelectorAll<HTMLElement>(TARGET_SELECTOR),
+  )
+  if (pageTargets.length > 0) scheduleRun(pageTargets)
+  queryCartDrawerRoots().forEach((root) => remountUnmountedDrawerTargets(root))
+}
+
+function cancelDrawerRefreshFallback(): void {
+  if (drawerFallbackTimer) {
+    window.clearTimeout(drawerFallbackTimer)
+    drawerFallbackTimer = null
+  }
+}
+
+function scheduleDrawerRefreshFallback(): void {
+  drawerRemountedThisRefresh = false
+  cancelDrawerRefreshFallback()
+  drawerFallbackTimer = window.setTimeout(() => {
+    drawerFallbackTimer = null
+    if (drawerRemountedThisRefresh) return
+    const { drawerTargets } = partitionDrawerTargets(
+      document.querySelectorAll<HTMLElement>(TARGET_SELECTOR),
+    )
+    if (drawerTargets.length === 0) return
+    log('cart drawer fallback refresh', { targets: drawerTargets.length })
+    scheduleRun(drawerTargets)
+  }, DRAWER_REFRESH_FALLBACK_MS)
 }
 
 /** Outermost matching drawers so we do not double-observe nested checkout footers. */
@@ -124,6 +171,8 @@ function remountUnmountedDrawerTargets(root: ParentNode): void {
   const targets = collectUnmountedTargets(root.querySelectorAll<HTMLElement>(TARGET_SELECTOR))
   if (targets.length === 0) return
   log('cart drawer remount', { targets: targets.length })
+  drawerRemountedThisRefresh = true
+  cancelDrawerRefreshFallback()
   scheduleRun(targets)
 }
 
@@ -230,7 +279,7 @@ function listenThemeEvents(): void {
   window._greensparkThemeEventsBound = true
   log('theme events bound')
   subscribe('variant:added', onCartRefresh)
-  subscribe('cart:opened', onCartRefresh)
+  subscribe('cart:opened', onCartOpened)
 }
 
 /** Fetch wrap, theme cart events, drawer remount. Safe to call when no targets exist yet. */
