@@ -1,6 +1,11 @@
 import type { GreensparkCartWidgetKey } from './global'
-import type { RunContext, WidgetVariant } from './interfaces'
+import type { CartOrderPayload, RunContext, WidgetVariant } from './interfaces'
 import { err, warn } from './debug'
+
+/** Wipe only a parsed empty cart. `undefined` is invalid currency — leave a painted widget in place. */
+export function shouldClearOrderImpactsMount(order: CartOrderPayload | undefined): boolean {
+  return order !== undefined && order.lineItems.length === 0
+}
 
 const UNAUTHORIZED_SUPPRESSION_MS = 60_000
 
@@ -215,7 +220,11 @@ export function renderOrderImpacts(
     .getOrder()
     .then((order) => {
       if (!isCurrent()) return undefined
-      if (!order || order.lineItems.length === 0) {
+      if (!order) {
+        warn('widgets: invalid or missing cart currency; skip')
+        return undefined
+      }
+      if (shouldClearOrderImpactsMount(order)) {
         clearWidgetMount(target)
         return undefined
       }
