@@ -12,7 +12,12 @@ import {
 } from './drawer-stash'
 import { movePopupToBody } from './dom'
 import type { GreensparkCartWidgetKey } from './global'
-import { EnumToWidgetTypeMap, type CartOrderPayload, type RunContext, type WidgetVariant } from './interfaces'
+import {
+  EnumToWidgetTypeMap,
+  type CartOrderPayload,
+  type RunContext,
+  type WidgetVariant,
+} from './interfaces'
 import { err, log, warn } from './debug'
 import { WIDGET_INSTANCE_SELECTOR } from './selectors'
 
@@ -98,7 +103,9 @@ export function renderOffsetByProduct(
 ): void {
   const { greenspark, movePopupToBody, productId, useShadowDom, version } = ctx
   renderWithPopup(target, 'offsetByProduct', movePopupToBody, () =>
-    greenspark.perProductById({ widgetId, productId, containerSelector, useShadowDom, version }).render(),
+    greenspark
+      .perProductById({ widgetId, productId, containerSelector, useShadowDom, version })
+      .render(),
   )
 }
 
@@ -114,7 +121,9 @@ export function renderOffsetBySpend(
     return
   }
   renderWithPopup(target, 'offsetBySpend', movePopupToBody, () =>
-    greenspark.spendLevelById({ widgetId, currency, containerSelector, useShadowDom, version }).render(),
+    greenspark
+      .spendLevelById({ widgetId, currency, containerSelector, useShadowDom, version })
+      .render(),
   )
 }
 
@@ -130,7 +139,9 @@ export function renderOffsetByStoreRevenue(
     return
   }
   renderWithPopup(target, 'offsetByStoreRevenue', movePopupToBody, () =>
-    greenspark.tieredSpendLevelById({ widgetId, currency, containerSelector, useShadowDom, version }).render(),
+    greenspark
+      .tieredSpendLevelById({ widgetId, currency, containerSelector, useShadowDom, version })
+      .render(),
   )
 }
 
@@ -154,7 +165,9 @@ export function renderByPercentageOfRevenue(
 ): void {
   const { greenspark, movePopupToBody, useShadowDom, version } = ctx
   renderWithPopup(target, 'byPercentageOfRevenue', movePopupToBody, () =>
-    greenspark.byPercentageOfRevenueById({ widgetId, containerSelector, useShadowDom, version }).render(),
+    greenspark
+      .byPercentageOfRevenueById({ widgetId, containerSelector, useShadowDom, version })
+      .render(),
   )
 }
 
@@ -275,8 +288,7 @@ export function renderOrderImpacts(
 ): void {
   const renderKey = `orderImpacts:${target.id}`
   // Do not skip in-flight refreshes: an early return would skip the gen bump,
-  // so a newer cart never paints (stale last-write-wins). Overlapping
-  // getCart/render is allowed; isCurrent() no-ops stale work.
+  // so a newer cart never paints. Fetch HTML off-DOM; inject only if current.
   if (shouldSuppress(renderKey)) {
     log('cart-widget suppressed (401/403)', renderKey)
     return
@@ -329,8 +341,9 @@ export function renderOrderImpacts(
 
       window[cartWidgetWindowKey] = widget
 
-      return widget.render({ order }, selector).then(() => {
-        if (!isCurrent()) return
+      return widget.renderToElement({ order }).then((node) => {
+        if (!isCurrent() || !node) return
+        widget.inject(node, selector)
         finalizeOrderImpactsMount(target)
       })
     })
@@ -352,9 +365,11 @@ export function renderWidget(
     offsetPerOrder: () => renderOffsetPerOrder(ctx, target, widgetId, containerSelector),
     offsetByProduct: () => renderOffsetByProduct(ctx, target, widgetId, containerSelector),
     offsetBySpend: () => renderOffsetBySpend(ctx, target, widgetId, containerSelector),
-    offsetByStoreRevenue: () => renderOffsetByStoreRevenue(ctx, target, widgetId, containerSelector),
+    offsetByStoreRevenue: () =>
+      renderOffsetByStoreRevenue(ctx, target, widgetId, containerSelector),
     byPercentage: () => renderByPercentage(ctx, target, widgetId, containerSelector),
-    byPercentageOfRevenue: () => renderByPercentageOfRevenue(ctx, target, widgetId, containerSelector),
+    byPercentageOfRevenue: () =>
+      renderByPercentageOfRevenue(ctx, target, widgetId, containerSelector),
     stats: () => renderStats(ctx, target, widgetId, containerSelector),
     static: () => renderStatic(ctx, target, widgetId, containerSelector),
     banner: () => renderBanner(ctx, target, widgetId, containerSelector),

@@ -1,6 +1,7 @@
 const POPUP_SELECTOR = '.gs-popup, div[class^="gs-popup-"]'
 
-const ownedPopups = new WeakMap<HTMLElement, HTMLElement>()
+// Key by target id: drawer refreshes replace the HTMLElement, but the id is stable.
+const ownedPopups = new Map<string, HTMLElement>()
 
 export function preparePopupMedia(root: ParentNode): void {
   root.querySelectorAll<HTMLImageElement>(`${POPUP_SELECTOR} img`).forEach((img) => {
@@ -29,12 +30,14 @@ export function getWidgetContainer(target: HTMLElement): string {
 }
 
 export function cleanupOwnedPopup(target: HTMLElement): void {
-  const popup = ownedPopups.get(target)
+  const key = target.id
+  if (!key) return
+  const popup = ownedPopups.get(key)
   if (!popup) return
   popup.innerHTML = ''
   popup.style.display = 'none'
   popup.remove()
-  ownedPopups.delete(target)
+  ownedPopups.delete(key)
 }
 
 /** Empty carts must not leave widget HTML; keep the mount node for the next refresh. */
@@ -49,7 +52,7 @@ export function movePopupToBody(target: HTMLElement): void {
   if (popup) {
     preparePopupMedia(popup)
     document.body.append(popup)
-    ownedPopups.set(target, popup)
+    if (target.id) ownedPopups.set(target.id, popup)
   }
 }
 

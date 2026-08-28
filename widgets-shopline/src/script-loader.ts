@@ -1,5 +1,5 @@
-import { getShopUniqueName, widgetSdkUrl } from './config'
-import { err, log } from './debug'
+import {getShopUniqueName, widgetSdkUrl} from './config'
+import {err, log} from './debug'
 
 const MAX_SCRIPT_RETRIES = 5
 const SCRIPT_LOADED_ATTRIBUTE = 'data-greenspark-loaded'
@@ -15,10 +15,15 @@ export function loadScript(url: string): Promise<void> {
         resolve()
         return
       }
-      existing.addEventListener('load', () => resolve(), { once: true })
-      existing.addEventListener('error', () => reject(new Error(`Failed to load ${url}`)), {
-        once: true,
-      })
+      existing.addEventListener('load', () => resolve(), {once: true})
+      existing.addEventListener(
+        'error',
+        () => {
+          existing.remove()
+          reject(new Error(`Failed to load ${url}`))
+        },
+        {once: true},
+      )
       return
     }
 
@@ -31,6 +36,8 @@ export function loadScript(url: string): Promise<void> {
       resolve()
     }
     script.onerror = () => {
+      // Drop the failed tag so a retry does not attach listeners after `error` has already fired.
+      script.remove()
       err('script-loader: script failed to load', url)
       reject(new Error(`Failed to load ${url}`))
     }

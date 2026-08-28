@@ -5,7 +5,7 @@
     "url": "https://github.com/getgreenspark/sdks/issues"
   },
   "main": "./dist/widgets-shopline@latest.js",
-  "description": "An embedable script tag solution built on top of Greenspark Widget SDK for SHOPLINE storefronts.",
+  "description": "An embeddable script tag solution built on top of Greenspark Widget SDK for SHOPLINE storefronts.",
   "author": "Greenspark <support@getgreenspark.com>",
   "scripts": {
     "lint": "eslint src",

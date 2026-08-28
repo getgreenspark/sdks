@@ -6,8 +6,7 @@ export const GREENSPARK_API = {
 /** Same pin as shopline-widgets-cli — not widgets@2.6.3. */
 export const PINNED_WIDGET_SDK_URL =
   'https://cdn.getgreenspark.com/scripts/widgets%402.2.0-2-umd.js'
-export const LATEST_WIDGET_SDK_URL =
-  'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
+export const LATEST_WIDGET_SDK_URL = 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
 
 /** Theme editor always constructs the CDN client with this slug. */
 export const PREVIEW_INTEGRATION_SLUG = 'GS_PREVIEW'
@@ -108,6 +107,7 @@ export function stampedCurrency(el: Element): string | undefined {
   return parseCurrency(el.getAttribute('data-gs-currency') ?? '')
 }
 
+/** PDP-only: one product per page. Stamp first, then `product:viewed`. */
 export function getProductIdFromPage(): string {
   const stamped = document.querySelector('[data-gs-product-id]')?.getAttribute('data-gs-product-id')
   if (stamped) return stamped
