@@ -11,12 +11,13 @@ import {
 import { clearWidgetMount, getWidgetContainer, injectWidgetStyles, movePopupToBody } from './dom'
 import { err, log } from './debug'
 import { EnumToWidgetTypeMap, type RunContext, type WidgetVariant } from './interfaces'
-import { TARGET_SELECTOR } from './selectors'
+import { CART_DRAWER_SELECTORS, TARGET_SELECTOR, collectUnmountedTargets } from './selectors'
 import { setup } from './script-loader'
 import { renderWidget } from './widgets'
 
 const MAX_RETRIES = 5
 const RENDER_DEBOUNCE_MS = 150
+const CART_DRAWER_DEBOUNCE_MS = 120
 
 /**
  * Theme `routes.cart_*_url` plus Ajax `POST /api/cart/change`.
@@ -29,6 +30,10 @@ let retryCount = 0
 let scheduledRenderTimer: number | null = null
 let pendingTargets: HTMLElement[] | null = null
 let themeEventRetryCount = 0
+let cartDrawerRetryCount = 0
+let cartDrawerObserverInitialized = false
+let cartDrawerDebounceTimer: number | null = null
+let documentDrawerObserver: MutationObserver | null = null
 
 export function resolveWidgetId(target: HTMLElement): string {
   return target.getAttribute('data-gs-widget-id') || target.id
@@ -109,6 +114,81 @@ function onCartRefresh(): void {
   scheduleRun()
 }
 
+/** Outermost matching drawers so we do not double-observe nested checkout footers. */
+function queryCartDrawerRoots(): Element[] {
+  const matches = [...document.querySelectorAll(CART_DRAWER_SELECTORS.join(', '))]
+  return matches.filter((el) => !matches.some((other) => other !== el && other.contains(el)))
+}
+
+function remountUnmountedDrawerTargets(root: ParentNode): void {
+  const targets = collectUnmountedTargets(root.querySelectorAll<HTMLElement>(TARGET_SELECTOR))
+  if (targets.length === 0) return
+  log('cart drawer remount', { targets: targets.length })
+  scheduleRun(targets)
+}
+
+function scheduleDrawerRemount(): void {
+  if (cartDrawerDebounceTimer) window.clearTimeout(cartDrawerDebounceTimer)
+  cartDrawerDebounceTimer = window.setTimeout(() => {
+    queryCartDrawerRoots().forEach((root) => remountUnmountedDrawerTargets(root))
+  }, CART_DRAWER_DEBOUNCE_MS)
+}
+
+function observeDrawer(drawerEl: Element): void {
+  const observer = new MutationObserver((mutations) => {
+    if (!mutations.some((mutation) => mutation.type === 'childList')) return
+    scheduleDrawerRemount()
+  })
+  observer.observe(drawerEl, { childList: true, subtree: true })
+}
+
+function observeDocumentForDrawer(): void {
+  if (documentDrawerObserver || typeof MutationObserver === 'undefined') return
+  log('cart drawer missing; watching document')
+  documentDrawerObserver = new MutationObserver(() => {
+    if (documentDrawerObserver == null) return
+    if (queryCartDrawerRoots().length === 0) return
+    documentDrawerObserver.disconnect()
+    documentDrawerObserver = null
+    cartDrawerObserverInitialized = false
+    cartDrawerRetryCount = 0
+    setupCartDrawerObserver()
+  })
+  documentDrawerObserver.observe(document.documentElement, { childList: true, subtree: true })
+}
+
+function setupCartDrawerObserver(): void {
+  if (cartDrawerObserverInitialized) return
+  if (typeof MutationObserver === 'undefined') {
+    cartDrawerObserverInitialized = true
+    return
+  }
+
+  const drawers = queryCartDrawerRoots()
+  if (drawers.length === 0) {
+    if (cartDrawerRetryCount++ >= MAX_RETRIES) {
+      observeDocumentForDrawer()
+      return
+    }
+    window.setTimeout(() => {
+      if (!cartDrawerObserverInitialized) setupCartDrawerObserver()
+    }, 400)
+    return
+  }
+
+  try {
+    drawers.forEach((drawerEl) => {
+      observeDrawer(drawerEl)
+      remountUnmountedDrawerTargets(drawerEl)
+    })
+    cartDrawerObserverInitialized = true
+    cartDrawerRetryCount = 0
+    log('cart drawer observer attached', drawers.length)
+  } catch (error: unknown) {
+    err('run: failed to attach cart drawer observer', error)
+  }
+}
+
 function interceptCartMutations(): void {
   if (!window._greensparkCartRefreshBound) {
     window._greensparkCartRefreshBound = true
@@ -153,6 +233,13 @@ function listenThemeEvents(): void {
   subscribe('cart:opened', onCartRefresh)
 }
 
+/** Fetch wrap, theme cart events, drawer remount. Safe to call when no targets exist yet. */
+export function bindStorefrontListeners(): void {
+  interceptCartMutations()
+  listenThemeEvents()
+  setupCartDrawerObserver()
+}
+
 function currencyForTarget(target: HTMLElement, cartCurrency: string): string {
   return stampedCurrency(target) ?? parseCurrency(cartCurrency) ?? ''
 }
@@ -183,8 +270,7 @@ export function runGreenspark(targets?: Iterable<Element>): void {
     return
   }
 
-  interceptCartMutations()
-  listenThemeEvents()
+  bindStorefrontListeners()
 
   if (!window.GreensparkWidgets) {
     if (retryCount++ >= MAX_RETRIES) {

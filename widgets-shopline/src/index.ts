@@ -1,6 +1,6 @@
 import { captureScriptEl, getShopUniqueName } from './config'
 import { err, log } from './debug'
-import { scheduleRun } from './run'
+import { bindStorefrontListeners, scheduleRun } from './run'
 import { TARGET_SELECTOR } from './selectors'
 
 captureScriptEl(document.currentScript instanceof HTMLScriptElement ? document.currentScript : null)
@@ -12,6 +12,8 @@ function bootstrap(): void {
     targets: targets.length,
     readyState: document.readyState,
   })
+  // Drawer HTML is often injected after this scan; bind before the first target exists.
+  bindStorefrontListeners()
   if (targets.length === 0) return
   scheduleRun(targets)
 }
