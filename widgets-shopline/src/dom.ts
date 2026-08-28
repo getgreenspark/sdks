@@ -10,8 +10,12 @@ export function preparePopupMedia(root: ParentNode): void {
 }
 
 /** Instance id is the element's unique DOM id, which may differ from the Greenspark widget id. */
+export function widgetInstanceId(target: HTMLElement): string {
+  return target.id.replace(/[^a-z0-9_-]/gi, '-').toLowerCase()
+}
+
 export function getWidgetContainer(target: HTMLElement): string {
-  const instanceId = target.id.replace(/[^a-z0-9_-]/gi, '-').toLowerCase()
+  const instanceId = widgetInstanceId(target)
   const containerSelector = `[data-greenspark-widget-container-for="${instanceId}"]`
   const el = target.querySelector(containerSelector) as HTMLElement | null
   if (!el) {

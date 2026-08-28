@@ -1,6 +1,20 @@
+import { createCartApi } from './cart'
+import {
+  applyPaintedToTarget,
+  beginDrawerStash,
+  dropDrawerClone,
+  isCurrentStashGen,
+  rememberPaintedNode,
+  rememberStashedOrder,
+  restoreDrawerWidget,
+  takeStashedOrder,
+  wasRestoredFromClone,
+} from './drawer-stash'
+import { movePopupToBody } from './dom'
 import type { GreensparkCartWidgetKey } from './global'
-import type { CartOrderPayload, RunContext, WidgetVariant } from './interfaces'
+import { EnumToWidgetTypeMap, type CartOrderPayload, type RunContext, type WidgetVariant } from './interfaces'
 import { err, log, warn } from './debug'
+import { WIDGET_INSTANCE_SELECTOR } from './selectors'
 
 /** Wipe only a parsed empty cart. `undefined` is invalid currency — leave a painted widget in place. */
 export function shouldClearOrderImpactsMount(order: CartOrderPayload | undefined): boolean {
@@ -188,6 +202,71 @@ function stripContributionUi(root: ParentNode): void {
   })
 }
 
+export function finalizeOrderImpactsMount(target: HTMLElement): void {
+  stripContributionUi(target)
+  movePopupToBody(target)
+}
+
+function parseOrderImpactsWidgetId(target: HTMLElement): string | undefined {
+  const widgetId = target.getAttribute('data-gs-widget-id') || target.id
+  try {
+    const [type] = atob(widgetId).split('|')
+    if (EnumToWidgetTypeMap[type] !== 'orderImpacts') return undefined
+    return widgetId
+  } catch {
+    return undefined
+  }
+}
+
+/** Clone the visible drawer widget and fetch the next paint off-DOM. Do not inject into the live node — the theme is about to wipe it. */
+export function prefetchOrderImpactsPaint(target: HTMLElement): void {
+  const instance = target.querySelector<HTMLElement>(WIDGET_INSTANCE_SELECTOR)
+  const gen = beginDrawerStash(
+    target.id,
+    instance ? (instance.cloneNode(true) as HTMLElement) : null,
+  )
+  if (!parseOrderImpactsWidgetId(target)) return
+
+  const cartWidgetWindowKey = `greensparkCartWidget-${target.id}` as GreensparkCartWidgetKey
+  const existingWidget = window[cartWidgetWindowKey]
+
+  createCartApi()
+    .getOrder()
+    .then((order) => {
+      if (!isCurrentStashGen(target.id, gen)) return undefined
+      if (!order) return undefined
+      if (shouldClearOrderImpactsMount(order)) {
+        dropDrawerClone(target.id)
+        return undefined
+      }
+      rememberStashedOrder(target.id, order)
+      if (typeof existingWidget?.renderToElement !== 'function') return undefined
+      return existingWidget.renderToElement({ order })
+    })
+    .then((node) => {
+      if (!node || !isCurrentStashGen(target.id, gen)) return
+      rememberPaintedNode(target.id, node)
+      const live = document.getElementById(target.id)
+      if (!(live instanceof HTMLElement)) return
+      if (wasRestoredFromClone(live.id) && applyPaintedToTarget(live)) {
+        log('cart-widget prefetch applied to clone', live.id)
+        finalizeOrderImpactsMount(live)
+        window.dispatchEvent(new Event('greenspark-drawer-painted'))
+        return
+      }
+      if (live.querySelector(WIDGET_INSTANCE_SELECTOR) == null) {
+        if (restoreDrawerWidget(live) === 'painted') {
+          log('cart-widget prefetch restored painted', live.id)
+          finalizeOrderImpactsMount(live)
+          window.dispatchEvent(new Event('greenspark-drawer-painted'))
+        }
+      }
+    })
+    .catch((error: unknown) => {
+      err('widgets: drawer prefetch failed', error)
+    })
+}
+
 export function renderOrderImpacts(
   ctx: RunContext,
   target: HTMLElement,
@@ -207,15 +286,7 @@ export function renderOrderImpacts(
     return
   }
 
-  const {
-    cartApi,
-    getWidgetContainer,
-    movePopupToBody,
-    clearWidgetMount,
-    greenspark,
-    useShadowDom,
-    version,
-  } = ctx
+  const { cartApi, getWidgetContainer, clearWidgetMount, greenspark, useShadowDom, version } = ctx
   const cartWidgetWindowKey = `greensparkCartWidget-${target.id}` as GreensparkCartWidgetKey
 
   const gen = (cartRefreshGenByTarget.get(target.id) ?? 0) + 1
@@ -223,8 +294,9 @@ export function renderOrderImpacts(
   const isCurrent = (): boolean => cartRefreshGenByTarget.get(target.id) === gen
 
   const existingWidget = window[cartWidgetWindowKey]
-  cartApi
-    .getOrder()
+  const stashedOrder = takeStashedOrder(target.id)
+  const orderPromise = stashedOrder ? Promise.resolve(stashedOrder) : cartApi.getOrder()
+  orderPromise
     .then((order) => {
       if (!isCurrent()) return undefined
       if (!order) {
@@ -259,8 +331,7 @@ export function renderOrderImpacts(
 
       return widget.render({ order }, selector).then(() => {
         if (!isCurrent()) return
-        stripContributionUi(target)
-        movePopupToBody(target)
+        finalizeOrderImpactsMount(target)
       })
     })
     .catch((error: unknown) => {

@@ -11,6 +11,7 @@ import {
 import { clearWidgetMount, getWidgetContainer, injectWidgetStyles, movePopupToBody } from './dom'
 import { err, log } from './debug'
 import { EnumToWidgetTypeMap, type RunContext, type WidgetVariant } from './interfaces'
+import { applyPaintedToTarget, restoreDrawerWidget } from './drawer-stash'
 import {
   CART_DRAWER_SELECTORS,
   TARGET_SELECTOR,
@@ -18,7 +19,7 @@ import {
   partitionDrawerTargets,
 } from './selectors'
 import { setup } from './script-loader'
-import { renderWidget } from './widgets'
+import { finalizeOrderImpactsMount, prefetchOrderImpactsPaint, renderWidget } from './widgets'
 
 const MAX_RETRIES = 5
 const RENDER_DEBOUNCE_MS = 150
@@ -123,8 +124,9 @@ function onCartRefresh(): void {
   const { pageTargets, drawerTargets } = partitionDrawerTargets(
     document.querySelectorAll<HTMLElement>(TARGET_SELECTOR),
   )
-  // Drawer nodes are about to be replaced; painting now flashes then gets wiped.
+  // Drawer nodes are about to be replaced; stash a clone and paint the next HTML off-DOM.
   if (pageTargets.length > 0) scheduleRun(pageTargets)
+  drawerTargets.forEach((target) => prefetchOrderImpactsPaint(target))
   if (drawerTargets.length > 0 || queryCartDrawerRoots().length > 0) {
     scheduleDrawerRefreshFallback()
   }
@@ -136,7 +138,10 @@ function onCartOpened(): void {
     document.querySelectorAll<HTMLElement>(TARGET_SELECTOR),
   )
   if (pageTargets.length > 0) scheduleRun(pageTargets)
-  queryCartDrawerRoots().forEach((root) => remountUnmountedDrawerTargets(root))
+  queryCartDrawerRoots().forEach((root) => {
+    restoreDrawerTargets(root)
+    remountUnmountedDrawerTargets(root)
+  })
 }
 
 function cancelDrawerRefreshFallback(): void {
@@ -167,6 +172,27 @@ function queryCartDrawerRoots(): Element[] {
   return matches.filter((el) => !matches.some((other) => other !== el && other.contains(el)))
 }
 
+function restoreDrawerTargets(root: ParentNode): void {
+  root.querySelectorAll<HTMLElement>(TARGET_SELECTOR).forEach((target) => {
+    const kind = restoreDrawerWidget(target)
+    if (kind === 'painted') {
+      log('cart drawer restore painted', target.id)
+      drawerRemountedThisRefresh = true
+      cancelDrawerRefreshFallback()
+      finalizeOrderImpactsMount(target)
+      return
+    }
+    if (kind === 'clone') {
+      log('cart drawer restore clone', target.id)
+      if (applyPaintedToTarget(target)) {
+        drawerRemountedThisRefresh = true
+        cancelDrawerRefreshFallback()
+        finalizeOrderImpactsMount(target)
+      }
+    }
+  })
+}
+
 function remountUnmountedDrawerTargets(root: ParentNode): void {
   const targets = collectUnmountedTargets(root.querySelectorAll<HTMLElement>(TARGET_SELECTOR))
   if (targets.length === 0) return
@@ -186,6 +212,7 @@ function scheduleDrawerRemount(): void {
 function observeDrawer(drawerEl: Element): void {
   const observer = new MutationObserver((mutations) => {
     if (!mutations.some((mutation) => mutation.type === 'childList')) return
+    restoreDrawerTargets(drawerEl)
     scheduleDrawerRemount()
   })
   observer.observe(drawerEl, { childList: true, subtree: true })
@@ -228,6 +255,7 @@ function setupCartDrawerObserver(): void {
   try {
     drawers.forEach((drawerEl) => {
       observeDrawer(drawerEl)
+      restoreDrawerTargets(drawerEl)
       remountUnmountedDrawerTargets(drawerEl)
     })
     cartDrawerObserverInitialized = true
@@ -242,6 +270,10 @@ function interceptCartMutations(): void {
   if (!window._greensparkCartRefreshBound) {
     window._greensparkCartRefreshBound = true
     window.addEventListener('greenspark-cart-refresh', onCartRefresh)
+    window.addEventListener('greenspark-drawer-painted', () => {
+      drawerRemountedThisRefresh = true
+      cancelDrawerRefreshFallback()
+    })
   }
 
   // CLI uses the same flag; skip wrapping if the theme extension already did.
