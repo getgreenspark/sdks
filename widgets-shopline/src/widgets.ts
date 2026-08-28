@@ -189,7 +189,10 @@ export function renderOrderImpacts(
   containerSelector: string,
 ): void {
   const renderKey = `orderImpacts:${target.id}`
-  if (inFlightRenders.has(renderKey) || shouldSuppress(renderKey)) return
+  // Do not skip in-flight refreshes: an early return would skip the gen bump,
+  // so a newer cart never paints (stale last-write-wins). Overlapping
+  // getCart/render is allowed; isCurrent() no-ops stale work.
+  if (shouldSuppress(renderKey)) return
   if (!document.querySelector(containerSelector)) return
 
   const {
@@ -207,44 +210,40 @@ export function renderOrderImpacts(
   cartRefreshGenByTarget.set(target.id, gen)
   const isCurrent = (): boolean => cartRefreshGenByTarget.get(target.id) === gen
 
-  inFlightRenders.add(renderKey)
   const existingWidget = window[cartWidgetWindowKey]
-  const renderPromise = cartApi.getOrder().then((order) => {
-    if (!isCurrent()) return undefined
-    if (!order || order.lineItems.length === 0) {
-      clearWidgetMount(target)
-      return undefined
-    }
+  cartApi
+    .getOrder()
+    .then((order) => {
+      if (!isCurrent()) return undefined
+      if (!order || order.lineItems.length === 0) {
+        clearWidgetMount(target)
+        return undefined
+      }
 
-    const selector = getWidgetContainer(target)
-    if (!document.querySelector(selector)) return undefined
+      const selector = getWidgetContainer(target)
+      if (!document.querySelector(selector)) return undefined
 
-    const widget =
-      existingWidget ??
-      greenspark.cartById({
-        widgetId,
-        containerSelector: selector,
-        useShadowDom,
-        order,
-        version,
+      const widget =
+        existingWidget ??
+        greenspark.cartById({
+          widgetId,
+          containerSelector: selector,
+          useShadowDom,
+          order,
+          version,
+        })
+
+      window[cartWidgetWindowKey] = widget
+
+      return widget.render({ order }, selector).then(() => {
+        if (!isCurrent()) return
+        stripContributionUi(target)
+        movePopupToBody(target)
       })
-
-    window[cartWidgetWindowKey] = widget
-
-    return widget.render({ order }, selector).then(() => {
-      if (!isCurrent()) return
-      stripContributionUi(target)
-      movePopupToBody(target)
     })
-  })
-
-  renderPromise
     .catch((error: unknown) => {
       rememberUnauthorized(renderKey, error)
       err('widgets: order-impacts render error', error)
-    })
-    .finally(() => {
-      inFlightRenders.delete(renderKey)
     })
 }
 
