@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import { lineProductId, parseCart, toCents } from './cart'
+import { lineProductId, parseCart, toCents } from '../src/cart'
 
 describe('toCents', () => {
   it('converts ajax-cart major units to widget-api cents (docs sample 11)', () => {

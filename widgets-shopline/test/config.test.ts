@@ -7,7 +7,7 @@ import {
   widgetSdkUrl,
   PINNED_WIDGET_SDK_URL,
   LATEST_WIDGET_SDK_URL,
-} from './config'
+} from '../src/config'
 
 describe('isGsDevStore', () => {
   it('treats a hyphen-delimited gs-dev handle as QA', () => {

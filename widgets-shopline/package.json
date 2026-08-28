@@ -9,7 +9,7 @@
   "author": "Greenspark <support@getgreenspark.com>",
   "scripts": {
     "lint": "eslint src",
-    "test": "tsx --test src/*.test.ts",
+    "test": "tsx --test test/*.test.ts",
     "dev": "webpack --mode=development",
     "build": "rm -rf dist && mkdir -p dist && webpack --mode=production",
     "release": "release-it"
