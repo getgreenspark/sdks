@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Projects
- * Here you can find documentation and examples for Greenspark Projects API
+ * Browse Greenspark impact project catalog and project details.  Authentication: `x-api-key` header (required). Create keys in the Greenspark dashboard after registration — separate key per environment.  Environments: `https://api.getgreenspark.com` (production key) or `https://sandbox.getgreenspark.com` (sandbox key). Always match host and key.  ReadMe MCP (v1): `https://docs.getgreenspark.com/mcp` — read-only live calls on enabled GET routes. POST/PUT/DELETE are documented for integration building; use `get-endpoint` for schemas, not `execute-request` for writes.  API keys: Accepts all standard API key types — individual routes may restrict allowed types.
  *
  * OpenAPI spec version: v1
  * 
@@ -26,7 +26,7 @@ import { ProjectDetails } from '../models';
 export const ProjectsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Fetch project by id
+         * Fetch detailed project information. Accepts all standard API key types. Callable via ReadMe MCP execute-request when this route is enabled in ReadMe MCP route toggles.
          * @summary Fetch project by id
          * @param {string} projectId The id of the project.
          * @param {*} [options] Override http request option.
@@ -74,7 +74,7 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * Fetch project categories
+         * List impact project categories. Accepts all standard API key types. Callable via ReadMe MCP execute-request when this route is enabled in ReadMe MCP route toggles.
          * @summary Fetch project categories
          * @param {string} [type] The type of the impact which can by purchased by the project category.
          * @param {*} [options] Override http request option.
@@ -121,7 +121,7 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * Fetch projects
+         * List impact projects available to the account. Accepts all standard API key types. Callable via ReadMe MCP execute-request when this route is enabled in ReadMe MCP route toggles.
          * @summary Fetch projects
          * @param {string} [country] Defines a country where the project is located.
          * @param {string} [projectCategoryId] Defines the category that the project falls under. It links the project to its relevant category.
@@ -212,7 +212,7 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
 export const ProjectsApiFp = function(configuration?: Configuration) {
     return {
         /**
-         * Fetch project by id
+         * Fetch detailed project information. Accepts all standard API key types. Callable via ReadMe MCP execute-request when this route is enabled in ReadMe MCP route toggles.
          * @summary Fetch project by id
          * @param {string} projectId The id of the project.
          * @param {*} [options] Override http request option.
@@ -226,7 +226,7 @@ export const ProjectsApiFp = function(configuration?: Configuration) {
             };
         },
         /**
-         * Fetch project categories
+         * List impact project categories. Accepts all standard API key types. Callable via ReadMe MCP execute-request when this route is enabled in ReadMe MCP route toggles.
          * @summary Fetch project categories
          * @param {string} [type] The type of the impact which can by purchased by the project category.
          * @param {*} [options] Override http request option.
@@ -240,7 +240,7 @@ export const ProjectsApiFp = function(configuration?: Configuration) {
             };
         },
         /**
-         * Fetch projects
+         * List impact projects available to the account. Accepts all standard API key types. Callable via ReadMe MCP execute-request when this route is enabled in ReadMe MCP route toggles.
          * @summary Fetch projects
          * @param {string} [country] Defines a country where the project is located.
          * @param {string} [projectCategoryId] Defines the category that the project falls under. It links the project to its relevant category.
@@ -270,7 +270,7 @@ export const ProjectsApiFp = function(configuration?: Configuration) {
 export const ProjectsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     return {
         /**
-         * Fetch project by id
+         * Fetch detailed project information. Accepts all standard API key types. Callable via ReadMe MCP execute-request when this route is enabled in ReadMe MCP route toggles.
          * @summary Fetch project by id
          * @param {string} projectId The id of the project.
          * @param {*} [options] Override http request option.
@@ -280,7 +280,7 @@ export const ProjectsApiFactory = function (configuration?: Configuration, baseP
             return ProjectsApiFp(configuration).getProject(projectId, options).then((request) => request(axios, basePath));
         },
         /**
-         * Fetch project categories
+         * List impact project categories. Accepts all standard API key types. Callable via ReadMe MCP execute-request when this route is enabled in ReadMe MCP route toggles.
          * @summary Fetch project categories
          * @param {string} [type] The type of the impact which can by purchased by the project category.
          * @param {*} [options] Override http request option.
@@ -290,7 +290,7 @@ export const ProjectsApiFactory = function (configuration?: Configuration, baseP
             return ProjectsApiFp(configuration).getProjectCategories(type, options).then((request) => request(axios, basePath));
         },
         /**
-         * Fetch projects
+         * List impact projects available to the account. Accepts all standard API key types. Callable via ReadMe MCP execute-request when this route is enabled in ReadMe MCP route toggles.
          * @summary Fetch projects
          * @param {string} [country] Defines a country where the project is located.
          * @param {string} [projectCategoryId] Defines the category that the project falls under. It links the project to its relevant category.
@@ -317,7 +317,7 @@ export const ProjectsApiFactory = function (configuration?: Configuration, baseP
  */
 export class ProjectsApi extends BaseAPI {
     /**
-     * Fetch project by id
+     * Fetch detailed project information. Accepts all standard API key types. Callable via ReadMe MCP execute-request when this route is enabled in ReadMe MCP route toggles.
      * @summary Fetch project by id
      * @param {string} projectId The id of the project.
      * @param {*} [options] Override http request option.
@@ -328,7 +328,7 @@ export class ProjectsApi extends BaseAPI {
         return ProjectsApiFp(this.configuration).getProject(projectId, options).then((request) => request(this.axios, this.basePath));
     }
     /**
-     * Fetch project categories
+     * List impact project categories. Accepts all standard API key types. Callable via ReadMe MCP execute-request when this route is enabled in ReadMe MCP route toggles.
      * @summary Fetch project categories
      * @param {string} [type] The type of the impact which can by purchased by the project category.
      * @param {*} [options] Override http request option.
@@ -339,7 +339,7 @@ export class ProjectsApi extends BaseAPI {
         return ProjectsApiFp(this.configuration).getProjectCategories(type, options).then((request) => request(this.axios, this.basePath));
     }
     /**
-     * Fetch projects
+     * List impact projects available to the account. Accepts all standard API key types. Callable via ReadMe MCP execute-request when this route is enabled in ReadMe MCP route toggles.
      * @summary Fetch projects
      * @param {string} [country] Defines a country where the project is located.
      * @param {string} [projectCategoryId] Defines the category that the project falls under. It links the project to its relevant category.
