@@ -24,7 +24,7 @@ import type {
   ByPercentageWidgetParams,
   CartWidgetByIdParams,
   CartWidgetParams,
-  CustomerCartContributionWidgetParams,
+  CustomerCartContributionWidgetOptions,
   FullWidthBannerWidgetByIdParams,
   FullWidthBannerWidgetParams,
   PerOrderWidgetByIdParams,
@@ -63,7 +63,7 @@ export default class GreensparkWidgets extends ApiConsumer {
   }
 
   customerCartContribution(
-    params: CustomerCartContributionWidgetParams & {
+    params: CustomerCartContributionWidgetOptions & {
       containerSelector?: string
       useShadowDom?: boolean
     },

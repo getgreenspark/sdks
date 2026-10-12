@@ -1,6 +1,7 @@
 import type { WidgetConfig } from '@/widgets/base'
 import { Widget } from '@/widgets/base'
 import type {
+  CustomerCartContributionWidgetOptions,
   CustomerCartContributionWidgetParams,
   PopupTheme,
   StoreOrder,
@@ -8,6 +9,7 @@ import type {
   WidgetStyle,
 } from '@/interfaces'
 import { WidgetValidator } from '@/utils/widget-validation'
+import { ProjectChoiceController } from '@/widgets/projectChoice'
 
 export class CustomerCartContributionWidget
   extends Widget
@@ -18,8 +20,10 @@ export class CustomerCartContributionWidget
   popupTheme?: PopupTheme
   style?: WidgetStyle
   version?: 'v2'
+  private readonly projectChoice?: ProjectChoiceController
+  private renderSequence = 0
 
-  constructor(params: WidgetConfig & CustomerCartContributionWidgetParams) {
+  constructor(params: WidgetConfig & CustomerCartContributionWidgetOptions) {
     super(params)
     this.color = params.color
     this.order = params.order
@@ -27,6 +31,19 @@ export class CustomerCartContributionWidget
     this.popupTheme = params.popupTheme
     this.style = params.style ?? 'default'
     this.version = params.version
+
+    if (params.projectChoice) {
+      WidgetValidator.for('Customer Cart Contribution Widget')
+        .projectChoice(params.projectChoice)
+        .validate()
+      const { storage, onRedraw } = params.projectChoice
+      this.projectChoice = new ProjectChoiceController(storage, {
+        redraw: async (projectId) => {
+          await this.render({ order: { ...this.order, projectChoiceProjectId: projectId } })
+          onRedraw?.()
+        },
+      })
+    }
   }
 
   private get requestBody(): CustomerCartContributionWidgetParams {
@@ -44,8 +61,18 @@ export class CustomerCartContributionWidget
     options?: Partial<CustomerCartContributionWidgetParams>,
     containerSelector?: string,
   ): Promise<void> {
+    const sequence = ++this.renderSequence
     const node = await this.renderToElement(options)
-    if (node) this.inject(node, containerSelector)
+    // With project choice, the widget redraws itself alongside the platform's renders, so a response
+    // that a newer render overtook must not replace it. Without it, rendering is unchanged.
+    if (this.projectChoice && sequence !== this.renderSequence) return
+    if (!node) return
+
+    this.inject(node, containerSelector)
+    const container = document.querySelector(this.containerSelector)
+    if (container && this.projectChoice) {
+      this.projectChoice.afterRender(this.getWrapper(container), this.order.projectChoiceProjectId)
+    }
   }
 
   async renderToString(options?: Partial<CustomerCartContributionWidgetParams>): Promise<string | undefined> {
