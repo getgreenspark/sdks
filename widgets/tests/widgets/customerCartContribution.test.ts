@@ -7,7 +7,7 @@ import apiFixtures from '@tests/fixtures/api.json'
 import orderFixtures from '@tests/fixtures/order.json'
 import { createContainer } from '@tests/utilities/dom'
 
-import type { ProjectChoiceStorage, StoreOrder } from '@/interfaces'
+import type { CustomerChoiceStorage, StoreOrder } from '@/interfaces'
 
 jest.mock('axios')
 const axiosMock = axios as jest.Mocked<typeof axios>
@@ -67,11 +67,11 @@ const checkedProjectId = (containerSelector: string): string | undefined =>
 
 const postedProjectIds = (): Array<string | undefined> =>
   axiosMock.post.mock.calls.map(
-    ([, body]) => (body as { order: StoreOrder }).order.projectChoiceProjectId,
+    ([, body]) => (body as { order: StoreOrder }).order.customerChoiceProjectId,
   )
 
 const createWidget = (
-  storage: ProjectChoiceStorage,
+  storage: CustomerChoiceStorage,
   order: StoreOrder = BASIC_ORDER,
   onRedraw?: () => void,
 ) => {
@@ -81,7 +81,7 @@ const createWidget = (
     order,
     containerSelector,
     useShadowDom: false,
-    projectChoice: { storage, onRedraw },
+    customerChoice: { storage, onRedraw },
   })
   return { widget, containerSelector }
 }
@@ -111,7 +111,7 @@ describe('Customer Cart Contribution Widget project choice', () => {
 
   test('does not write when the shown selection matches the stored choice', async () => {
     const { storage } = createStorage(PLASTIC)
-    const { widget } = createWidget(storage, { ...BASIC_ORDER, projectChoiceProjectId: PLASTIC })
+    const { widget } = createWidget(storage, { ...BASIC_ORDER, customerChoiceProjectId: PLASTIC })
 
     axiosMock.post.mockResolvedValueOnce({ data: choiceHtml(PLASTIC) })
     await widget.render()
@@ -140,7 +140,7 @@ describe('Customer Cart Contribution Widget project choice', () => {
     const onRedraw = jest.fn()
     const { widget, containerSelector } = createWidget(
       storage,
-      { ...BASIC_ORDER, projectChoiceProjectId: TREES },
+      { ...BASIC_ORDER, customerChoiceProjectId: TREES },
       onRedraw,
     )
 
@@ -159,14 +159,14 @@ describe('Customer Cart Contribution Widget project choice', () => {
 
   test('writes a pick once when two widgets render into the same container', async () => {
     const { storage } = createStorage(TREES)
-    const order = { ...BASIC_ORDER, projectChoiceProjectId: TREES }
+    const order = { ...BASIC_ORDER, customerChoiceProjectId: TREES }
     const { widget: first, containerSelector } = createWidget(storage, order)
     const second = widgets.customerCartContribution({
       color: 'beige',
       order,
       containerSelector,
       useShadowDom: false,
-      projectChoice: { storage },
+      customerChoice: { storage },
     })
 
     axiosMock.post.mockResolvedValueOnce({ data: choiceHtml(TREES) })
@@ -190,7 +190,7 @@ describe('Customer Cart Contribution Widget project choice', () => {
     storage.write.mockImplementationOnce(async () => firstWrite.promise)
     const { widget, containerSelector } = createWidget(storage, {
       ...BASIC_ORDER,
-      projectChoiceProjectId: TREES,
+      customerChoiceProjectId: TREES,
     })
 
     axiosMock.post.mockResolvedValueOnce({ data: choiceHtml(TREES) })
@@ -215,7 +215,7 @@ describe('Customer Cart Contribution Widget project choice', () => {
     storage.write.mockRejectedValueOnce(new Error('network'))
     const { widget, containerSelector } = createWidget(storage, {
       ...BASIC_ORDER,
-      projectChoiceProjectId: TREES,
+      customerChoiceProjectId: TREES,
     })
 
     axiosMock.post.mockResolvedValueOnce({ data: choiceHtml(TREES) })
@@ -248,7 +248,7 @@ describe('Customer Cart Contribution Widget project choice', () => {
     const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined)
     const { widget, containerSelector } = createWidget(storage, {
       ...BASIC_ORDER,
-      projectChoiceProjectId: TREES,
+      customerChoiceProjectId: TREES,
     })
 
     axiosMock.post.mockResolvedValueOnce({ data: choiceHtml(TREES) })
@@ -268,7 +268,7 @@ describe('Customer Cart Contribution Widget project choice', () => {
     storage.write.mockImplementationOnce(async () => pickWrite.promise)
     const { widget, containerSelector } = createWidget(storage, {
       ...BASIC_ORDER,
-      projectChoiceProjectId: TREES,
+      customerChoiceProjectId: TREES,
     })
 
     axiosMock.post.mockResolvedValueOnce({ data: choiceHtml(TREES) })
@@ -291,14 +291,14 @@ describe('Customer Cart Contribution Widget project choice', () => {
     const { storage } = createStorage(TREES)
     const { widget, containerSelector } = createWidget(storage, {
       ...BASIC_ORDER,
-      projectChoiceProjectId: TREES,
+      customerChoiceProjectId: TREES,
     })
     const slow = deferred<{ data: string }>()
 
     axiosMock.post.mockReturnValueOnce(slow.promise)
     const first = widget.render()
     axiosMock.post.mockResolvedValueOnce({ data: choiceHtml(PLASTIC) })
-    await widget.render({ order: { ...BASIC_ORDER, totalPrice: 11, projectChoiceProjectId: PLASTIC } })
+    await widget.render({ order: { ...BASIC_ORDER, totalPrice: 11, customerChoiceProjectId: PLASTIC } })
     slow.resolve({ data: choiceHtml(TREES) })
     await first
 
@@ -312,9 +312,9 @@ describe('Customer Cart Contribution Widget project choice', () => {
         color: 'beige',
         order: BASIC_ORDER,
         containerSelector: createContainer(),
-        projectChoice: { storage: {} as ProjectChoiceStorage },
+        customerChoice: { storage: {} as CustomerChoiceStorage },
       }),
-    ).toThrow('"projectChoice.storage" must provide "read" and "write" functions')
+    ).toThrow('"customerChoice.storage" must provide "read" and "write" functions')
   })
 
   test('rejects a non-function onRedraw', () => {
@@ -325,19 +325,19 @@ describe('Customer Cart Contribution Widget project choice', () => {
         color: 'beige',
         order: BASIC_ORDER,
         containerSelector: createContainer(),
-        projectChoice: { storage, onRedraw: 'move' as unknown as () => void },
+        customerChoice: { storage, onRedraw: 'move' as unknown as () => void },
       }),
-    ).toThrow('"projectChoice.onRedraw" must be a function')
+    ).toThrow('"customerChoice.onRedraw" must be a function')
   })
 
   test('rejects a non-string stored choice on the order', async () => {
     jest.spyOn(console, 'error').mockImplementation(() => undefined)
     const widget = widgets.customerCartContribution({
       color: 'beige',
-      order: { ...BASIC_ORDER, projectChoiceProjectId: 42 as unknown as string },
+      order: { ...BASIC_ORDER, customerChoiceProjectId: 42 as unknown as string },
       containerSelector: createContainer(),
     })
 
-    await expect(widget.render()).rejects.toThrow('"order.projectChoiceProjectId" must be a string')
+    await expect(widget.render()).rejects.toThrow('"order.customerChoiceProjectId" must be a string')
   })
 })

@@ -9,7 +9,7 @@ import type {
   WidgetStyle,
 } from '@/interfaces'
 import { WidgetValidator } from '@/utils/widget-validation'
-import { ProjectChoiceController } from '@/widgets/projectChoice'
+import { CustomerChoiceController } from '@/widgets/customerChoice'
 
 export class CustomerCartContributionWidget
   extends Widget
@@ -20,7 +20,7 @@ export class CustomerCartContributionWidget
   popupTheme?: PopupTheme
   style?: WidgetStyle
   version?: 'v2'
-  private readonly projectChoice?: ProjectChoiceController
+  private readonly customerChoice?: CustomerChoiceController
   private renderSequence = 0
 
   constructor(params: WidgetConfig & CustomerCartContributionWidgetOptions) {
@@ -32,14 +32,14 @@ export class CustomerCartContributionWidget
     this.style = params.style ?? 'default'
     this.version = params.version
 
-    if (params.projectChoice) {
+    if (params.customerChoice) {
       WidgetValidator.for('Customer Cart Contribution Widget')
-        .projectChoice(params.projectChoice)
+        .customerChoice(params.customerChoice)
         .validate()
-      const { storage, onRedraw } = params.projectChoice
-      this.projectChoice = new ProjectChoiceController(storage, {
+      const { storage, onRedraw } = params.customerChoice
+      this.customerChoice = new CustomerChoiceController(storage, {
         redraw: async (projectId) => {
-          await this.render({ order: { ...this.order, projectChoiceProjectId: projectId } })
+          await this.render({ order: { ...this.order, customerChoiceProjectId: projectId } })
           onRedraw?.()
         },
       })
@@ -65,13 +65,13 @@ export class CustomerCartContributionWidget
     const node = await this.renderToElement(options)
     // With project choice, the widget redraws itself alongside the platform's renders, so a response
     // that a newer render overtook must not replace it. Without it, rendering is unchanged.
-    if (this.projectChoice && sequence !== this.renderSequence) return
+    if (this.customerChoice && sequence !== this.renderSequence) return
     if (!node) return
 
     this.inject(node, containerSelector)
     const container = document.querySelector(this.containerSelector)
-    if (container && this.projectChoice) {
-      this.projectChoice.afterRender(this.getWrapper(container), this.order.projectChoiceProjectId)
+    if (container && this.customerChoice) {
+      this.customerChoice.afterRender(this.getWrapper(container), this.order.customerChoiceProjectId)
     }
   }
 

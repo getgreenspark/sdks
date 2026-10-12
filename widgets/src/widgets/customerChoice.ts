@@ -1,15 +1,15 @@
-import type { ProjectChoiceStorage } from '@/interfaces'
+import type { CustomerChoiceStorage } from '@/interfaces'
 
 const INPUT_SELECTOR = 'input[data-greenspark-project-choice-input]'
 
-export interface ProjectChoiceHost {
+export interface CustomerChoiceHost {
   // Re-renders the widget for the recorded project so the order-impact figures follow the pick.
   redraw(projectId: string): Promise<void>
 }
 
 // One change listener per root; only the widget that last rendered into a root handles its picks,
 // so a second widget instance on the same container never writes twice.
-const owners = new WeakMap<Node, ProjectChoiceController>()
+const owners = new WeakMap<Node, CustomerChoiceController>()
 
 const retryOnce = async <T>(attempt: () => Promise<T>): Promise<T> => {
   try {
@@ -24,9 +24,9 @@ const retryOnce = async <T>(attempt: () => Promise<T>): Promise<T> => {
  * The API decides which option is shown (SF-0010 AD-01); this records it on the cart through the
  * platform's storage and redraws after a shopper's pick. Highlight and panel follow the radio in CSS.
  */
-export class ProjectChoiceController {
-  private readonly storage: ProjectChoiceStorage
-  private readonly host: ProjectChoiceHost
+export class CustomerChoiceController {
+  private readonly storage: CustomerChoiceStorage
+  private readonly host: CustomerChoiceHost
   private root?: Element | ShadowRoot
   private writeChain: Promise<void> = Promise.resolve()
   // The most recent choice to record; queued writes for older choices are skipped.
@@ -38,7 +38,7 @@ export class ProjectChoiceController {
   // The option the last render checked: the API's selection, which a failed pick falls back to.
   private renderedProjectId = ''
 
-  constructor(storage: ProjectChoiceStorage, host: ProjectChoiceHost) {
+  constructor(storage: CustomerChoiceStorage, host: CustomerChoiceHost) {
     this.storage = storage
     this.host = host
   }
