@@ -289,6 +289,33 @@ export class WidgetValidator extends ValidationUtils {
       this.errors.push(`"order.withPopup" must be a boolean value for the ${this.widgetName}.`)
     }
 
+    // Validate order.customerChoiceProjectId
+    if (
+      orderObj.customerChoiceProjectId !== undefined &&
+      typeof orderObj.customerChoiceProjectId !== 'string'
+    ) {
+      this.errors.push(`"order.customerChoiceProjectId" must be a string for the ${this.widgetName}.`)
+    }
+
+    return this
+  }
+
+  /**
+   * Validates the project choice storage supplied by the platform
+   */
+  customerChoice(customerChoice: unknown): this {
+    const options =
+      typeof customerChoice === 'object' && customerChoice !== null
+        ? (customerChoice as { storage?: { read?: unknown; write?: unknown }; onRedraw?: unknown })
+        : undefined
+    if (typeof options?.storage?.read !== 'function' || typeof options?.storage?.write !== 'function') {
+      this.errors.push(
+        `"customerChoice.storage" must provide "read" and "write" functions for the ${this.widgetName}.`,
+      )
+    }
+    if (options?.onRedraw !== undefined && typeof options.onRedraw !== 'function') {
+      this.errors.push(`"customerChoice.onRedraw" must be a function for the ${this.widgetName}.`)
+    }
     return this
   }
 
