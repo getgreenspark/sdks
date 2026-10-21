@@ -1,5 +1,5 @@
 export const GREENSPARK_API = {
-  dev: 'https://dev-api.getmads.com',
+  dev: 'https://inquirable-posttracheal-heaven.ngrok-free.dev',
   prod: 'https://api.getgreenspark.com',
 } as const
 
