@@ -1,5 +1,4 @@
 const path = require('path')
-const Dotenv = require('dotenv-webpack')
 const PACKAGE = require('./package.json')
 
 const versionedEntries = {
@@ -39,6 +38,5 @@ module.exports = (env, { mode }) => {
       filename: 'widgets-general@[name].js',
       path: path.resolve(__dirname, 'dist'),
     },
-    plugins: [new Dotenv({ path: isProduction ? '.env.production' : '.env' })],
   }
 }

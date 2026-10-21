@@ -96,6 +96,18 @@ function getHttpStatus(error: unknown): number | undefined {
   return typeof maybeError.response?.status === 'number' ? maybeError.response.status : undefined
 }
 
+// Never put a personal tunnel here: release builds ship to every store. Pass `apiUrl` at runtime instead.
+export const GREENSPARK_API = {
+  dev: 'https://dev-api.getmads.com',
+  prod: 'https://api.getgreenspark.com',
+} as const
+
+// Webpack inlines NODE_ENV from --mode: release builds are production, prereleases are development.
+export function resolveApiUrl(apiUrl?: string, nodeEnv: string | undefined = process.env.NODE_ENV): string {
+  if (apiUrl) return apiUrl
+  return nodeEnv === 'production' ? GREENSPARK_API.prod : GREENSPARK_API.dev
+}
+
 export class ConnectionHandler {
   apiKey?: string
   integrationSlug?: string
@@ -122,7 +134,7 @@ export class ConnectionHandler {
     this.integrationSlug = integrationSlug
     this.locale = locale
     this.api = axios.create({
-      baseURL: apiUrl || process.env.API_URL,
+      baseURL: resolveApiUrl(apiUrl),
       timeout: 10000,
     })
     this.origin = origin
