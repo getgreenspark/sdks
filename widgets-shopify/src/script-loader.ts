@@ -1,8 +1,8 @@
-import { isDevStore } from './config'
-import { err } from './debug'
+import {isDevStore} from './config'
+import {err} from './debug'
 
 export const widgetUrl = isDevStore(window.location.hostname)
-  ? 'https://cdn.getgreenspark.com/scripts/widgets%402.6.3.js'
+  ? 'https://cdn.getgreenspark.com/scripts/widgets%402.7.0-2.js'
   : 'https://cdn.getgreenspark.com/scripts/widgets%40latest.js'
 
 const MAX_SCRIPT_RETRIES = 5
@@ -19,7 +19,7 @@ export function loadScript(url: string): Promise<void> {
         resolve()
         return
       }
-      existing.addEventListener('load', () => resolve(), { once: true })
+      existing.addEventListener('load', () => resolve(), {once: true})
       existing.addEventListener('error', () => reject(new Error(`Failed to load ${url}`)), {
         once: true,
       })
