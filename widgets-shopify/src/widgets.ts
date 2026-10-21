@@ -1,3 +1,4 @@
+import { storedCustomerChoice } from './cart'
 import type { GreensparkCartWidgetKey } from './global'
 import type { RunContext, WidgetVariant } from './interfaces'
 import { cleanupPopups } from './dom'
@@ -286,6 +287,13 @@ export function renderOrderImpacts(ctx: RunContext, widgetId: string, containerS
 
   inFlightRenders.add(renderKey)
   const existingWidget = window[cartWidgetWindowKey]
+  const customerChoice = {
+    storage: {
+      read: (): Promise<string> => cartApi.getCart().then(storedCustomerChoice),
+      write: (projectId: string): Promise<void> => cartApi.writeCustomerChoice(projectId),
+    },
+    onRedraw: (): void => movePopupToBody(widgetId),
+  }
   const renderPromise = cartApi.getOrder().then((order) => {
     if (order.lineItems.length === 0) {
       cleanupPopups()
@@ -303,6 +311,7 @@ export function renderOrderImpacts(ctx: RunContext, widgetId: string, containerS
         useShadowDom,
         order,
         version,
+        customerChoice,
       })
 
     window[cartWidgetWindowKey] = widget

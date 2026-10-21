@@ -22,7 +22,7 @@ import type {
   ByPercentageOfRevenueWidgetParams,
   ByPercentageWidgetByIdParams,
   ByPercentageWidgetParams,
-  CartWidgetByIdParams,
+  CartWidgetByIdOptions,
   CartWidgetParams,
   CustomerCartContributionWidgetOptions,
   FullWidthBannerWidgetByIdParams,
@@ -57,7 +57,7 @@ export default class GreensparkWidgets extends ApiConsumer {
     return new CartWidget({ ...params, api: this.api, containerSelector, useShadowDom })
   }
 
-  cartById(params: CartWidgetByIdParams & { containerSelector?: string; useShadowDom?: boolean }) {
+  cartById(params: CartWidgetByIdOptions & { containerSelector?: string; useShadowDom?: boolean }) {
     const { containerSelector = DEFAULT_CONTAINER_CSS_SELECTOR, useShadowDom } = params
     return new CartWidgetById({ ...params, api: this.api, containerSelector, useShadowDom })
   }

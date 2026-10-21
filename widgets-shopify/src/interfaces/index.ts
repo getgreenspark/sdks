@@ -27,12 +27,14 @@ export interface ShopifyCart {
   items: ShopifyCartItem[]
   currency: string
   total_price: number
+  attributes?: Record<string, unknown>
 }
 
 export interface CartOrderPayload {
   lineItems: { productId: string; quantity: number }[]
   currency: string
   totalPrice: number
+  customerChoiceProjectId?: string
 }
 
 export interface CartApi {
@@ -40,6 +42,7 @@ export interface CartApi {
   getOrder: () => Promise<CartOrderPayload>
   addItemToCart: (targetProductId: string, quantity?: number) => Promise<unknown>
   updateCart: (updates: Record<string, number>) => Promise<Response>
+  writeCustomerChoice: (projectId: string) => Promise<void>
   refreshCartDrawer: () => void
   captureEvent: (event: unknown) => Promise<Response>
 }

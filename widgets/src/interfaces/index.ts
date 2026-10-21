@@ -105,6 +105,11 @@ export interface CartWidgetByIdParams
     CartWidgetBaseParams {
 }
 
+// Browser-only options, never sent to the API.
+export interface CartWidgetByIdOptions extends CartWidgetByIdParams {
+  customerChoice?: CustomerChoiceOptions
+}
+
 export interface CustomerCartContributionWidgetParams
   extends CustomerCartContributionWidgetBaseParams,
     WidgetParams,
