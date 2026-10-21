@@ -292,7 +292,11 @@ export function renderOrderImpacts(ctx: RunContext, widgetId: string, containerS
       read: (): Promise<string> => cartApi.getCart().then(storedCustomerChoice),
       write: (projectId: string): Promise<void> => cartApi.writeCustomerChoice(projectId),
     },
-    onRedraw: (): void => movePopupToBody(widgetId),
+    // A choice redraw replaces the checkbox. Re-bind it and restore its state from the cart.
+    onRedraw: (): void => {
+      movePopupToBody(widgetId)
+      ensureHandlers()
+    },
   }
   const renderPromise = cartApi.getOrder().then((order) => {
     if (order.lineItems.length === 0) {

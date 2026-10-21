@@ -26,6 +26,9 @@ jobs:
       - run: npm --prefix ./widgets-bigcommerce install
       - run: npm --prefix ./widgets-bigcommerce run build
 
+      - name: Drop production latest from the prerelease artifact
+        run: rm -f ${{ env.WIDGET_DIST_FOLDER }}/*@latest*
+
       - id: "auth"
         uses: "google-github-actions/auth@v2"
         with:
