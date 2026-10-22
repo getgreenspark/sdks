@@ -9,6 +9,24 @@ const CART_ENDPOINTS = {
   update: '/cart/update.js',
 } as const
 
+const CUSTOMER_CHOICE_ATTRIBUTE = '_gs_customer_choice'
+const CUSTOMER_CHOICE_WRITE_FLAG = 'greensparkCustomerChoiceWrite'
+
+interface CustomerChoiceWriteInit extends RequestInit {
+  greensparkCustomerChoiceWrite?: boolean
+}
+
+// The cart intercept reads this flag. Fetch itself ignores it.
+export function isCustomerChoiceWrite(init?: RequestInit): boolean {
+  if (!init) return false
+  return (init as CustomerChoiceWriteInit)[CUSTOMER_CHOICE_WRITE_FLAG] === true
+}
+
+export function storedCustomerChoice(cart: ShopifyCart): string {
+  const value = cart.attributes?.[CUSTOMER_CHOICE_ATTRIBUTE]
+  return typeof value === 'string' ? value.trim() : ''
+}
+
 export function parseCart(cart: ShopifyCart): CartOrderPayload {
   const lineItems = cart.items.map((item) => ({
     productId: item.product_id.toString(),
@@ -20,6 +38,16 @@ export function parseCart(cart: ShopifyCart): CartOrderPayload {
     currency: cart.currency,
     totalPrice: cart.total_price,
   }
+}
+
+// The API selects the shown option from this id. An empty cart never sends it.
+export function orderFromCart(cart: ShopifyCart): CartOrderPayload {
+  const order = parseCart(cart)
+  const storedId = storedCustomerChoice(cart)
+  if (order.lineItems.length > 0 && storedId) {
+    order.customerChoiceProjectId = storedId
+  }
+  return order
 }
 
 function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
@@ -50,7 +78,7 @@ export function createCartApi(shopUniqueName: string): CartApi {
   }
 
   function getOrder(): Promise<CartOrderPayload> {
-    return getCart().then(parseCart)
+    return getCart().then(orderFromCart)
   }
 
   function addItemToCart(targetProductId: string, quantity = 1): Promise<unknown> {
@@ -74,6 +102,21 @@ export function createCartApi(shopUniqueName: string): CartApi {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({ updates }),
+    })
+  }
+
+  function writeCustomerChoice(projectId: string): Promise<void> {
+    // The flag tells the cart intercept to leave this write alone. The widget redraws after it.
+    const init: CustomerChoiceWriteInit = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ attributes: { [CUSTOMER_CHOICE_ATTRIBUTE]: projectId } }),
+      [CUSTOMER_CHOICE_WRITE_FLAG]: true,
+    }
+    return fetch(CART_ENDPOINTS.update, init).then((response: Response): void => {
+      if (!response.ok) {
+        throw new Error(`Greenspark project choice write failed with status ${response.status}`)
+      }
     })
   }
 
@@ -174,6 +217,7 @@ export function createCartApi(shopUniqueName: string): CartApi {
     getOrder,
     addItemToCart,
     updateCart,
+    writeCustomerChoice,
     refreshCartDrawer,
     captureEvent,
   }

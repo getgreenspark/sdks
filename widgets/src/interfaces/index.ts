@@ -55,6 +55,21 @@ export interface StoreOrder {
   totalPrice: number
   lineItems: Array<OrderProduct>
   withPopup?: boolean
+  // The project id the shopper chose, as stored on the cart. The API picks the shown option from it.
+  customerChoiceProjectId?: string
+}
+
+// Reads and writes the shopper's project choice on the platform's cart. `read` resolves '' when nothing is stored;
+// `write` rejects when the cart was not updated.
+export interface CustomerChoiceStorage {
+  read(): Promise<string>
+  write(projectId: string): Promise<void>
+}
+
+export interface CustomerChoiceOptions {
+  storage: CustomerChoiceStorage
+  // Runs after the widget redraws itself for a shopper's pick, for platform post-processing of the new HTML.
+  onRedraw?: () => void
 }
 
 export interface WidgetParams {
@@ -90,11 +105,21 @@ export interface CartWidgetByIdParams
     CartWidgetBaseParams {
 }
 
+// Browser-only options, never sent to the API.
+export interface CartWidgetByIdOptions extends CartWidgetByIdParams {
+  customerChoice?: CustomerChoiceOptions
+}
+
 export interface CustomerCartContributionWidgetParams
   extends CustomerCartContributionWidgetBaseParams,
     WidgetParams,
     WidgetPopupParams,
     WidgetStyleParams {
+}
+
+// Browser-only options, never sent to the API.
+export interface CustomerCartContributionWidgetOptions extends CustomerCartContributionWidgetParams {
+  customerChoice?: CustomerChoiceOptions
 }
 
 export interface SpendLevelWidgetParams

@@ -1,4 +1,4 @@
-import { createCartApi } from './cart'
+import { createCartApi, isCustomerChoiceWrite } from './cart'
 import { getGreensparkApiUrl } from './config'
 import { getWidgetContainer, injectWidgetStyles, movePopupToBody } from './dom'
 import { err, warn } from './debug'
@@ -118,8 +118,11 @@ function interceptCartMutations(): void {
   window._greensparkFetchIntercepted = true
 
   const originalFetch = window.fetch
-  window.fetch = function (input: RequestInfo | URL, init?: RequestInit) {
+  window.fetch = function (input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
     const response = originalFetch.call(this, input, init)
+    // A project-choice write redraws the widget itself. Scheduling another render here paints the previous order.
+    if (isCustomerChoiceWrite(init)) return response
+
     const url = getFetchUrl(input)
 
     if (!url || !CART_API_PATTERN.test(url.pathname)) {
