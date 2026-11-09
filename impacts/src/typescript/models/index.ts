@@ -22,4 +22,5 @@ export * from './site-assessment-response';
 export * from './survivability-metric';
 export * from './survivability-stats';
 export * from './transaction-purchase';
+export * from './transaction-purchase-summary';
 export * from './veritree-subsite-response';

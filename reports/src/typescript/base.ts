@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Reporting
- * Here you can find documentation and examples for Greenspark Reporting API
+ * Query impact and spend reports. Use GET /v2/reports (fetchRawReportV2) as the canonical raw export; v1 report routes are deprecated.  Authentication: `x-api-key` header (required). Create keys in the Greenspark dashboard after registration — separate key per environment.  Environments: `https://api.getgreenspark.com` (production key) or `https://sandbox.getgreenspark.com` (sandbox key). Always match host and key.  ReadMe MCP (v1): `https://docs.getgreenspark.com/mcp` — read-only live calls on enabled GET routes. POST/PUT/DELETE are documented for integration building; use `get-endpoint` for schemas, not `execute-request` for writes.  API keys: Accepts all standard API key types — individual routes may restrict allowed types.
  *
  * OpenAPI spec version: v1
  * 

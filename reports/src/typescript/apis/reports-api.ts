@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Reporting
- * Here you can find documentation and examples for Greenspark Reporting API
+ * Query impact and spend reports. Use GET /v2/reports (fetchRawReportV2) as the canonical raw export; v1 report routes are deprecated.  Authentication: `x-api-key` header (required). Create keys in the Greenspark dashboard after registration — separate key per environment.  Environments: `https://api.getgreenspark.com` (production key) or `https://sandbox.getgreenspark.com` (sandbox key). Always match host and key.  ReadMe MCP (v1): `https://docs.getgreenspark.com/mcp` — read-only live calls on enabled GET routes. POST/PUT/DELETE are documented for integration building; use `get-endpoint` for schemas, not `execute-request` for writes.  API keys: Accepts all standard API key types — individual routes may restrict allowed types.
  *
  * OpenAPI spec version: v1
  * 
@@ -34,7 +34,7 @@ import { RawReportV2 } from '../models';
 export const ReportsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Fetch your impacts page in a raw format.
+         * Deprecated — returns 404 at runtime. Use v2 fetchRawReportV2 (GET /v2/reports) with cursor pagination.
          * @summary Fetch a Report Page
          * @param {string} reportId The id of a previously generated report.
          * @param {string} cursor The cursor identifies the next page within a report.
@@ -94,11 +94,12 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fetchAverageSpendPerImpact: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        fetchAverageSpendPerImpact: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/reports/average-spend-per-impact`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, 'https://example.com');
@@ -138,6 +139,10 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['metadata'] = metadata;
             }
 
+            if (sourceType !== undefined) {
+                localVarQueryParameter['sourceType'] = sourceType;
+            }
+
             const query = new URLSearchParams(localVarUrlObj.search);
             for (const key in localVarQueryParameter) {
                 query.set(key, localVarQueryParameter[key]);
@@ -161,11 +166,12 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fetchCarbonByInterval: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        fetchCarbonByInterval: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/reports/carbon-by-interval`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, 'https://example.com');
@@ -205,6 +211,10 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['metadata'] = metadata;
             }
 
+            if (sourceType !== undefined) {
+                localVarQueryParameter['sourceType'] = sourceType;
+            }
+
             const query = new URLSearchParams(localVarUrlObj.search);
             for (const key in localVarQueryParameter) {
                 query.set(key, localVarQueryParameter[key]);
@@ -228,11 +238,12 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fetchImpactAmountByTypePerSourceReport: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        fetchImpactAmountByTypePerSourceReport: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/reports/impact-amount-by-type-per-source`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, 'https://example.com');
@@ -272,6 +283,10 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['metadata'] = metadata;
             }
 
+            if (sourceType !== undefined) {
+                localVarQueryParameter['sourceType'] = sourceType;
+            }
+
             const query = new URLSearchParams(localVarUrlObj.search);
             for (const key in localVarQueryParameter) {
                 query.set(key, localVarQueryParameter[key]);
@@ -295,11 +310,12 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fetchImpactAmountByTypePerTriggerReport: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        fetchImpactAmountByTypePerTriggerReport: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/reports/impact-amount-by-type-per-trigger`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, 'https://example.com');
@@ -339,6 +355,10 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['metadata'] = metadata;
             }
 
+            if (sourceType !== undefined) {
+                localVarQueryParameter['sourceType'] = sourceType;
+            }
+
             const query = new URLSearchParams(localVarUrlObj.search);
             for (const key in localVarQueryParameter) {
                 query.set(key, localVarQueryParameter[key]);
@@ -362,11 +382,12 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fetchImpactsByInterval: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        fetchImpactsByInterval: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/reports/impacts-by-interval`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, 'https://example.com');
@@ -406,6 +427,10 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['metadata'] = metadata;
             }
 
+            if (sourceType !== undefined) {
+                localVarQueryParameter['sourceType'] = sourceType;
+            }
+
             const query = new URLSearchParams(localVarUrlObj.search);
             for (const key in localVarQueryParameter) {
                 query.set(key, localVarQueryParameter[key]);
@@ -429,11 +454,12 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fetchPlasticByInterval: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        fetchPlasticByInterval: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/reports/plastic-by-interval`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, 'https://example.com');
@@ -473,6 +499,10 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['metadata'] = metadata;
             }
 
+            if (sourceType !== undefined) {
+                localVarQueryParameter['sourceType'] = sourceType;
+            }
+
             const query = new URLSearchParams(localVarUrlObj.search);
             for (const key in localVarQueryParameter) {
                 query.set(key, localVarQueryParameter[key]);
@@ -490,18 +520,19 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Fetch your impacts in a raw format.
+         * Deprecated — returns 404 at runtime. Use v2 fetchRawReportV2 (GET /v2/reports).
          * @summary Fetch Raw Report
          * @param {string} [sourceId] The id of the source associated with the impact.
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {string} [impactType] Type can be trees, plastic or carbon. As a result only the impacts containing the provided impact type will be returned. If they contain other impact types as well, those won&#x27;t be filtered out.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fetchRawReport: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, impactType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        fetchRawReport: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, impactType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/reports`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, 'https://example.com');
@@ -541,6 +572,10 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['metadata'] = metadata;
             }
 
+            if (sourceType !== undefined) {
+                localVarQueryParameter['sourceType'] = sourceType;
+            }
+
             if (impactType !== undefined) {
                 localVarQueryParameter['impactType'] = impactType;
             }
@@ -562,19 +597,20 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Fetch your impacts in a raw format.
+         * Canonical raw impact export. Paginate with the cursor query parameter when the response includes a non-null cursor. Row metadata may contain merchant-defined key/value pairs.
          * @summary Fetch Raw Report v2
          * @param {string} [sourceId] The id of the source associated with the impact.
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {string} [impactType] Type can be trees, plastic or carbon. As a result only the impacts containing the provided impact type will be returned. If they contain other impact types as well, those won&#x27;t be filtered out.
          * @param {string} [cursor] The cursor identifies the next page within a report.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fetchRawReportV2: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, impactType?: string, cursor?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        fetchRawReportV2: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, impactType?: string, cursor?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v2/reports`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, 'https://example.com');
@@ -614,6 +650,10 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['metadata'] = metadata;
             }
 
+            if (sourceType !== undefined) {
+                localVarQueryParameter['sourceType'] = sourceType;
+            }
+
             if (impactType !== undefined) {
                 localVarQueryParameter['impactType'] = impactType;
             }
@@ -645,11 +685,12 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fetchTotalImpactBySources: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        fetchTotalImpactBySources: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/reports/total-impact-by-sources`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, 'https://example.com');
@@ -689,6 +730,10 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['metadata'] = metadata;
             }
 
+            if (sourceType !== undefined) {
+                localVarQueryParameter['sourceType'] = sourceType;
+            }
+
             const query = new URLSearchParams(localVarUrlObj.search);
             for (const key in localVarQueryParameter) {
                 query.set(key, localVarQueryParameter[key]);
@@ -712,11 +757,12 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fetchTotalImpactByTriggers: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        fetchTotalImpactByTriggers: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/reports/total-impact-by-triggers`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, 'https://example.com');
@@ -756,6 +802,10 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['metadata'] = metadata;
             }
 
+            if (sourceType !== undefined) {
+                localVarQueryParameter['sourceType'] = sourceType;
+            }
+
             const query = new URLSearchParams(localVarUrlObj.search);
             for (const key in localVarQueryParameter) {
                 query.set(key, localVarQueryParameter[key]);
@@ -779,11 +829,12 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fetchTotalImpactByTypeReport: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        fetchTotalImpactByTypeReport: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/reports/total-impact-by-type`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, 'https://example.com');
@@ -823,6 +874,10 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['metadata'] = metadata;
             }
 
+            if (sourceType !== undefined) {
+                localVarQueryParameter['sourceType'] = sourceType;
+            }
+
             const query = new URLSearchParams(localVarUrlObj.search);
             for (const key in localVarQueryParameter) {
                 query.set(key, localVarQueryParameter[key]);
@@ -846,11 +901,12 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fetchTotalImpactsCount: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        fetchTotalImpactsCount: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/reports/total-impacts-count`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, 'https://example.com');
@@ -890,6 +946,10 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['metadata'] = metadata;
             }
 
+            if (sourceType !== undefined) {
+                localVarQueryParameter['sourceType'] = sourceType;
+            }
+
             const query = new URLSearchParams(localVarUrlObj.search);
             for (const key in localVarQueryParameter) {
                 query.set(key, localVarQueryParameter[key]);
@@ -913,11 +973,12 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fetchTotalSpendOnImpacts: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        fetchTotalSpendOnImpacts: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/reports/total-spend-on-impacts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, 'https://example.com');
@@ -957,6 +1018,10 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['metadata'] = metadata;
             }
 
+            if (sourceType !== undefined) {
+                localVarQueryParameter['sourceType'] = sourceType;
+            }
+
             const query = new URLSearchParams(localVarUrlObj.search);
             for (const key in localVarQueryParameter) {
                 query.set(key, localVarQueryParameter[key]);
@@ -980,11 +1045,12 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fetchTreesByInterval: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        fetchTreesByInterval: async (sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/reports/trees-by-interval`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, 'https://example.com');
@@ -1024,6 +1090,10 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['metadata'] = metadata;
             }
 
+            if (sourceType !== undefined) {
+                localVarQueryParameter['sourceType'] = sourceType;
+            }
+
             const query = new URLSearchParams(localVarUrlObj.search);
             for (const key in localVarQueryParameter) {
                 query.set(key, localVarQueryParameter[key]);
@@ -1050,7 +1120,7 @@ export const ReportsApiAxiosParamCreator = function (configuration?: Configurati
 export const ReportsApiFp = function(configuration?: Configuration) {
     return {
         /**
-         * Fetch your impacts page in a raw format.
+         * Deprecated — returns 404 at runtime. Use v2 fetchRawReportV2 (GET /v2/reports) with cursor pagination.
          * @summary Fetch a Report Page
          * @param {string} reportId The id of a previously generated report.
          * @param {string} cursor The cursor identifies the next page within a report.
@@ -1071,12 +1141,13 @@ export const ReportsApiFp = function(configuration?: Configuration) {
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchAverageSpendPerImpact(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2007>>>> {
-            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchAverageSpendPerImpact(sourceId, triggerId, startDate, endDate, metadata, options);
+        async fetchAverageSpendPerImpact(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2007>>>> {
+            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchAverageSpendPerImpact(sourceId, triggerId, startDate, endDate, metadata, sourceType, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1089,12 +1160,13 @@ export const ReportsApiFp = function(configuration?: Configuration) {
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchCarbonByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2003>>>> {
-            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchCarbonByInterval(sourceId, triggerId, startDate, endDate, metadata, options);
+        async fetchCarbonByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2003>>>> {
+            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchCarbonByInterval(sourceId, triggerId, startDate, endDate, metadata, sourceType, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1107,12 +1179,13 @@ export const ReportsApiFp = function(configuration?: Configuration) {
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchImpactAmountByTypePerSourceReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2001>>>> {
-            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchImpactAmountByTypePerSourceReport(sourceId, triggerId, startDate, endDate, metadata, options);
+        async fetchImpactAmountByTypePerSourceReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2001>>>> {
+            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchImpactAmountByTypePerSourceReport(sourceId, triggerId, startDate, endDate, metadata, sourceType, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1125,12 +1198,13 @@ export const ReportsApiFp = function(configuration?: Configuration) {
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchImpactAmountByTypePerTriggerReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2002>>>> {
-            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchImpactAmountByTypePerTriggerReport(sourceId, triggerId, startDate, endDate, metadata, options);
+        async fetchImpactAmountByTypePerTriggerReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2002>>>> {
+            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchImpactAmountByTypePerTriggerReport(sourceId, triggerId, startDate, endDate, metadata, sourceType, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1143,12 +1217,13 @@ export const ReportsApiFp = function(configuration?: Configuration) {
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchImpactsByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2004>>>> {
-            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchImpactsByInterval(sourceId, triggerId, startDate, endDate, metadata, options);
+        async fetchImpactsByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2004>>>> {
+            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchImpactsByInterval(sourceId, triggerId, startDate, endDate, metadata, sourceType, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1161,51 +1236,54 @@ export const ReportsApiFp = function(configuration?: Configuration) {
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchPlasticByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2003>>>> {
-            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchPlasticByInterval(sourceId, triggerId, startDate, endDate, metadata, options);
+        async fetchPlasticByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2003>>>> {
+            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchPlasticByInterval(sourceId, triggerId, startDate, endDate, metadata, sourceType, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
             };
         },
         /**
-         * Fetch your impacts in a raw format.
+         * Deprecated — returns 404 at runtime. Use v2 fetchRawReportV2 (GET /v2/reports).
          * @summary Fetch Raw Report
          * @param {string} [sourceId] The id of the source associated with the impact.
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {string} [impactType] Type can be trees, plastic or carbon. As a result only the impacts containing the provided impact type will be returned. If they contain other impact types as well, those won&#x27;t be filtered out.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchRawReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, impactType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<RawReport>>> {
-            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchRawReport(sourceId, triggerId, startDate, endDate, metadata, impactType, options);
+        async fetchRawReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, impactType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<RawReport>>> {
+            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchRawReport(sourceId, triggerId, startDate, endDate, metadata, sourceType, impactType, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
             };
         },
         /**
-         * Fetch your impacts in a raw format.
+         * Canonical raw impact export. Paginate with the cursor query parameter when the response includes a non-null cursor. Row metadata may contain merchant-defined key/value pairs.
          * @summary Fetch Raw Report v2
          * @param {string} [sourceId] The id of the source associated with the impact.
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {string} [impactType] Type can be trees, plastic or carbon. As a result only the impacts containing the provided impact type will be returned. If they contain other impact types as well, those won&#x27;t be filtered out.
          * @param {string} [cursor] The cursor identifies the next page within a report.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchRawReportV2(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, impactType?: string, cursor?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<RawReportV2>>> {
-            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchRawReportV2(sourceId, triggerId, startDate, endDate, metadata, impactType, cursor, options);
+        async fetchRawReportV2(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, impactType?: string, cursor?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<RawReportV2>>> {
+            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchRawReportV2(sourceId, triggerId, startDate, endDate, metadata, sourceType, impactType, cursor, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1218,12 +1296,13 @@ export const ReportsApiFp = function(configuration?: Configuration) {
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchTotalImpactBySources(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2005>>>> {
-            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchTotalImpactBySources(sourceId, triggerId, startDate, endDate, metadata, options);
+        async fetchTotalImpactBySources(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2005>>>> {
+            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchTotalImpactBySources(sourceId, triggerId, startDate, endDate, metadata, sourceType, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1236,12 +1315,13 @@ export const ReportsApiFp = function(configuration?: Configuration) {
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchTotalImpactByTriggers(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2006>>>> {
-            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchTotalImpactByTriggers(sourceId, triggerId, startDate, endDate, metadata, options);
+        async fetchTotalImpactByTriggers(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2006>>>> {
+            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchTotalImpactByTriggers(sourceId, triggerId, startDate, endDate, metadata, sourceType, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1254,12 +1334,13 @@ export const ReportsApiFp = function(configuration?: Configuration) {
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchTotalImpactByTypeReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse200>>>> {
-            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchTotalImpactByTypeReport(sourceId, triggerId, startDate, endDate, metadata, options);
+        async fetchTotalImpactByTypeReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse200>>>> {
+            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchTotalImpactByTypeReport(sourceId, triggerId, startDate, endDate, metadata, sourceType, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1272,12 +1353,13 @@ export const ReportsApiFp = function(configuration?: Configuration) {
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchTotalImpactsCount(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<InlineResponse2008>>> {
-            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchTotalImpactsCount(sourceId, triggerId, startDate, endDate, metadata, options);
+        async fetchTotalImpactsCount(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<InlineResponse2008>>> {
+            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchTotalImpactsCount(sourceId, triggerId, startDate, endDate, metadata, sourceType, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1290,12 +1372,13 @@ export const ReportsApiFp = function(configuration?: Configuration) {
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchTotalSpendOnImpacts(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2007>>>> {
-            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchTotalSpendOnImpacts(sourceId, triggerId, startDate, endDate, metadata, options);
+        async fetchTotalSpendOnImpacts(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2007>>>> {
+            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchTotalSpendOnImpacts(sourceId, triggerId, startDate, endDate, metadata, sourceType, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1308,12 +1391,13 @@ export const ReportsApiFp = function(configuration?: Configuration) {
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchTreesByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2003>>>> {
-            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchTreesByInterval(sourceId, triggerId, startDate, endDate, metadata, options);
+        async fetchTreesByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<InlineResponse2003>>>> {
+            const localVarAxiosArgs = await ReportsApiAxiosParamCreator(configuration).fetchTreesByInterval(sourceId, triggerId, startDate, endDate, metadata, sourceType, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1329,7 +1413,7 @@ export const ReportsApiFp = function(configuration?: Configuration) {
 export const ReportsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     return {
         /**
-         * Fetch your impacts page in a raw format.
+         * Deprecated — returns 404 at runtime. Use v2 fetchRawReportV2 (GET /v2/reports) with cursor pagination.
          * @summary Fetch a Report Page
          * @param {string} reportId The id of a previously generated report.
          * @param {string} cursor The cursor identifies the next page within a report.
@@ -1346,12 +1430,13 @@ export const ReportsApiFactory = function (configuration?: Configuration, basePa
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchAverageSpendPerImpact(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2007>>> {
-            return ReportsApiFp(configuration).fetchAverageSpendPerImpact(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(axios, basePath));
+        async fetchAverageSpendPerImpact(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2007>>> {
+            return ReportsApiFp(configuration).fetchAverageSpendPerImpact(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(axios, basePath));
         },
         /**
          * Fetch the Array of spending on impacts of carbon per month.
@@ -1360,12 +1445,13 @@ export const ReportsApiFactory = function (configuration?: Configuration, basePa
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchCarbonByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2003>>> {
-            return ReportsApiFp(configuration).fetchCarbonByInterval(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(axios, basePath));
+        async fetchCarbonByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2003>>> {
+            return ReportsApiFp(configuration).fetchCarbonByInterval(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(axios, basePath));
         },
         /**
          * Fetch the Array of spending on impacts on a single type and source.
@@ -1374,12 +1460,13 @@ export const ReportsApiFactory = function (configuration?: Configuration, basePa
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchImpactAmountByTypePerSourceReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2001>>> {
-            return ReportsApiFp(configuration).fetchImpactAmountByTypePerSourceReport(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(axios, basePath));
+        async fetchImpactAmountByTypePerSourceReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2001>>> {
+            return ReportsApiFp(configuration).fetchImpactAmountByTypePerSourceReport(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(axios, basePath));
         },
         /**
          * Fetch the Array of spending on impacts on a single type and trigger.
@@ -1388,12 +1475,13 @@ export const ReportsApiFactory = function (configuration?: Configuration, basePa
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchImpactAmountByTypePerTriggerReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2002>>> {
-            return ReportsApiFp(configuration).fetchImpactAmountByTypePerTriggerReport(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(axios, basePath));
+        async fetchImpactAmountByTypePerTriggerReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2002>>> {
+            return ReportsApiFp(configuration).fetchImpactAmountByTypePerTriggerReport(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(axios, basePath));
         },
         /**
          * Fetch the Array of spending on impacts per month.
@@ -1402,12 +1490,13 @@ export const ReportsApiFactory = function (configuration?: Configuration, basePa
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchImpactsByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2004>>> {
-            return ReportsApiFp(configuration).fetchImpactsByInterval(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(axios, basePath));
+        async fetchImpactsByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2004>>> {
+            return ReportsApiFp(configuration).fetchImpactsByInterval(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(axios, basePath));
         },
         /**
          * Fetch the Array of spending on impacts of plastic per month.
@@ -1416,43 +1505,46 @@ export const ReportsApiFactory = function (configuration?: Configuration, basePa
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchPlasticByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2003>>> {
-            return ReportsApiFp(configuration).fetchPlasticByInterval(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(axios, basePath));
+        async fetchPlasticByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2003>>> {
+            return ReportsApiFp(configuration).fetchPlasticByInterval(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(axios, basePath));
         },
         /**
-         * Fetch your impacts in a raw format.
+         * Deprecated — returns 404 at runtime. Use v2 fetchRawReportV2 (GET /v2/reports).
          * @summary Fetch Raw Report
          * @param {string} [sourceId] The id of the source associated with the impact.
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {string} [impactType] Type can be trees, plastic or carbon. As a result only the impacts containing the provided impact type will be returned. If they contain other impact types as well, those won&#x27;t be filtered out.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchRawReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, impactType?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<RawReport>> {
-            return ReportsApiFp(configuration).fetchRawReport(sourceId, triggerId, startDate, endDate, metadata, impactType, options).then((request) => request(axios, basePath));
+        async fetchRawReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, impactType?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<RawReport>> {
+            return ReportsApiFp(configuration).fetchRawReport(sourceId, triggerId, startDate, endDate, metadata, sourceType, impactType, options).then((request) => request(axios, basePath));
         },
         /**
-         * Fetch your impacts in a raw format.
+         * Canonical raw impact export. Paginate with the cursor query parameter when the response includes a non-null cursor. Row metadata may contain merchant-defined key/value pairs.
          * @summary Fetch Raw Report v2
          * @param {string} [sourceId] The id of the source associated with the impact.
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {string} [impactType] Type can be trees, plastic or carbon. As a result only the impacts containing the provided impact type will be returned. If they contain other impact types as well, those won&#x27;t be filtered out.
          * @param {string} [cursor] The cursor identifies the next page within a report.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchRawReportV2(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, impactType?: string, cursor?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<RawReportV2>> {
-            return ReportsApiFp(configuration).fetchRawReportV2(sourceId, triggerId, startDate, endDate, metadata, impactType, cursor, options).then((request) => request(axios, basePath));
+        async fetchRawReportV2(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, impactType?: string, cursor?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<RawReportV2>> {
+            return ReportsApiFp(configuration).fetchRawReportV2(sourceId, triggerId, startDate, endDate, metadata, sourceType, impactType, cursor, options).then((request) => request(axios, basePath));
         },
         /**
          * Fetch the Array of impacts amount per source.
@@ -1461,12 +1553,13 @@ export const ReportsApiFactory = function (configuration?: Configuration, basePa
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchTotalImpactBySources(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2005>>> {
-            return ReportsApiFp(configuration).fetchTotalImpactBySources(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(axios, basePath));
+        async fetchTotalImpactBySources(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2005>>> {
+            return ReportsApiFp(configuration).fetchTotalImpactBySources(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(axios, basePath));
         },
         /**
          * Fetch the Array of impacts amount per trigger.
@@ -1475,12 +1568,13 @@ export const ReportsApiFactory = function (configuration?: Configuration, basePa
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchTotalImpactByTriggers(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2006>>> {
-            return ReportsApiFp(configuration).fetchTotalImpactByTriggers(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(axios, basePath));
+        async fetchTotalImpactByTriggers(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2006>>> {
+            return ReportsApiFp(configuration).fetchTotalImpactByTriggers(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(axios, basePath));
         },
         /**
          * Fetch the Array of spending on impacts on a single type.
@@ -1489,12 +1583,13 @@ export const ReportsApiFactory = function (configuration?: Configuration, basePa
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchTotalImpactByTypeReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse200>>> {
-            return ReportsApiFp(configuration).fetchTotalImpactByTypeReport(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(axios, basePath));
+        async fetchTotalImpactByTypeReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse200>>> {
+            return ReportsApiFp(configuration).fetchTotalImpactByTypeReport(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(axios, basePath));
         },
         /**
          * Fetch the total number of impacts.
@@ -1503,12 +1598,13 @@ export const ReportsApiFactory = function (configuration?: Configuration, basePa
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchTotalImpactsCount(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<InlineResponse2008>> {
-            return ReportsApiFp(configuration).fetchTotalImpactsCount(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(axios, basePath));
+        async fetchTotalImpactsCount(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<InlineResponse2008>> {
+            return ReportsApiFp(configuration).fetchTotalImpactsCount(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(axios, basePath));
         },
         /**
          * Fetch the Array of total spending on impacts per currency.
@@ -1517,12 +1613,13 @@ export const ReportsApiFactory = function (configuration?: Configuration, basePa
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchTotalSpendOnImpacts(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2007>>> {
-            return ReportsApiFp(configuration).fetchTotalSpendOnImpacts(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(axios, basePath));
+        async fetchTotalSpendOnImpacts(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2007>>> {
+            return ReportsApiFp(configuration).fetchTotalSpendOnImpacts(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(axios, basePath));
         },
         /**
          * Fetch the Array of spending on impacts of trees per month.
@@ -1531,12 +1628,13 @@ export const ReportsApiFactory = function (configuration?: Configuration, basePa
          * @param {string} [triggerId] The id of the trigger associated with the impact.
          * @param {string} [startDate] The beginning of the date filter interval.
          * @param {string} [endDate] The end of the date filter interval.
-         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+         * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+         * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fetchTreesByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2003>>> {
-            return ReportsApiFp(configuration).fetchTreesByInterval(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(axios, basePath));
+        async fetchTreesByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<InlineResponse2003>>> {
+            return ReportsApiFp(configuration).fetchTreesByInterval(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -1549,7 +1647,7 @@ export const ReportsApiFactory = function (configuration?: Configuration, basePa
  */
 export class ReportsApi extends BaseAPI {
     /**
-     * Fetch your impacts page in a raw format.
+     * Deprecated — returns 404 at runtime. Use v2 fetchRawReportV2 (GET /v2/reports) with cursor pagination.
      * @summary Fetch a Report Page
      * @param {string} reportId The id of a previously generated report.
      * @param {string} cursor The cursor identifies the next page within a report.
@@ -1567,13 +1665,14 @@ export class ReportsApi extends BaseAPI {
      * @param {string} [triggerId] The id of the trigger associated with the impact.
      * @param {string} [startDate] The beginning of the date filter interval.
      * @param {string} [endDate] The end of the date filter interval.
-     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+     * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ReportsApi
      */
-    public async fetchAverageSpendPerImpact(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2007>>> {
-        return ReportsApiFp(this.configuration).fetchAverageSpendPerImpact(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(this.axios, this.basePath));
+    public async fetchAverageSpendPerImpact(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2007>>> {
+        return ReportsApiFp(this.configuration).fetchAverageSpendPerImpact(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(this.axios, this.basePath));
     }
     /**
      * Fetch the Array of spending on impacts of carbon per month.
@@ -1582,13 +1681,14 @@ export class ReportsApi extends BaseAPI {
      * @param {string} [triggerId] The id of the trigger associated with the impact.
      * @param {string} [startDate] The beginning of the date filter interval.
      * @param {string} [endDate] The end of the date filter interval.
-     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+     * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ReportsApi
      */
-    public async fetchCarbonByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2003>>> {
-        return ReportsApiFp(this.configuration).fetchCarbonByInterval(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(this.axios, this.basePath));
+    public async fetchCarbonByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2003>>> {
+        return ReportsApiFp(this.configuration).fetchCarbonByInterval(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(this.axios, this.basePath));
     }
     /**
      * Fetch the Array of spending on impacts on a single type and source.
@@ -1597,13 +1697,14 @@ export class ReportsApi extends BaseAPI {
      * @param {string} [triggerId] The id of the trigger associated with the impact.
      * @param {string} [startDate] The beginning of the date filter interval.
      * @param {string} [endDate] The end of the date filter interval.
-     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+     * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ReportsApi
      */
-    public async fetchImpactAmountByTypePerSourceReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2001>>> {
-        return ReportsApiFp(this.configuration).fetchImpactAmountByTypePerSourceReport(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(this.axios, this.basePath));
+    public async fetchImpactAmountByTypePerSourceReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2001>>> {
+        return ReportsApiFp(this.configuration).fetchImpactAmountByTypePerSourceReport(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(this.axios, this.basePath));
     }
     /**
      * Fetch the Array of spending on impacts on a single type and trigger.
@@ -1612,13 +1713,14 @@ export class ReportsApi extends BaseAPI {
      * @param {string} [triggerId] The id of the trigger associated with the impact.
      * @param {string} [startDate] The beginning of the date filter interval.
      * @param {string} [endDate] The end of the date filter interval.
-     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+     * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ReportsApi
      */
-    public async fetchImpactAmountByTypePerTriggerReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2002>>> {
-        return ReportsApiFp(this.configuration).fetchImpactAmountByTypePerTriggerReport(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(this.axios, this.basePath));
+    public async fetchImpactAmountByTypePerTriggerReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2002>>> {
+        return ReportsApiFp(this.configuration).fetchImpactAmountByTypePerTriggerReport(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(this.axios, this.basePath));
     }
     /**
      * Fetch the Array of spending on impacts per month.
@@ -1627,13 +1729,14 @@ export class ReportsApi extends BaseAPI {
      * @param {string} [triggerId] The id of the trigger associated with the impact.
      * @param {string} [startDate] The beginning of the date filter interval.
      * @param {string} [endDate] The end of the date filter interval.
-     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+     * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ReportsApi
      */
-    public async fetchImpactsByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2004>>> {
-        return ReportsApiFp(this.configuration).fetchImpactsByInterval(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(this.axios, this.basePath));
+    public async fetchImpactsByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2004>>> {
+        return ReportsApiFp(this.configuration).fetchImpactsByInterval(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(this.axios, this.basePath));
     }
     /**
      * Fetch the Array of spending on impacts of plastic per month.
@@ -1642,46 +1745,49 @@ export class ReportsApi extends BaseAPI {
      * @param {string} [triggerId] The id of the trigger associated with the impact.
      * @param {string} [startDate] The beginning of the date filter interval.
      * @param {string} [endDate] The end of the date filter interval.
-     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+     * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ReportsApi
      */
-    public async fetchPlasticByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2003>>> {
-        return ReportsApiFp(this.configuration).fetchPlasticByInterval(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(this.axios, this.basePath));
+    public async fetchPlasticByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2003>>> {
+        return ReportsApiFp(this.configuration).fetchPlasticByInterval(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(this.axios, this.basePath));
     }
     /**
-     * Fetch your impacts in a raw format.
+     * Deprecated — returns 404 at runtime. Use v2 fetchRawReportV2 (GET /v2/reports).
      * @summary Fetch Raw Report
      * @param {string} [sourceId] The id of the source associated with the impact.
      * @param {string} [triggerId] The id of the trigger associated with the impact.
      * @param {string} [startDate] The beginning of the date filter interval.
      * @param {string} [endDate] The end of the date filter interval.
-     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+     * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
      * @param {string} [impactType] Type can be trees, plastic or carbon. As a result only the impacts containing the provided impact type will be returned. If they contain other impact types as well, those won&#x27;t be filtered out.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ReportsApi
      */
-    public async fetchRawReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, impactType?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<RawReport>> {
-        return ReportsApiFp(this.configuration).fetchRawReport(sourceId, triggerId, startDate, endDate, metadata, impactType, options).then((request) => request(this.axios, this.basePath));
+    public async fetchRawReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, impactType?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<RawReport>> {
+        return ReportsApiFp(this.configuration).fetchRawReport(sourceId, triggerId, startDate, endDate, metadata, sourceType, impactType, options).then((request) => request(this.axios, this.basePath));
     }
     /**
-     * Fetch your impacts in a raw format.
+     * Canonical raw impact export. Paginate with the cursor query parameter when the response includes a non-null cursor. Row metadata may contain merchant-defined key/value pairs.
      * @summary Fetch Raw Report v2
      * @param {string} [sourceId] The id of the source associated with the impact.
      * @param {string} [triggerId] The id of the trigger associated with the impact.
      * @param {string} [startDate] The beginning of the date filter interval.
      * @param {string} [endDate] The end of the date filter interval.
-     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+     * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
      * @param {string} [impactType] Type can be trees, plastic or carbon. As a result only the impacts containing the provided impact type will be returned. If they contain other impact types as well, those won&#x27;t be filtered out.
      * @param {string} [cursor] The cursor identifies the next page within a report.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ReportsApi
      */
-    public async fetchRawReportV2(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, impactType?: string, cursor?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<RawReportV2>> {
-        return ReportsApiFp(this.configuration).fetchRawReportV2(sourceId, triggerId, startDate, endDate, metadata, impactType, cursor, options).then((request) => request(this.axios, this.basePath));
+    public async fetchRawReportV2(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, impactType?: string, cursor?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<RawReportV2>> {
+        return ReportsApiFp(this.configuration).fetchRawReportV2(sourceId, triggerId, startDate, endDate, metadata, sourceType, impactType, cursor, options).then((request) => request(this.axios, this.basePath));
     }
     /**
      * Fetch the Array of impacts amount per source.
@@ -1690,13 +1796,14 @@ export class ReportsApi extends BaseAPI {
      * @param {string} [triggerId] The id of the trigger associated with the impact.
      * @param {string} [startDate] The beginning of the date filter interval.
      * @param {string} [endDate] The end of the date filter interval.
-     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+     * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ReportsApi
      */
-    public async fetchTotalImpactBySources(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2005>>> {
-        return ReportsApiFp(this.configuration).fetchTotalImpactBySources(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(this.axios, this.basePath));
+    public async fetchTotalImpactBySources(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2005>>> {
+        return ReportsApiFp(this.configuration).fetchTotalImpactBySources(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(this.axios, this.basePath));
     }
     /**
      * Fetch the Array of impacts amount per trigger.
@@ -1705,13 +1812,14 @@ export class ReportsApi extends BaseAPI {
      * @param {string} [triggerId] The id of the trigger associated with the impact.
      * @param {string} [startDate] The beginning of the date filter interval.
      * @param {string} [endDate] The end of the date filter interval.
-     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+     * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ReportsApi
      */
-    public async fetchTotalImpactByTriggers(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2006>>> {
-        return ReportsApiFp(this.configuration).fetchTotalImpactByTriggers(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(this.axios, this.basePath));
+    public async fetchTotalImpactByTriggers(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2006>>> {
+        return ReportsApiFp(this.configuration).fetchTotalImpactByTriggers(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(this.axios, this.basePath));
     }
     /**
      * Fetch the Array of spending on impacts on a single type.
@@ -1720,13 +1828,14 @@ export class ReportsApi extends BaseAPI {
      * @param {string} [triggerId] The id of the trigger associated with the impact.
      * @param {string} [startDate] The beginning of the date filter interval.
      * @param {string} [endDate] The end of the date filter interval.
-     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+     * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ReportsApi
      */
-    public async fetchTotalImpactByTypeReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse200>>> {
-        return ReportsApiFp(this.configuration).fetchTotalImpactByTypeReport(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(this.axios, this.basePath));
+    public async fetchTotalImpactByTypeReport(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse200>>> {
+        return ReportsApiFp(this.configuration).fetchTotalImpactByTypeReport(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(this.axios, this.basePath));
     }
     /**
      * Fetch the total number of impacts.
@@ -1735,13 +1844,14 @@ export class ReportsApi extends BaseAPI {
      * @param {string} [triggerId] The id of the trigger associated with the impact.
      * @param {string} [startDate] The beginning of the date filter interval.
      * @param {string} [endDate] The end of the date filter interval.
-     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+     * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ReportsApi
      */
-    public async fetchTotalImpactsCount(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<InlineResponse2008>> {
-        return ReportsApiFp(this.configuration).fetchTotalImpactsCount(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(this.axios, this.basePath));
+    public async fetchTotalImpactsCount(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<InlineResponse2008>> {
+        return ReportsApiFp(this.configuration).fetchTotalImpactsCount(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(this.axios, this.basePath));
     }
     /**
      * Fetch the Array of total spending on impacts per currency.
@@ -1750,13 +1860,14 @@ export class ReportsApi extends BaseAPI {
      * @param {string} [triggerId] The id of the trigger associated with the impact.
      * @param {string} [startDate] The beginning of the date filter interval.
      * @param {string} [endDate] The end of the date filter interval.
-     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+     * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ReportsApi
      */
-    public async fetchTotalSpendOnImpacts(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2007>>> {
-        return ReportsApiFp(this.configuration).fetchTotalSpendOnImpacts(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(this.axios, this.basePath));
+    public async fetchTotalSpendOnImpacts(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2007>>> {
+        return ReportsApiFp(this.configuration).fetchTotalSpendOnImpacts(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(this.axios, this.basePath));
     }
     /**
      * Fetch the Array of spending on impacts of trees per month.
@@ -1765,12 +1876,13 @@ export class ReportsApi extends BaseAPI {
      * @param {string} [triggerId] The id of the trigger associated with the impact.
      * @param {string} [startDate] The beginning of the date filter interval.
      * @param {string} [endDate] The end of the date filter interval.
-     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata.
+     * @param {string} [metadata] You can filter the data by the provided key-value pairs as Metadata. Separate key and value with a comma and pairs with a semicolon. To use a comma, semicolon or backslash inside a key or value, escape it with a backslash (for example &#x60;name,Smith\\, John&#x60;).
+     * @param {string} [sourceType] The source type of the impact, one of \&quot;one-time\&quot;, \&quot;subscription\&quot;.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ReportsApi
      */
-    public async fetchTreesByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2003>>> {
-        return ReportsApiFp(this.configuration).fetchTreesByInterval(sourceId, triggerId, startDate, endDate, metadata, options).then((request) => request(this.axios, this.basePath));
+    public async fetchTreesByInterval(sourceId?: string, triggerId?: string, startDate?: string, endDate?: string, metadata?: string, sourceType?: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<InlineResponse2003>>> {
+        return ReportsApiFp(this.configuration).fetchTreesByInterval(sourceId, triggerId, startDate, endDate, metadata, sourceType, options).then((request) => request(this.axios, this.basePath));
     }
 }

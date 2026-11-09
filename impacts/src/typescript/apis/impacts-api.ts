@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Impact
- * Here you can find documentation and examples for Greenspark Impact API
+ * Create and query Greenspark impacts. POST routes bill the account; GET /impacts/purchases exposes the public impact ledger.  Authentication: `x-api-key` header (required). Create keys in the Greenspark dashboard after registration — separate key per environment.  Environments: `https://api.getgreenspark.com` (production key) or `https://sandbox.getgreenspark.com` (sandbox key). Always match host and key.  ReadMe MCP (v1): `https://docs.getgreenspark.com/mcp` — read-only live calls on enabled GET routes. POST/PUT/DELETE are documented for integration building; use `get-endpoint` for schemas, not `execute-request` for writes.  API keys: Accepts all standard API key types — individual routes may restrict allowed types.
  *
  * OpenAPI spec version: v1
  * 
@@ -21,6 +21,7 @@ import { CreateImpactBatchRequestBody } from '../models';
 import { ImpactDto } from '../models';
 import { ImpactPurchaseDetail } from '../models';
 import { TransactionPurchase } from '../models';
+import { TransactionPurchaseSummary } from '../models';
 /**
  * ImpactsApi - axios parameter creator
  * @export
@@ -28,7 +29,7 @@ import { TransactionPurchase } from '../models';
 export const ImpactsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Creates an impact associated with a source and a trigger.
+         * Creates an impact associated with a source and a trigger. Not executable via ReadMe MCP execute-request in the current version (read-only MCP). Use get-endpoint output to build integrations in your application.
          * @summary Create Impact
          * @param {ImpactDto} body 
          * @param {string} sourceId The id of the source associated with the impact.
@@ -91,7 +92,7 @@ export const ImpactsApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Run multiple create impact call in a batch, equivalent to calling create impact multiple times with different parameters.
+         * Run multiple create impact call in a batch, equivalent to calling create impact multiple times with different parameters. Not executable via ReadMe MCP execute-request in the current version (read-only MCP). Use get-endpoint output to build integrations in your application.
          * @summary Create Impact in Batch
          * @param {CreateImpactBatchRequestBody} body 
          * @param {*} [options] Override http request option.
@@ -142,8 +143,8 @@ export const ImpactsApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Creates an impact associated with an account id.
-         * @summary Create Tailored Impact
+         * Creates an impact associated with an account id. Not executable via ReadMe MCP execute-request in the current version (read-only MCP). Use get-endpoint output to build integrations in your application.
+         * @summary Create One-time Impact
          * @param {ImpactDto} body 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -193,7 +194,7 @@ export const ImpactsApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Fetch a single impact purchase. [Read more about the domain object here.](https://greenspark.readme.io/reference/impacts)
+         * Public impact purchase ledger entry, including its evidence metadata. The id is a purchase id from the ledger list, not a transaction id from a report. Callable via ReadMe MCP execute-request when this route is enabled in ReadMe MCP route toggles. [Read more about the domain object here.](https://docs.getgreenspark.com/reference/impacts)
          * @summary Fetch Impact Purchase
          * @param {string} purchaseId The id of the purchase.
          * @param {*} [options] Override http request option.
@@ -241,7 +242,7 @@ export const ImpactsApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Fetch all impact purchases. [Read more about the domain object here.](https://greenspark.readme.io/reference/impacts)
+         * Public impact purchase ledger. Callable via ReadMe MCP execute-request when this route is enabled in ReadMe MCP route toggles. [Read more about the domain object here.](https://docs.getgreenspark.com/reference/impacts)
          * @summary Fetch Impact Purchases
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -292,7 +293,7 @@ export const ImpactsApiAxiosParamCreator = function (configuration?: Configurati
 export const ImpactsApiFp = function(configuration?: Configuration) {
     return {
         /**
-         * Creates an impact associated with a source and a trigger.
+         * Creates an impact associated with a source and a trigger. Not executable via ReadMe MCP execute-request in the current version (read-only MCP). Use get-endpoint output to build integrations in your application.
          * @summary Create Impact
          * @param {ImpactDto} body 
          * @param {string} sourceId The id of the source associated with the impact.
@@ -308,7 +309,7 @@ export const ImpactsApiFp = function(configuration?: Configuration) {
             };
         },
         /**
-         * Run multiple create impact call in a batch, equivalent to calling create impact multiple times with different parameters.
+         * Run multiple create impact call in a batch, equivalent to calling create impact multiple times with different parameters. Not executable via ReadMe MCP execute-request in the current version (read-only MCP). Use get-endpoint output to build integrations in your application.
          * @summary Create Impact in Batch
          * @param {CreateImpactBatchRequestBody} body 
          * @param {*} [options] Override http request option.
@@ -322,8 +323,8 @@ export const ImpactsApiFp = function(configuration?: Configuration) {
             };
         },
         /**
-         * Creates an impact associated with an account id.
-         * @summary Create Tailored Impact
+         * Creates an impact associated with an account id. Not executable via ReadMe MCP execute-request in the current version (read-only MCP). Use get-endpoint output to build integrations in your application.
+         * @summary Create One-time Impact
          * @param {ImpactDto} body 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -336,7 +337,7 @@ export const ImpactsApiFp = function(configuration?: Configuration) {
             };
         },
         /**
-         * Fetch a single impact purchase. [Read more about the domain object here.](https://greenspark.readme.io/reference/impacts)
+         * Public impact purchase ledger entry, including its evidence metadata. The id is a purchase id from the ledger list, not a transaction id from a report. Callable via ReadMe MCP execute-request when this route is enabled in ReadMe MCP route toggles. [Read more about the domain object here.](https://docs.getgreenspark.com/reference/impacts)
          * @summary Fetch Impact Purchase
          * @param {string} purchaseId The id of the purchase.
          * @param {*} [options] Override http request option.
@@ -350,12 +351,12 @@ export const ImpactsApiFp = function(configuration?: Configuration) {
             };
         },
         /**
-         * Fetch all impact purchases. [Read more about the domain object here.](https://greenspark.readme.io/reference/impacts)
+         * Public impact purchase ledger. Callable via ReadMe MCP execute-request when this route is enabled in ReadMe MCP route toggles. [Read more about the domain object here.](https://docs.getgreenspark.com/reference/impacts)
          * @summary Fetch Impact Purchases
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getImpactPurchases(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<TransactionPurchase>>>> {
+        async getImpactPurchases(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<TransactionPurchaseSummary>>>> {
             const localVarAxiosArgs = await ImpactsApiAxiosParamCreator(configuration).getImpactPurchases(options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
@@ -372,7 +373,7 @@ export const ImpactsApiFp = function(configuration?: Configuration) {
 export const ImpactsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     return {
         /**
-         * Creates an impact associated with a source and a trigger.
+         * Creates an impact associated with a source and a trigger. Not executable via ReadMe MCP execute-request in the current version (read-only MCP). Use get-endpoint output to build integrations in your application.
          * @summary Create Impact
          * @param {ImpactDto} body 
          * @param {string} sourceId The id of the source associated with the impact.
@@ -384,7 +385,7 @@ export const ImpactsApiFactory = function (configuration?: Configuration, basePa
             return ImpactsApiFp(configuration).createImpact(body, sourceId, triggerId, options).then((request) => request(axios, basePath));
         },
         /**
-         * Run multiple create impact call in a batch, equivalent to calling create impact multiple times with different parameters.
+         * Run multiple create impact call in a batch, equivalent to calling create impact multiple times with different parameters. Not executable via ReadMe MCP execute-request in the current version (read-only MCP). Use get-endpoint output to build integrations in your application.
          * @summary Create Impact in Batch
          * @param {CreateImpactBatchRequestBody} body 
          * @param {*} [options] Override http request option.
@@ -394,8 +395,8 @@ export const ImpactsApiFactory = function (configuration?: Configuration, basePa
             return ImpactsApiFp(configuration).createImpactBatch(body, options).then((request) => request(axios, basePath));
         },
         /**
-         * Creates an impact associated with an account id.
-         * @summary Create Tailored Impact
+         * Creates an impact associated with an account id. Not executable via ReadMe MCP execute-request in the current version (read-only MCP). Use get-endpoint output to build integrations in your application.
+         * @summary Create One-time Impact
          * @param {ImpactDto} body 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -404,7 +405,7 @@ export const ImpactsApiFactory = function (configuration?: Configuration, basePa
             return ImpactsApiFp(configuration).createTailoredImpact(body, options).then((request) => request(axios, basePath));
         },
         /**
-         * Fetch a single impact purchase. [Read more about the domain object here.](https://greenspark.readme.io/reference/impacts)
+         * Public impact purchase ledger entry, including its evidence metadata. The id is a purchase id from the ledger list, not a transaction id from a report. Callable via ReadMe MCP execute-request when this route is enabled in ReadMe MCP route toggles. [Read more about the domain object here.](https://docs.getgreenspark.com/reference/impacts)
          * @summary Fetch Impact Purchase
          * @param {string} purchaseId The id of the purchase.
          * @param {*} [options] Override http request option.
@@ -414,12 +415,12 @@ export const ImpactsApiFactory = function (configuration?: Configuration, basePa
             return ImpactsApiFp(configuration).getImpactPurchase(purchaseId, options).then((request) => request(axios, basePath));
         },
         /**
-         * Fetch all impact purchases. [Read more about the domain object here.](https://greenspark.readme.io/reference/impacts)
+         * Public impact purchase ledger. Callable via ReadMe MCP execute-request when this route is enabled in ReadMe MCP route toggles. [Read more about the domain object here.](https://docs.getgreenspark.com/reference/impacts)
          * @summary Fetch Impact Purchases
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getImpactPurchases(options?: AxiosRequestConfig): Promise<AxiosResponse<Array<TransactionPurchase>>> {
+        async getImpactPurchases(options?: AxiosRequestConfig): Promise<AxiosResponse<Array<TransactionPurchaseSummary>>> {
             return ImpactsApiFp(configuration).getImpactPurchases(options).then((request) => request(axios, basePath));
         },
     };
@@ -433,7 +434,7 @@ export const ImpactsApiFactory = function (configuration?: Configuration, basePa
  */
 export class ImpactsApi extends BaseAPI {
     /**
-     * Creates an impact associated with a source and a trigger.
+     * Creates an impact associated with a source and a trigger. Not executable via ReadMe MCP execute-request in the current version (read-only MCP). Use get-endpoint output to build integrations in your application.
      * @summary Create Impact
      * @param {ImpactDto} body 
      * @param {string} sourceId The id of the source associated with the impact.
@@ -446,7 +447,7 @@ export class ImpactsApi extends BaseAPI {
         return ImpactsApiFp(this.configuration).createImpact(body, sourceId, triggerId, options).then((request) => request(this.axios, this.basePath));
     }
     /**
-     * Run multiple create impact call in a batch, equivalent to calling create impact multiple times with different parameters.
+     * Run multiple create impact call in a batch, equivalent to calling create impact multiple times with different parameters. Not executable via ReadMe MCP execute-request in the current version (read-only MCP). Use get-endpoint output to build integrations in your application.
      * @summary Create Impact in Batch
      * @param {CreateImpactBatchRequestBody} body 
      * @param {*} [options] Override http request option.
@@ -457,8 +458,8 @@ export class ImpactsApi extends BaseAPI {
         return ImpactsApiFp(this.configuration).createImpactBatch(body, options).then((request) => request(this.axios, this.basePath));
     }
     /**
-     * Creates an impact associated with an account id.
-     * @summary Create Tailored Impact
+     * Creates an impact associated with an account id. Not executable via ReadMe MCP execute-request in the current version (read-only MCP). Use get-endpoint output to build integrations in your application.
+     * @summary Create One-time Impact
      * @param {ImpactDto} body 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -468,7 +469,7 @@ export class ImpactsApi extends BaseAPI {
         return ImpactsApiFp(this.configuration).createTailoredImpact(body, options).then((request) => request(this.axios, this.basePath));
     }
     /**
-     * Fetch a single impact purchase. [Read more about the domain object here.](https://greenspark.readme.io/reference/impacts)
+     * Public impact purchase ledger entry, including its evidence metadata. The id is a purchase id from the ledger list, not a transaction id from a report. Callable via ReadMe MCP execute-request when this route is enabled in ReadMe MCP route toggles. [Read more about the domain object here.](https://docs.getgreenspark.com/reference/impacts)
      * @summary Fetch Impact Purchase
      * @param {string} purchaseId The id of the purchase.
      * @param {*} [options] Override http request option.
@@ -479,13 +480,13 @@ export class ImpactsApi extends BaseAPI {
         return ImpactsApiFp(this.configuration).getImpactPurchase(purchaseId, options).then((request) => request(this.axios, this.basePath));
     }
     /**
-     * Fetch all impact purchases. [Read more about the domain object here.](https://greenspark.readme.io/reference/impacts)
+     * Public impact purchase ledger. Callable via ReadMe MCP execute-request when this route is enabled in ReadMe MCP route toggles. [Read more about the domain object here.](https://docs.getgreenspark.com/reference/impacts)
      * @summary Fetch Impact Purchases
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ImpactsApi
      */
-    public async getImpactPurchases(options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<TransactionPurchase>>> {
+    public async getImpactPurchases(options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<TransactionPurchaseSummary>>> {
         return ImpactsApiFp(this.configuration).getImpactPurchases(options).then((request) => request(this.axios, this.basePath));
     }
 }
